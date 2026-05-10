@@ -3,6 +3,10 @@ import { HTTPException } from "hono/http-exception";
 import authRoutes from "./routes/auth.js";
 import organizationRoutes from "./routes/organizations.js";
 import siteRoutes from "./routes/sites.js";
+import turbineRoutes from "./routes/turbines.js";
+import subsystemRoutes from "./routes/subsystems.js";
+import componentRoutes from "./routes/components.js";
+import assetRoutes from "./routes/assets.js";
 
 const app = new Hono();
 
@@ -13,6 +17,10 @@ app.get("/health", (c) => c.json({ status: "healthy", timestamp: new Date().toIS
 app.route("/auth", authRoutes);
 app.route("/organizations", organizationRoutes);
 app.route("/organizations/:orgId/sites", siteRoutes);
+app.route("/organizations/:orgId/sites/:siteId/turbines", turbineRoutes);
+app.route("/organizations/:orgId/sites/:siteId/turbines/:turbineId/subsystems", subsystemRoutes);
+app.route("/organizations/:orgId/sites/:siteId/turbines/:turbineId/subsystems/:subsystemId/components", componentRoutes);
+app.route("/assets", assetRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
