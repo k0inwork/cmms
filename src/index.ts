@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.js";
 import organizationRoutes from "./routes/organizations.js";
 import siteRoutes from "./routes/sites.js";
 import inspectionTemplateRoutes from "./routes/inspection-templates.js";
+import adminRoutes from "./routes/admin.js";
 
 const app = new Hono();
 
@@ -15,6 +16,7 @@ app.route("/auth", authRoutes);
 app.route("/organizations", organizationRoutes);
 app.route("/organizations/:orgId/sites", siteRoutes);
 app.route("/templates", inspectionTemplateRoutes);
+app.route("/admin", adminRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
