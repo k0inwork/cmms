@@ -117,10 +117,14 @@ free_panes() {
 is_pane_idle() {
   local pane="$1"
   local last_lines
-  last_lines="$(tmux capture-pane -t "${SESSION}:0.${pane}" -p 2>/dev/null | sed '/^$/d' | tail -3)"
-  # Idle if last line is just a prompt character with nothing after it
-  if echo "$last_lines" | tail -1 | grep -qE '^\s*❯\s*$'; then
-    return 0
+  last_lines="$(tmux capture-pane -t "${SESSION}:0.${pane}" -p 2>/dev/null | sed '/^$/d' | tail -5)"
+  # Idle if last lines contain the CC prompt footer (bypass permissions / esc to interrupt)
+  # or a standalone prompt character with no active tool output
+  if echo "$last_lines" | grep -q 'bypass permissions\|esc to interrupt'; then
+    # Check that no tool is actively running (no spinner like "Fermenting", "Effecting", etc.)
+    if ! echo "$last_lines" | grep -qE 'Fermenting|Effecting|Sock-hopping|Reading|Searched|Analyzing|Building'; then
+      return 0
+    fi
   fi
   return 1
 }
