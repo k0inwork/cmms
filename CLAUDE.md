@@ -50,20 +50,70 @@ bd close <id>         # Complete work
 <!-- END BEADS INTEGRATION -->
 
 
-## Build & Test
+## Orch Workflow
 
-_Add your build and test commands here_
+Session: always use current tmux session — NEVER create a new one.
+
+Role detection: **pane index 0 = ORCHESTRATOR**, pane index 1+ = EXECUTOR.
+
+### Orchestrator (pane 0) — assigns, monitors, merges
 
 ```bash
-# Example:
-# npm install
-# npm test
+./scripts/orch spawn                    # new CC executor pane (worktree auto-created)
+./scripts/orch assign <bead> --cc <pane> # map bead to executor pane
+./scripts/orch task <bead>              # build prompt from bd + send to executor
+./scripts/orch status                   # all beads + bd + CI overview
+./scripts/orch monitor [sec]            # daemon: watch state changes, notify pane 0
+./scripts/orch pull <bead>              # merge completed work back to main
+./scripts/orch done <bead>              # mark done + close in bd
+./scripts/orch kill <bead>              # kill stuck executor
+```
+
+Flow: `spawn → assign → task → monitor → pull → done`
+
+### Executor (pane 1+) — implements, tests, commits
+
+1. Receive task prompt from orchestrator
+2. `bd update <id> --claim` — claim the bead
+3. Read code, understand before changing
+4. Implement the feature/fix
+5. `npm run build && npm test` — verify quality gates
+6. `git add <files> && git commit -m "description"`
+7. `git push`
+8. `bd close <id>`
+9. `bd remember "insight" --key <category>:<topic>` — share learnings
+10. `bd dolt push` — sync beads
+
+### Rules
+- Orchestrator NEVER writes implementation code directly
+- Executors NEVER assign work to other agents
+- Always use `./scripts/orch` commands — never raw tmux or manual pane management
+- Monitor runs in background; orchestrator checks `./scripts/orch status` periodically
+
+## Build & Test
+
+```bash
+npm run build
+npm test
+npm run lint
 ```
 
 ## Architecture Overview
 
-_Add a brief overview of your project architecture_
+Wind turbine CMMS/FSM/EAM platform. Hono + Prisma + TypeScript + Vitest.
+- `src/routes/` — REST API routes (CRUD with cursor pagination, soft deletes)
+- `src/middleware/auth.ts` — JWT auth + role guards
+- `src/utils/` — pagination, errors, JWT, password hashing
+- `src/lib/prisma.ts` — Prisma client singleton
+- `prisma/schema.prisma` — full schema (29 tables)
+- `prisma/seed.ts` — realistic seed data
+- `tests/` — mock-first (London School) tests with vi.mock
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+- CRUD routes: pagination via `paginationSchema`/`buildCursorQuery`/`paginatedResponse`
+- Soft deletes: `deleted_at` field, filtered with `where: { deleted_at: null }`
+- Duplicate checks: `findFirst` before create, `ConflictError` on clash
+- Auth: `authMiddleware()` for all writes, `requireRoles('ADMINISTRATOR')` for admin-only
+- Tests: mock prisma with `vi.mock`, test via `app.request()` — never hit real DB
+- Route nesting: organizations → sites → turbines → subsystems → components

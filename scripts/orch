@@ -112,6 +112,19 @@ free_panes() {
   done
 }
 
+# Check if a pane is idle (not actively running a task)
+# Returns 0 if idle, 1 if busy
+is_pane_idle() {
+  local pane="$1"
+  local last_lines
+  last_lines="$(tmux capture-pane -t "${SESSION}:0.${pane}" -p 2>/dev/null | sed '/^$/d' | tail -3)"
+  # Idle if last line is just a prompt character with nothing after it
+  if echo "$last_lines" | tail -1 | grep -qE '^\s*❯\s*$'; then
+    return 0
+  fi
+  return 1
+}
+
 build_prompt() {
   local bead="$1"
   local bd_output
@@ -214,6 +227,14 @@ cmd_assign() {
   # CC: simple mapping to pane
   if [[ "$type" == "cc" ]]; then
     local bead="$beads"
+
+    # Guard: refuse if pane is busy
+    if ! is_pane_idle "$target"; then
+      echo "ERROR: Pane $target is BUSY — not assigning. Use a free pane or wait."
+      echo "  Free panes: $(free_panes | tr '\n' ' ')"
+      return 1
+    fi
+
     # Look up branch from pane→worktree mapping
     local branch=""
     branch="$(grep "^${target}:" "/tmp/orch-worktrees-${PROJECT_NAME}.txt" 2>/dev/null | cut -d: -f3)" || true
@@ -227,6 +248,10 @@ cmd_assign() {
       echo "{\"bead\":\"$bead\",\"type\":\"cc\",\"target\":\"$target\",\"status\":\"pending\",\"complexity\":\"$complexity\"${branch:+,\"branch\":\"$branch\"}}" >> "$TRACKER"
       echo "Assigned $bead → CC pane $target${branch:+ ($branch)}"
     fi
+
+    # Auto-send task prompt
+    echo ""
+    cmd_task "$bead"
     return
   fi
 
