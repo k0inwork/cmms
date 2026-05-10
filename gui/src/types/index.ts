@@ -66,14 +66,48 @@ export interface Site {
   updated_at: string;
 }
 
+export type TurbineStatus = "ACTIVE" | "DECOMMISSIONED" | "MAINTENANCE" | "PLANNED";
+
 export interface Turbine {
   id: string;
   site_id: string;
   name: string;
-  status: string;
+  status: TurbineStatus;
   model?: string;
+  latitude?: number;
+  longitude?: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface Subsystem {
+  id: string;
+  turbine_id: string;
+  name: string;
+  type?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Component {
+  id: string;
+  subsystem_id: string;
+  name: string;
+  status: TurbineStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export type AssetType = "organization" | "site" | "turbine" | "subsystem" | "component";
+
+export interface AssetLookupResult {
+  type: "Turbine" | "Subsystem" | "Component";
+  id: string;
+  name: string;
+  status?: string;
+  site?: { id: string; name: string; organization_id: string };
+  turbine?: { id: string; name: string; site: { id: string; name: string; organization_id: string } };
+  subsystem?: { id: string; name: string; turbine: { id: string; name: string; site: { id: string; name: string; organization_id: string } } };
 }
 
 export type TicketStatus =
