@@ -131,3 +131,80 @@ export interface WorkOrder {
   created_at: string;
   updated_at: string;
 }
+
+// ─── Reports ────────────────────────────────────────────────────────────────────
+
+export interface ReportFilters {
+  dateFrom: string | null;
+  dateTo: string | null;
+  orgId: string | null;
+  siteId: string | null;
+}
+
+export interface ComplianceReport {
+  report_type: "compliance";
+  generated_at: string;
+  filters: ReportFilters;
+  summary: {
+    total_inspections: number;
+    completed: number;
+    rejected: number;
+    overdue: number;
+    approval_rate: number;
+    rejection_rate: number;
+  };
+  by_status: Record<string, number>;
+}
+
+export interface InspectionsReport {
+  report_type: "inspections";
+  generated_at: string;
+  filters: ReportFilters;
+  summary: { total: number; avg_completion_hours: number | null };
+  by_status: Record<string, number>;
+}
+
+export interface WorkOrdersReport {
+  report_type: "work-orders";
+  generated_at: string;
+  filters: ReportFilters;
+  summary: { total: number; closed: number; avg_completion_hours: number | null };
+  by_status: Record<string, number>;
+  by_priority: Record<string, number>;
+}
+
+export interface TechnicianProductivityReport {
+  report_type: "technician-productivity";
+  generated_at: string;
+  filters: ReportFilters;
+  data: Array<{
+    technician_id: string;
+    name: string;
+    email: string;
+    work_orders_completed: number;
+    inspections_completed: number;
+  }>;
+}
+
+// ─── Search ─────────────────────────────────────────────────────────────────────
+
+export type SearchEntityType = "TICKET" | "WORK_ORDER" | "INSPECTION" | "TURBINE" | "COMPONENT";
+
+export interface SearchHit {
+  id: string;
+  type: SearchEntityType;
+  title: string;
+  description: string | null;
+  status: string | null;
+  priority: string | null;
+  createdAt: string;
+  updatedAt: string;
+  assignee: { id: string; firstName: string; lastName: string } | null;
+  turbine: { id: string; name: string } | null;
+  site: { id: string; name: string } | null;
+}
+
+export interface SearchResponse {
+  data: SearchHit[];
+  pagination: { next_cursor: string | null; has_more: boolean };
+}
