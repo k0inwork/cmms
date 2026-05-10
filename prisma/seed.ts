@@ -1,245 +1,461 @@
 import { PrismaClient, Role, type TechnicianStatus } from "@prisma/client";
 import bcryptjs from "bcryptjs";
+import { faker } from "@faker-js/faker";
+
 const { hash } = bcryptjs;
-
 const prisma = new PrismaClient();
-
 const PASSWORD = "Password123!";
 
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const TURBINE_MODELS = [
+  { model: "Vestas V90-3.0 MW", mw: 3.0 },
+  { model: "Vestas V110-2.0 MW", mw: 2.0 },
+  { model: "Vestas V164-9.5 MW", mw: 9.5 },
+  { model: "Siemens SG 14-222 DD", mw: 14.0 },
+  { model: "Siemens SWT-3.6-120", mw: 3.6 },
+  { model: "Siemens SG 8.0-167 DD", mw: 8.0 },
+  { model: "GE 1.5sle", mw: 1.5 },
+  { model: "GE 2.75-120", mw: 2.75 },
+  { model: "GE Haliade-X 13 MW", mw: 13.0 },
+  { model: "Enercon E-126 EP4 7.5 MW", mw: 7.5 },
+  { model: "Enercon E-115 3.0 MW", mw: 3.0 },
+];
+
+const SITES = [
+  { name: "North Sea Wind Farm Alpha", lat: 54.23, lon: 7.45, tz: "Europe/Berlin" },
+  { name: "Baltic Coast Site Beta", lat: 54.69, lon: 10.87, tz: "Europe/Berlin" },
+  { name: "Fjord Wind Park Gamma", lat: 62.47, lon: 6.15, tz: "Europe/Oslo" },
+  { name: "Hornsea Offshore Delta", lat: 53.85, lon: 1.75, tz: "Europe/London" },
+  { name: "Jutland Plains Epsilon", lat: 56.15, lon: 8.65, tz: "Europe/Copenhagen" },
+  { name: "Galicia Coast Zeta", lat: 43.35, lon: -8.45, tz: "Europe/Madrid" },
+];
+
+const ROLES: Role[] = [
+  Role.TECHNICIAN, Role.TECHNICIAN, Role.TECHNICIAN,
+  Role.TECHNICIAN, Role.TECHNICIAN, Role.TECHNICIAN,
+  Role.TECHNICIAN, Role.TECHNICIAN, Role.TECHNICIAN,
+  Role.TECHNICIAN, Role.DISPATCHER, Role.DISPATCHER,
+  Role.QA_REVIEWER, Role.QA_REVIEWER, Role.QA_REVIEWER,
+  Role.OPERATIONS_MANAGER, Role.ADMINISTRATOR,
+];
+
+const SKILL_DEFS = [
+  { name: "Blade Repair", category: "Structural", description: "Rotor blade inspection and composite repair" },
+  { name: "Electrical Systems", category: "Electrical", description: "HV/LV electrical systems maintenance" },
+  { name: "Hydraulic Systems", category: "Mechanical", description: "Hydraulic pitch and yaw systems" },
+  { name: "SCADA Systems", category: "Control", description: "SCADA monitoring and diagnostics" },
+  { name: "Working at Heights", category: "Safety", description: "Certified for tower climb and nacelle work" },
+  { name: "Gearbox Overhaul", category: "Mechanical", description: "Planetary gearbox inspection and rebuild" },
+  { name: "Generator Service", category: "Electrical", description: "Generator testing, rewinding, and bearing replacement" },
+  { name: "Torque & Tensioning", category: "Mechanical", description: "Bolt tensioning and torque calibration" },
+  { name: "Vibration Analysis", category: "Diagnostics", description: "Condition monitoring via vibration spectrum analysis" },
+  { name: "Thermography", category: "Diagnostics", description: "IR thermographic inspection of electrical and mechanical systems" },
+];
+
+const CERT_DEFS = [
+  { name: "GWO Basic Safety", issuing_body: "Global Wind Organisation", months: 24 },
+  { name: "HV Electrical Authorization", issuing_body: "TÜV Rheinland", months: 36 },
+  { name: "Blade Repair Specialist", issuing_body: "WindTree Institute", months: 24 },
+  { name: "Advanced First Aid", issuing_body: "Red Cross", months: 12 },
+  { name: "GWO Advanced Rescue", issuing_body: "Global Wind Organisation", months: 24 },
+  { name: "LOTO Competent Person", issuing_body: "DEKRA", months: 36 },
+  { name: "Slinger/Signaller", issuing_body: "BSI Group", months: 24 },
+];
+
+const SUBSYSTEM_DEFS = [
+  { name: "Rotor System", type: "ROTOR" },
+  { name: "Nacelle", type: "NACELLE" },
+  { name: "Tower", type: "TOWER" },
+  { name: "Electrical System", type: "ELECTRICAL" },
+];
+
+const COMPONENT_DEFS: Record<string, string[]> = {
+  ROTOR: ["Blade A", "Blade B", "Blade C", "Hub", "Pitch Bearing", "Pitch Actuator"],
+  NACELLE: ["Main Bearing", "Gearbox", "Generator", "Yaw System", "Cooling System", "Main Shaft"],
+  TOWER: ["Foundation Bolts", "Tower Section 1 (bottom)", "Tower Section 2 (mid)", "Tower Section 3 (top)"],
+  ELECTRICAL: ["Transformer", "Converter", "Cable Tray", "Switchgear", "Nacelle Junction Box"],
+};
+
+// Failure descriptions keyed by component group, weighted by industry OREDA rates
+const FAILURE_TEMPLATES: { group: string; weight: number; titles: string[]; descs: string[] }[] = [
+  { group: "Nacelle", weight: 20, titles: ["Gearbox oil leak detected", "Gearbox bearing temperature high", "Gearbox vibration alarm"], descs: ["Unusual metallic particles found in oil sample — spectrometric analysis indicates inner race wear.", "Bearing temperature exceeding 85°C under rated load. Vibration spectrum shows gear mesh frequency harmonic.", "Planetary stage showing increased peak-to-peak vibration amplitude trending above alarm threshold."] },
+  { group: "ROTOR", weight: 15, titles: ["Blade leading edge erosion", "Blade tip crack identified", "Pitch bearing excessive play"], descs: ["Leading edge protection tape degraded — composite substrate exposed over 300mm section near tip.", "Visual inspection revealed 120mm longitudinal crack on blade pressure side at 2/3 span.", "Pitch bearing clearance measured at 0.8mm, exceeding the 0.3mm service limit."] },
+  { group: "ELECTRICAL", weight: 12, titles: ["Converter IGBT module failure", "Transformer oil temperature high", "Switchgear partial discharge detected"], descs: ["Converter module 2 IGBT gate driver fault — unit bypassed pending replacement.", "Transformer oil temperature reached 95°C — cooling fan circuit tripped on overcurrent.", "Partial discharge monitoring detected 15 pC activity on 33kV switchgear feeder 3."] },
+  { group: "Nacelle", weight: 10, titles: ["Generator winding insulation degradation", "Generator bearing noise", "Slip ring arcing observed"], descs: ["Megger test shows insulation resistance below 5 MΩ on phase U — moisture ingress suspected.", "Non-periodic broadband noise from DE bearing — accelerometer reading 8.2 mm/s RMS.", "Visible arcing and carbon dust accumulation on slip ring 2 — brush spring tension low."] },
+  { group: "ROTOR", weight: 8, titles: ["Pitch actuator position fault", "Pitch battery backup failure", "Hub bolt tension loss"], descs: ["Blade B pitch actuator unable to reach fine pitch position — encoder reading intermittent.", "Battery backup test for blade B pitch system showed <80% rated capacity after 15 min.", "Ultrasonic bolt tension measurement shows 3 of 48 hub bolts below minimum preload."] },
+  { group: "Nacelle", weight: 5, titles: ["Yaw system misalignment", "Yaw brake pad wear", "Nacelle cooling fan failure"], descs: ["Wind vane vs nacelle heading deviation exceeds 10° — yaw encoder calibration required.", "Brake pad thickness measured at 4mm, approaching 3mm minimum replacement threshold.", "Nacelle cooling fan motor drawing 15% over rated current — bearing seizure imminent."] },
+];
+
+const TICKET_STATUSES = ["NEW", "TRIAGED", "ASSIGNED", "IN_PROGRESS", "PENDING_REVIEW", "CLOSED", "REOPENED"] as const;
+const PRIORITIES = ["LOW", "MEDIUM", "HIGH", "CRITICAL"] as const;
+const SEVERITIES = ["COSMETIC", "MINOR", "MAJOR", "CRITICAL", "SAFETY"] as const;
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function pick<T>(arr: readonly T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function weightedPick<T extends { weight: number }>(items: T[]): T {
+  const total = items.reduce((s, i) => s + i.weight, 0);
+  let r = Math.random() * total;
+  for (const item of items) {
+    r -= item.weight;
+    if (r <= 0) return item;
+  }
+  return items[items.length - 1];
+}
+
+function daysAgo(min: number, max: number): Date {
+  const days = min + Math.floor(Math.random() * (max - min));
+  const d = new Date();
+  d.setDate(d.getDate() - days);
+  return d;
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
+
 async function main() {
-  console.log("Seeding database...");
+  console.log("Seeding database with Faker.js...");
+
+  const passwordHash = await hash(PASSWORD, 10);
+  faker.seed(42);
 
   // ─── Organizations ──────────────────────────────────────────────────────
   const org1 = await prisma.organization.create({
-    data: {
-      name: "WindTech Energy GmbH",
-      description: "Wind turbine operations and maintenance company",
-    },
+    data: { name: "WindTech Energy GmbH", description: "Wind turbine operations and maintenance company" },
   });
-
   const org2 = await prisma.organization.create({
-    data: {
-      name: "Nordic Wind AS",
-      description: "Scandinavian wind farm operator",
-    },
+    data: { name: "Nordic Wind AS", description: "Scandinavian wind farm operator" },
+  });
+  const org3 = await prisma.organization.create({
+    data: { name: "Atlantic Renewables Ltd", description: "Offshore wind energy provider" },
   });
 
   // ─── Sites ──────────────────────────────────────────────────────────────
-  const site1 = await prisma.site.create({
-    data: {
-      organization_id: org1.id,
-      name: "North Sea Wind Farm Alpha",
-      latitude: 54.23,
-      longitude: 7.45,
-      time_zone: "Europe/Berlin",
-    },
-  });
+  const siteRecords = await Promise.all(
+    SITES.map((s, i) =>
+      prisma.site.create({
+        data: {
+          organization_id: i < 2 ? org1.id : i < 4 ? org2.id : org3.id,
+          name: s.name,
+          latitude: s.lat + faker.location.latitude({ min: -0.02, max: 0.02 }) * 0,
+          longitude: s.lon + faker.location.longitude({ min: -0.02, max: 0.02 }) * 0,
+          time_zone: s.tz,
+        },
+      }),
+    ),
+  );
 
-  const site2 = await prisma.site.create({
-    data: {
-      organization_id: org1.id,
-      name: "Baltic Coast Site Beta",
-      latitude: 54.69,
-      longitude: 10.87,
-      time_zone: "Europe/Berlin",
-    },
-  });
+  // ─── Skills & Certifications ────────────────────────────────────────────
+  const skills = await Promise.all(
+    SKILL_DEFS.map((s) => prisma.skill.create({ data: s })),
+  );
+  const certs = await Promise.all(
+    CERT_DEFS.map((c) =>
+      prisma.certification.create({
+        data: { name: c.name, issuing_body: c.issuing_body, validity_months: c.months },
+      }),
+    ),
+  );
 
-  const site3 = await prisma.site.create({
-    data: {
-      organization_id: org2.id,
-      name: "Fjord Wind Park Gamma",
-      latitude: 62.47,
-      longitude: 6.15,
-      time_zone: "Europe/Oslo",
-    },
-  });
+  // ─── Users (50+) ────────────────────────────────────────────────────────
+  const allUsers: Awaited<ReturnType<typeof prisma.user.create>>[] = [];
 
-  // ─── Skills ─────────────────────────────────────────────────────────────
-  const skillBlade = await prisma.skill.create({
-    data: { name: "Blade Repair", category: "Structural", description: "Rotor blade inspection and repair" },
-  });
-  const skillElectrical = await prisma.skill.create({
-    data: { name: "Electrical Systems", category: "Electrical", description: "HV/LV electrical systems maintenance" },
-  });
-  const skillHydraulic = await prisma.skill.create({
-    data: { name: "Hydraulic Systems", category: "Mechanical", description: "Hydraulic pitch and yaw systems" },
-  });
-  const skillSCADA = await prisma.skill.create({
-    data: { name: "SCADA Systems", category: "Control", description: "SCADA monitoring and diagnostics" },
-  });
-  const skillSafety = await prisma.skill.create({
-    data: { name: "Working at Heights", category: "Safety", description: "Certified for tower climb and nacelle work" },
-  });
+  // Create users for org1 (majority)
+  for (let i = 0; i < 35; i++) {
+    const role = i < ROLES.length ? ROLES[i] : pick([Role.TECHNICIAN, Role.TECHNICIAN, Role.TECHNICIAN, Role.DISPATCHER]);
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const orgId = i < 25 ? org1.id : i < 30 ? org2.id : org3.id;
+    allUsers.push(
+      await prisma.user.create({
+        data: {
+          email: faker.internet.email({ firstName, lastName }).toLowerCase(),
+          password_hash: passwordHash,
+          first_name: firstName,
+          last_name: lastName,
+          role,
+          status: pick(["AVAILABLE", "ASSIGNED", "AVAILABLE", "AVAILABLE", "ON_SITE"] as TechnicianStatus[]),
+          organization_id: orgId,
+        },
+      }),
+    );
+  }
 
-  // ─── Certifications ─────────────────────────────────────────────────────
-  const certGWO = await prisma.certification.create({
-    data: { name: "GWO Basic Safety", issuing_body: "Global Wind Organisation", validity_months: 24 },
-  });
-  const certElectrical = await prisma.certification.create({
-    data: { name: "HV Electrical Authorization", issuing_body: "TÜV Rheinland", validity_months: 36 },
-  });
-  const certBlade = await prisma.certification.create({
-    data: { name: "Blade Repair Specialist", issuing_body: "WindTree Institute", validity_months: 24 },
-  });
-  const certFirstAid = await prisma.certification.create({
-    data: { name: "Advanced First Aid", issuing_body: "Red Cross", validity_months: 12 },
-  });
+  // Extra org2 and org3 users
+  for (let i = 0; i < 20; i++) {
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const orgId = i < 12 ? org2.id : org3.id;
+    allUsers.push(
+      await prisma.user.create({
+        data: {
+          email: faker.internet.email({ firstName, lastName }).toLowerCase(),
+          password_hash: passwordHash,
+          first_name: firstName,
+          last_name: lastName,
+          role: i < 8 ? Role.TECHNICIAN : i < 12 ? Role.DISPATCHER : pick([Role.TECHNICIAN, Role.QA_REVIEWER]),
+          status: "AVAILABLE" as TechnicianStatus,
+          organization_id: orgId,
+        },
+      }),
+    );
+  }
 
-  // ─── Users (one per role) ──────────────────────────────────────────────
-  const passwordHash = await hash(PASSWORD, 10);
+  const technicians = allUsers.filter((u) => (u as { role: string }).role === "TECHNICIAN");
+  const dispatchers = allUsers.filter((u) => (u as { role: string }).role === "DISPATCHER");
+  const managers = allUsers.filter((u) => (u as { role: string }).role === "OPERATIONS_MANAGER");
+  const reviewers = allUsers.filter((u) => (u as { role: string }).role === "QA_REVIEWER");
 
-  const users = await Promise.all([
-    prisma.user.create({
-      data: {
-        email: "admin@windtech.de",
-        password_hash: passwordHash,
-        first_name: "Anna",
-        last_name: "Müller",
-        role: Role.ADMINISTRATOR,
-        status: "AVAILABLE" as TechnicianStatus,
-        organization_id: org1.id,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        email: "ops@windtech.de",
-        password_hash: passwordHash,
-        first_name: "Max",
-        last_name: "Schmidt",
-        role: Role.OPERATIONS_MANAGER,
-        status: "AVAILABLE" as TechnicianStatus,
-        organization_id: org1.id,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        email: "dispatcher@windtech.de",
-        password_hash: passwordHash,
-        first_name: "Lisa",
-        last_name: "Weber",
-        role: Role.DISPATCHER,
-        status: "AVAILABLE" as TechnicianStatus,
-        organization_id: org1.id,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        email: "tech@windtech.de",
-        password_hash: passwordHash,
-        first_name: "Tom",
-        last_name: "Fischer",
-        role: Role.TECHNICIAN,
-        status: "AVAILABLE" as TechnicianStatus,
-        organization_id: org1.id,
-      },
-    }),
-    prisma.user.create({
-      data: {
-        email: "qa@windtech.de",
-        password_hash: passwordHash,
-        first_name: "Sarah",
-        last_name: "Braun",
-        role: Role.QA_REVIEWER,
-        status: "AVAILABLE" as TechnicianStatus,
-        organization_id: org1.id,
-      },
-    }),
+  // ─── User Skills & Certs ────────────────────────────────────────────────
+  const userSkillPromises = technicians.slice(0, 25).map((tech) => {
+    const count = 2 + Math.floor(Math.random() * 4);
+    const chosen = Array.from({ length: count }, () => pick(skills)).filter(
+      (v, i, a) => a.findIndex((s) => s.id === v.id) === i,
+    );
+    return chosen.map((skill) =>
+      prisma.userSkill.create({
+        data: {
+          user_id: tech.id,
+          skill_id: skill.id,
+          proficiency_level: 2 + Math.floor(Math.random() * 4),
+          acquired_date: daysAgo(180, 730),
+        },
+      }),
+    );
+  });
+  await Promise.all(userSkillPromises.flat());
+
+  const userCertPromises = allUsers.slice(0, 30).map((user) => {
+    const count = 1 + Math.floor(Math.random() * 3);
+    const chosen = Array.from({ length: count }, () => pick(certs)).filter(
+      (v, i, a) => a.findIndex((c) => c.id === v.id) === i,
+    );
+    return chosen.map((cert) =>
+      prisma.userCertification.create({
+        data: {
+          user_id: user.id,
+          certification_id: cert.id,
+          issued_date: daysAgo(90, 730),
+          expiry_date: daysAgo(-30, -400),
+        },
+      }),
+    );
+  });
+  await Promise.all(userCertPromises.flat());
+
+  // ─── Turbines (75) ──────────────────────────────────────────────────────
+  const turbines: Awaited<ReturnType<typeof prisma.turbine.create>>[] = [];
+  for (const site of siteRecords) {
+    const count = 10 + Math.floor(Math.random() * 5); // 10-14 per site
+    for (let i = 0; i < count; i++) {
+      const idx = i + 1;
+      const tm = pick(TURBINE_MODELS);
+      turbines.push(
+        await prisma.turbine.create({
+          data: {
+            site_id: site.id,
+            name: `WTG-${site.name.charAt(0)}${String(idx).padStart(2, "0")}`,
+            model: tm.model,
+            latitude: (site.latitude ?? 0) + (Math.random() - 0.5) * 0.01,
+            longitude: (site.longitude ?? 0) + (Math.random() - 0.5) * 0.01,
+            status: Math.random() > 0.1 ? "ACTIVE" : pick(["MAINTENANCE", "DECOMMISSIONED", "PLANNED"]),
+          },
+        }),
+      );
+    }
+  }
+
+  // ─── Subsystems & Components ────────────────────────────────────────────
+  for (const turbine of turbines) {
+    const subs = await Promise.all(
+      SUBSYSTEM_DEFS.map((sd) =>
+        prisma.subsystem.create({ data: { turbine_id: turbine.id, name: sd.name, type: sd.type } }),
+      ),
+    );
+    for (const sub of subs) {
+      const sd = SUBSYSTEM_DEFS.find((s) => s.name === sub.name)!;
+      const compNames = COMPONENT_DEFS[sd.type] ?? [];
+      await Promise.all(
+        compNames.map((cn) =>
+          prisma.component.create({
+            data: { subsystem_id: sub.id, name: cn, status: Math.random() > 0.05 ? "ACTIVE" : "MAINTENANCE" },
+          }),
+        ),
+      );
+    }
+  }
+
+  // ─── Inspection Templates ───────────────────────────────────────────────
+  const templates = await Promise.all([
+    prisma.inspectionTemplate.create({ data: { name: "Quarterly Blade Inspection", description: "Full blade visual and tap test", inspection_type: "BLADE", is_active: true } }),
+    prisma.inspectionTemplate.create({ data: { name: "Annual Gearbox Inspection", description: "Comprehensive gearbox oil analysis and vibration check", inspection_type: "DRIVETRAIN", is_active: true } }),
+    prisma.inspectionTemplate.create({ data: { name: "Monthly SCADA Review", description: "SCADA alarm and trend analysis", inspection_type: "SCADA", is_active: true } }),
+    prisma.inspectionTemplate.create({ data: { name: "Pre-Commissioning Checklist", description: "New turbine commissioning verification", inspection_type: "COMMISSIONING", is_active: true } }),
+    prisma.inspectionTemplate.create({ data: { name: "End-of-Warranty Inspection", description: "Full turbine condition assessment before warranty expiry", inspection_type: "WARRANTY", is_active: true } }),
   ]);
 
-  const [admin, ops, dispatcher, tech, qa] = users;
+  const templateVersions = await Promise.all(
+    templates.map((t, i) =>
+      prisma.inspectionTemplateVersion.create({
+        data: {
+          template_id: t.id,
+          version: 1,
+          schema: { fields: [{ key: `field_${i}_1`, label: "Condition", type: "PASS_FAIL" }] },
+          changelog: "Initial version",
+          created_by: managers[0]?.id ?? allUsers[0].id,
+        },
+      }),
+    ),
+  );
 
-  // ─── User Skills ────────────────────────────────────────────────────────
-  await Promise.all([
-    prisma.userSkill.create({ data: { user_id: tech.id, skill_id: skillBlade.id, proficiency_level: 4, acquired_date: new Date("2023-01-15") } }),
-    prisma.userSkill.create({ data: { user_id: tech.id, skill_id: skillElectrical.id, proficiency_level: 3, acquired_date: new Date("2022-06-01") } }),
-    prisma.userSkill.create({ data: { user_id: tech.id, skill_id: skillHydraulic.id, proficiency_level: 3, acquired_date: new Date("2023-03-20") } }),
-    prisma.userSkill.create({ data: { user_id: tech.id, skill_id: skillSafety.id, proficiency_level: 5, acquired_date: new Date("2021-09-01") } }),
-    prisma.userSkill.create({ data: { user_id: qa.id, skill_id: skillSCADA.id, proficiency_level: 4, acquired_date: new Date("2022-01-10") } }),
-    prisma.userSkill.create({ data: { user_id: qa.id, skill_id: skillElectrical.id, proficiency_level: 3, acquired_date: new Date("2022-06-15") } }),
-  ]);
+  // ─── Tickets (120) ──────────────────────────────────────────────────────
+  const tickets: Awaited<ReturnType<typeof prisma.ticket.create>>[] = [];
+  for (let i = 0; i < 120; i++) {
+    const failure = weightedPick(FAILURE_TEMPLATES);
+    const title = pick(failure.titles);
+    const description = pick(failure.descs);
+    const turbine = pick(turbines);
+    const status = pick(TICKET_STATUSES);
+    const priority = pick(PRIORITIES);
+    const severity = pick(SEVERITIES);
+    const creator = pick(dispatchers.length ? dispatchers : allUsers);
+    const assignee = Math.random() > 0.3 && technicians.length ? pick(technicians) : null;
 
-  // ─── User Certifications ────────────────────────────────────────────────
-  await Promise.all([
-    prisma.userCertification.create({ data: { user_id: tech.id, certification_id: certGWO.id, issued_date: new Date("2024-01-01"), expiry_date: new Date("2025-12-31") } }),
-    prisma.userCertification.create({ data: { user_id: tech.id, certification_id: certBlade.id, issued_date: new Date("2024-03-01"), expiry_date: new Date("2026-02-28") } }),
-    prisma.userCertification.create({ data: { user_id: qa.id, certification_id: certGWO.id, issued_date: new Date("2024-01-01"), expiry_date: new Date("2025-12-31") } }),
-    prisma.userCertification.create({ data: { user_id: qa.id, certification_id: certElectrical.id, issued_date: new Date("2023-06-01"), expiry_date: new Date("2026-05-31") } }),
-    prisma.userCertification.create({ data: { user_id: ops.id, certification_id: certFirstAid.id, issued_date: new Date("2024-06-01"), expiry_date: new Date("2025-05-31") } }),
-  ]);
+    tickets.push(
+      await prisma.ticket.create({
+        data: {
+          turbine_id: turbine.id,
+          title,
+          description,
+          priority,
+          severity,
+          status,
+          created_by: creator.id,
+          assignee_id: assignee?.id ?? null,
+          due_date: Math.random() > 0.3 ? daysAgo(-5, 30) : null,
+          sla_target_date: Math.random() > 0.4 ? daysAgo(-3, 15) : null,
+          closed_at: status === "CLOSED" ? daysAgo(1, 30) : null,
+          created_at: daysAgo(1, 180),
+        },
+      }),
+    );
+  }
 
-  // ─── Turbines ───────────────────────────────────────────────────────────
-  const turbine1 = await prisma.turbine.create({
-    data: { site_id: site1.id, name: "WTG-A01", model: "Vestas V164-9.5 MW", latitude: 54.231, longitude: 7.452 },
-  });
-  const turbine2 = await prisma.turbine.create({
-    data: { site_id: site1.id, name: "WTG-A02", model: "Vestas V164-9.5 MW", latitude: 54.233, longitude: 7.455 },
-  });
-  const turbine3 = await prisma.turbine.create({
-    data: { site_id: site1.id, name: "WTG-A03", model: "Siemens SG 14-222 DD", latitude: 54.235, longitude: 7.458 },
-  });
-  const turbine4 = await prisma.turbine.create({
-    data: { site_id: site2.id, name: "WTG-B01", model: "Vestas V164-9.5 MW", latitude: 54.692, longitude: 10.873 },
-  });
-  const turbine5 = await prisma.turbine.create({
-    data: { site_id: site3.id, name: "WTG-G01", model: "Siemens SG 14-222 DD", latitude: 62.472, longitude: 6.153 },
-  });
+  // ─── Work Orders (80) ───────────────────────────────────────────────────
+  const workOrders: Awaited<ReturnType<typeof prisma.workOrder.create>>[] = [];
+  for (let i = 0; i < 80; i++) {
+    const ticket = pick(tickets);
+    const turbine = pick(turbines);
+    const creator = pick(dispatchers.length ? dispatchers : allUsers);
+    const assignee = Math.random() > 0.25 && technicians.length ? pick(technicians) : null;
+    const status = pick(["NEW", "ASSIGNED", "IN_PROGRESS", "PENDING_REVIEW", "CLOSED"] as const);
+    const priority = pick(PRIORITIES);
 
-  // ─── Subsystems ─────────────────────────────────────────────────────────
-  const createSubsystems = async (turbineId: string) => {
-    const [rotor, nacelle, tower, electrical] = await Promise.all([
-      prisma.subsystem.create({ data: { turbine_id: turbineId, name: "Rotor System", type: "ROTOR" } }),
-      prisma.subsystem.create({ data: { turbine_id: turbineId, name: "Nacelle", type: "NACELLE" } }),
-      prisma.subsystem.create({ data: { turbine_id: turbineId, name: "Tower", type: "TOWER" } }),
-      prisma.subsystem.create({ data: { turbine_id: turbineId, name: "Electrical System", type: "ELECTRICAL" } }),
-    ]);
-    return { rotor, nacelle, tower, electrical };
-  };
+    workOrders.push(
+      await prisma.workOrder.create({
+        data: {
+          ticket_id: ticket.id,
+          turbine_id: turbine.id,
+          title: `WO: ${ticket.title}`,
+          description: `Remediation work for ticket ${ticket.id.slice(0, 8)}`,
+          priority,
+          status,
+          created_by: creator.id,
+          assignee_id: assignee?.id ?? null,
+          due_date: Math.random() > 0.3 ? daysAgo(-3, 21) : null,
+          started_at: ["IN_PROGRESS", "PENDING_REVIEW", "CLOSED"].includes(status) ? daysAgo(1, 14) : null,
+          completed_at: status === "CLOSED" ? daysAgo(1, 7) : null,
+          resolution_notes: status === "CLOSED" ? "Issue resolved. Components replaced and tested." : null,
+          created_at: daysAgo(1, 120),
+        },
+      }),
+    );
+  }
 
-  const sub1 = await createSubsystems(turbine1.id);
-  const sub2 = await createSubsystems(turbine2.id);
-  const sub3 = await createSubsystems(turbine3.id);
-  const sub4 = await createSubsystems(turbine4.id);
-  const sub5 = await createSubsystems(turbine5.id);
+  // ─── Inspections (60) ───────────────────────────────────────────────────
+  const inspectionStatuses = ["ASSIGNED", "IN_PROGRESS", "SUBMITTED", "APPROVED", "REJECTED", "CHANGES_REQUESTED"] as const;
+  for (let i = 0; i < 60; i++) {
+    const turbine = pick(turbines);
+    const tech = pick(technicians.length ? technicians : allUsers);
+    const tv = pick(templateVersions);
+    const status = pick(inspectionStatuses);
+    const createdAt = daysAgo(1, 120);
 
-  // ─── Components ─────────────────────────────────────────────────────────
-  const createComponents = async (subsystems: Awaited<ReturnType<typeof createSubsystems>>) => {
-    await Promise.all([
-      // Rotor subsystem
-      prisma.component.create({ data: { subsystem_id: subsystems.rotor.id, name: "Blade A (top)" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.rotor.id, name: "Blade B (120°)" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.rotor.id, name: "Blade C (240°)" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.rotor.id, name: "Hub" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.rotor.id, name: "Pitch Bearing" } }),
-      // Nacelle subsystem
-      prisma.component.create({ data: { subsystem_id: subsystems.nacelle.id, name: "Main Bearing" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.nacelle.id, name: "Gearbox" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.nacelle.id, name: "Generator" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.nacelle.id, name: "Yaw System" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.nacelle.id, name: "Cooling System" } }),
-      // Tower subsystem
-      prisma.component.create({ data: { subsystem_id: subsystems.tower.id, name: "Foundation Bolts" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.tower.id, name: "Tower Section 1 (bottom)" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.tower.id, name: "Tower Section 2 (mid)" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.tower.id, name: "Tower Section 3 (top)" } }),
-      // Electrical subsystem
-      prisma.component.create({ data: { subsystem_id: subsystems.electrical.id, name: "Transformer" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.electrical.id, name: "Converter" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.electrical.id, name: "Cable Tray" } }),
-      prisma.component.create({ data: { subsystem_id: subsystems.electrical.id, name: "Switchgear" } }),
-    ]);
-  };
+    await prisma.inspectionRecord.create({
+      data: {
+        template_version_id: tv.id,
+        technician_id: tech.id,
+        turbine_id: turbine.id,
+        status,
+        started_at: status !== "ASSIGNED" ? createdAt : null,
+        completed_at: ["SUBMITTED", "APPROVED", "REJECTED"].includes(status) ? daysAgo(1, 30) : null,
+        submitted_at: ["SUBMITTED", "APPROVED", "REJECTED"].includes(status) ? daysAgo(1, 28) : null,
+        reviewed_by: ["APPROVED", "REJECTED"].includes(status) && reviewers.length ? pick(reviewers).id : null,
+        reviewed_at: ["APPROVED", "REJECTED"].includes(status) ? daysAgo(1, 25) : null,
+        review_notes: Math.random() > 0.5 ? faker.lorem.sentence() : null,
+        due_date: daysAgo(-5, 30),
+        created_at: createdAt,
+      },
+    });
+  }
 
-  await Promise.all([createComponents(sub1), createComponents(sub2), createComponents(sub3), createComponents(sub4), createComponents(sub5)]);
+  // ─── Evidence Items (40) ────────────────────────────────────────────────
+  for (let i = 0; i < 40; i++) {
+    const uploader = pick(allUsers);
+    await prisma.evidenceItem.create({
+      data: {
+        media_type: pick(["PHOTO", "VIDEO", "PHOTO", "PHOTO", "PDF"] as const),
+        status: pick(["PENDING", "APPROVED", "APPROVED", "APPROVED"] as const),
+        file_url: `/uploads/${faker.system.commonFileName("jpg")}`,
+        thumbnail_url: Math.random() > 0.3 ? `/uploads/thumb_${faker.system.commonFileName("jpg")}` : null,
+        file_size_bytes: 500_000 + Math.floor(Math.random() * 4_500_000),
+        mime_type: pick(["image/jpeg", "image/png", "video/mp4", "application/pdf"]),
+        uploaded_by: uploader.id,
+        description: Math.random() > 0.4 ? faker.lorem.sentence() : null,
+        created_at: daysAgo(1, 90),
+      },
+    });
+  }
 
+  // ─── Audit Events (100) ────────────────────────────────────────────────
+  const auditActions = ["CREATE", "UPDATE", "STATUS_CHANGE", "ASSIGN", "DELETE"] as const;
+  for (let i = 0; i < 100; i++) {
+    const entityType = pick(["TICKET", "WORK_ORDER", "INSPECTION"] as const);
+    const entityId = entityType === "TICKET"
+      ? pick(tickets).id
+      : entityType === "WORK_ORDER"
+        ? pick(workOrders).id
+        : pick(allUsers).id;
+
+    await prisma.auditEvent.create({
+      data: {
+        entity_type: entityType,
+        entity_id: entityId,
+        action: pick(auditActions),
+        user_id: pick(allUsers).id,
+        before_state: { status: pick(TICKET_STATUSES) },
+        after_state: { status: pick(TICKET_STATUSES) },
+        created_at: daysAgo(1, 180),
+      },
+    });
+  }
+
+  // ─── Summary ────────────────────────────────────────────────────────────
   console.log("Seed completed successfully!");
-  console.log(`  Organizations: 2`);
-  console.log(`  Sites: 3`);
-  console.log(`  Turbines: 5`);
-  console.log(`  Subsystems: 20`);
-  console.log(`  Components: ~90`);
-  console.log(`  Users: 5 (one per role)`);
-  console.log(`  Skills: 5, Certifications: 4`);
+  console.log(`  Organizations: 3`);
+  console.log(`  Sites: ${siteRecords.length}`);
+  console.log(`  Turbines: ${turbines.length}`);
+  console.log(`  Users: ${allUsers.length}`);
+  console.log(`  Skills: ${skills.length}, Certifications: ${certs.length}`);
+  console.log(`  Inspection templates: ${templates.length}`);
+  console.log(`  Tickets: ${tickets.length}`);
+  console.log(`  Work orders: ${workOrders.length}`);
+  console.log(`  Inspections: 60`);
+  console.log(`  Evidence items: 40`);
+  console.log(`  Audit events: 100`);
   console.log(`  All user passwords: ${PASSWORD}`);
 }
 
