@@ -11,6 +11,9 @@ import assetRoutes from "./routes/assets.js";
 import adminRoutes from "./routes/admin.js";
 import evidenceRoutes from "./routes/evidence.js";
 import syncRoutes from "./routes/sync.js";
+import technicianRoutes from "./routes/technicians.js";
+import replacementRoutes from "./routes/replacements.js";
+import dispatchRoutes from "./routes/dispatch.js";
 
 const app = new Hono();
 
@@ -29,6 +32,9 @@ app.route("/assets", assetRoutes);
 app.route("/admin", adminRoutes);
 app.route("/evidence", evidenceRoutes);
 app.route("/sync", syncRoutes);
+app.route("/technicians", technicianRoutes);
+app.route("/replacements", replacementRoutes);
+app.route("/dispatch", dispatchRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
