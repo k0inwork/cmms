@@ -308,8 +308,9 @@ app.delete("/users/:id/skills/:skillId", async (c) => {
     },
   });
 
-  await prisma.userSkill.delete({
+  await prisma.userSkill.update({
     where: { user_id_skill_id: { user_id: userId, skill_id: skillId } },
+    data: { deleted_at: new Date() },
   });
 
   return c.json({ deleted: true });
@@ -374,8 +375,9 @@ app.delete("/users/:id/certifications/:certId", async (c) => {
     },
   });
 
-  await prisma.userCertification.delete({
+  await prisma.userCertification.update({
     where: { user_id_certification_id: { user_id: userId, certification_id: certId } },
+    data: { deleted_at: new Date() },
   });
 
   return c.json({ deleted: true });

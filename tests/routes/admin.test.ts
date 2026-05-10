@@ -80,12 +80,12 @@ vi.mock("../../src/lib/prisma.js", () => ({
     userSkill: {
       findUnique: vi.fn(),
       create: vi.fn(),
-      delete: vi.fn(),
+      update: vi.fn(),
     },
     userCertification: {
       findUnique: vi.fn(),
       create: vi.fn(),
-      delete: vi.fn(),
+      update: vi.fn(),
     },
     auditEvent: {
       create: vi.fn(),
@@ -425,7 +425,7 @@ describe("Admin routes", () => {
       (prisma.user.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
       (prisma.userSkill.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "us-001" });
       (prisma.auditEvent.create as ReturnType<typeof vi.fn>).mockResolvedValue({});
-      (prisma.userSkill.delete as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "us-001" });
+      (prisma.userSkill.update as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "us-001" });
 
       const app = makeApp();
       const res = await app.request("/admin/users/user-001/skills/skill-001", {
@@ -518,7 +518,7 @@ describe("Admin routes", () => {
         id: "uc-001",
       });
       (prisma.auditEvent.create as ReturnType<typeof vi.fn>).mockResolvedValue({});
-      (prisma.userCertification.delete as ReturnType<typeof vi.fn>).mockResolvedValue({
+      (prisma.userCertification.update as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: "uc-001",
       });
 

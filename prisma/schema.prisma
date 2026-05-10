@@ -302,13 +302,14 @@ model Certification {
 }
 
 model UserSkill {
-  id               String   @id @default(uuid()) @db.Uuid
-  user_id          String   @map("user_id") @db.Uuid
-  skill_id         String   @map("skill_id") @db.Uuid
-  proficiency_level Int     @map("proficiency_level")
-  acquired_date    DateTime @map("acquired_date")
-  created_at       DateTime @default(now()) @map("created_at")
-  updated_at       DateTime @updatedAt @map("updated_at")
+  id               String    @id @default(uuid()) @db.Uuid
+  user_id          String    @map("user_id") @db.Uuid
+  skill_id         String    @map("skill_id") @db.Uuid
+  proficiency_level Int      @map("proficiency_level")
+  acquired_date    DateTime  @map("acquired_date")
+  created_at       DateTime  @default(now()) @map("created_at")
+  updated_at       DateTime  @updatedAt @map("updated_at")
+  deleted_at       DateTime? @map("deleted_at")
 
   user  User  @relation(fields: [user_id], references: [id])
   skill Skill @relation(fields: [skill_id], references: [id])
@@ -326,6 +327,7 @@ model UserCertification {
   certificate_url  String?   @map("certificate_url")
   created_at       DateTime  @default(now()) @map("created_at")
   updated_at       DateTime  @updatedAt @map("updated_at")
+  deleted_at       DateTime? @map("deleted_at")
 
   user          User          @relation(fields: [user_id], references: [id])
   certification Certification @relation(fields: [certification_id], references: [id])
