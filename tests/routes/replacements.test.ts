@@ -103,7 +103,7 @@ describe("Replacement routes", () => {
       expect(res.status).toBe(404);
     });
 
-    it("returns 400 for inactive candidate", async () => {
+    it("returns 404 for inactive candidate", async () => {
       (prisma.absenceRecord.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({ id: ABSENCE_ID });
       (prisma.user.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
@@ -117,7 +117,7 @@ describe("Replacement routes", () => {
         }),
       });
 
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(404);
     });
 
     it("requires dispatcher/admin role", async () => {
