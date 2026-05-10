@@ -2,6 +2,15 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
 // ── Mock Prisma ─────────────────────────────────────────────────────────────
 
+vi.mock("../../src/utils/jwt.js", () => ({
+  verifyAccessToken: vi.fn(() => ({
+    userId: "admin-001",
+    email: "admin@test.com",
+    role: "ADMINISTRATOR",
+    organizationId: "org-001",
+  })),
+}));
+
 vi.mock("../../src/lib/prisma.js", () => ({
   default: {
     organization: {
@@ -60,6 +69,8 @@ function makeApp() {
   return app;
 }
 
+const authHeader = { Authorization: "Bearer test-token" };
+
 const ORG_ID = "org-aaaaaaaa-0000-0000-000000000001";
 const SITE_ID = "site-aaaaaa-0000-0000-000000000001";
 const TURB_ID = "turb-aaaaaa-0000-0000-000000000001";
@@ -88,7 +99,7 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
       const app = makeApp();
       const res = await app.request("/organizations", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "WindFarm Corp", description: "Test org" }),
       });
 
@@ -106,7 +117,7 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
       const app = makeApp();
       const res = await app.request("/organizations", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "WindFarm Corp" }),
       });
 
@@ -135,7 +146,7 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
       const app = makeApp();
       const res = await app.request(`/organizations/${ORG_ID}/sites`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({
           name: "North Wind Site",
           latitude: 55.7,
@@ -155,7 +166,7 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
       const app = makeApp();
       const res = await app.request(`/organizations/bad-org/sites`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Site X" }),
       });
 
@@ -187,7 +198,7 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
         `/organizations/${ORG_ID}/sites/${SITE_ID}/turbines`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { ...authHeader, "Content-Type": "application/json" },
           body: JSON.stringify({
             name: "WTG-001",
             model: "Vestas V164",
@@ -217,7 +228,7 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
         deleted_at: null,
       } as any);
 
-      const orgRes = await app.request(`/organizations/${ORG_ID}`);
+      const orgRes = await app.request(`/organizations/${ORG_ID}`, { headers: authHeader });
       expect(orgRes.status).toBe(200);
 
       // Step 2: Get site
@@ -227,7 +238,8 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
         .mockResolvedValueOnce({ id: SITE_ID, organization_id: ORG_ID, deleted_at: null } as any);
 
       const siteRes = await app.request(
-        `/organizations/${ORG_ID}/sites/${SITE_ID}`
+        `/organizations/${ORG_ID}/sites/${SITE_ID}`,
+        { headers: authHeader }
       );
       expect(siteRes.status).toBe(200);
 
@@ -238,7 +250,8 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
         .mockResolvedValueOnce({ id: TURB_ID, site_id: SITE_ID, deleted_at: null } as any);
 
       const turbRes = await app.request(
-        `/organizations/${ORG_ID}/sites/${SITE_ID}/turbines/${TURB_ID}`
+        `/organizations/${ORG_ID}/sites/${SITE_ID}/turbines/${TURB_ID}`,
+        { headers: authHeader }
       );
       expect(turbRes.status).toBe(200);
 
@@ -260,7 +273,7 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
         `/organizations/${ORG_ID}/sites/${SITE_ID}/turbines/${TURB_ID}/subsystems`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { ...authHeader, "Content-Type": "application/json" },
           body: JSON.stringify({ name: "Pitch System", type: "MECHANICAL" }),
         }
       );
@@ -285,7 +298,7 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
         `/organizations/${ORG_ID}/sites/${SITE_ID}/turbines/${TURB_ID}/subsystems/${SUB_ID}/components`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { ...authHeader, "Content-Type": "application/json" },
           body: JSON.stringify({ name: "Pitch Bearing" }),
         }
       );
@@ -314,7 +327,7 @@ describe("E2E: Asset Hierarchy (US-ASSET)", () => {
 
       const delRes = await app.request(
         `/organizations/${ORG_ID}/sites/${SITE_ID}/turbines/${TURB_ID}/subsystems/${SUB_ID}/components/${COMP_ID}`,
-        { method: "DELETE" }
+        { method: "DELETE", headers: authHeader }
       );
       expect(delRes.status).toBe(200);
       const delBody = await delRes.json();
