@@ -13,3 +13,11 @@ export class ConflictError extends HTTPException {
     super(409, { message });
   }
 }
+
+export class AssetError extends HTTPException {
+  readonly code: string;
+  constructor(status: 400 | 404 | 409, code: string, message: string) {
+    super(status, { message });
+    this.code = code;
+  }
+}
