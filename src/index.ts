@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { hasErrorCode } from "./utils/errors.js";
 import authRoutes from "./routes/auth.js";
 import organizationRoutes from "./routes/organizations.js";
 import siteRoutes from "./routes/sites.js";
@@ -50,7 +51,11 @@ app.route("/reports", reportRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
-    return c.json({ error: err.message }, err.status);
+    const body: Record<string, unknown> = { error: err.message };
+    if (hasErrorCode(err)) {
+      body.code = err.code;
+    }
+    return c.json(body, err.status);
   }
   console.error("Unhandled error:", err);
   return c.json({ error: "Internal server error" }, 500);

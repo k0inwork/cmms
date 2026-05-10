@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import prisma from "../lib/prisma.js";
-import { NotFoundError } from "../utils/errors.js";
+import { NotFoundError, ForbiddenError } from "../utils/errors.js";
 import { authMiddleware, requireRoles, type AuthEnv } from "../middleware/auth.js";
 
 const app = new Hono<AuthEnv>();
@@ -32,7 +32,7 @@ app.post("/", authMiddleware(), requireRoles("DISPATCHER", "ADMINISTRATOR"), zVa
     select: { id: true, first_name: true, last_name: true },
   });
   if (!candidate) {
-    return c.json({ error: "Candidate not found or inactive", code: "REPL_001" }, 400);
+    throw new NotFoundError("User", candidateId);
   }
 
   // Update assignments to the new candidate
@@ -86,10 +86,10 @@ app.post("/:id/accept", authMiddleware(), async (c) => {
 
   // Only the assigned replacement can accept
   if (assignment.user_id !== user.userId) {
-    return c.json({ error: "Only the assigned replacement can accept" }, 403);
+    throw new ForbiddenError("Only the assigned replacement can accept");
   }
 
-  const updated = await prisma.assignment.update({
+  await prisma.assignment.update({
     where: { id },
     data: { accepted_at: new Date() },
   });
@@ -114,7 +114,7 @@ app.post("/:id/decline", authMiddleware(), zValidator("json", declineSchema), as
   }
 
   if (assignment.user_id !== user.userId) {
-    return c.json({ error: "Only the assigned replacement can decline" }, 403);
+    throw new ForbiddenError("Only the assigned replacement can decline");
   }
 
   await prisma.assignment.update({

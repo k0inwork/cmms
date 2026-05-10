@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import prisma from "../lib/prisma.js";
+import { NotFoundError } from "../utils/errors.js";
 import { authMiddleware, requireRoles, type AuthEnv } from "../middleware/auth.js";
 
 const app = new Hono<AuthEnv>();
@@ -150,7 +151,7 @@ app.post("/assign", authMiddleware(), requireRoles("DISPATCHER", "ADMINISTRATOR"
     where: { id: technicianId, is_active: true, deleted_at: null },
   });
   if (!technician) {
-    return c.json({ error: "Technician not found", code: "DISP_002" }, 422);
+    throw new NotFoundError("User", technicianId);
   }
 
   if (["SICK", "LEAVE", "UNAVAILABLE"].includes(technician.status)) {
@@ -163,14 +164,14 @@ app.post("/assign", authMiddleware(), requireRoles("DISPATCHER", "ADMINISTRATOR"
       where: { id: assignmentId, deleted_at: null },
     });
     if (!inspection) {
-      return c.json({ error: "Inspection not found", code: "DISP_003" }, 404);
+      throw new NotFoundError("InspectionRecord", assignmentId);
     }
   } else {
     const wo = await prisma.workOrder.findFirst({
       where: { id: assignmentId, deleted_at: null },
     });
     if (!wo) {
-      return c.json({ error: "Work order not found", code: "DISP_003" }, 404);
+      throw new NotFoundError("WorkOrder", assignmentId);
     }
   }
 

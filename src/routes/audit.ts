@@ -3,6 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import prisma from "../lib/prisma.js";
 import { paginationSchema, buildCursorQuery, paginatedResponse } from "../utils/pagination.js";
+import { NotFoundError } from "../utils/errors.js";
 import { authMiddleware, requireRoles, type AuthEnv } from "../middleware/auth.js";
 
 const app = new Hono<AuthEnv>();
@@ -73,7 +74,7 @@ app.get("/", authMiddleware(), requireRoles("ADMINISTRATOR", "OPERATIONS_MANAGER
 
 // GET /audit/:id — single audit event detail
 app.get("/:id", authMiddleware(), requireRoles("ADMINISTRATOR", "OPERATIONS_MANAGER"), async (c) => {
-  const id = c.req.param("id");
+  const id = c.req.param("id")!;
 
   const event = await prisma.auditEvent.findFirst({
     where: { id },
@@ -81,7 +82,7 @@ app.get("/:id", authMiddleware(), requireRoles("ADMINISTRATOR", "OPERATIONS_MANA
       user: { select: { id: true, first_name: true, last_name: true, email: true } },
     },
   });
-  if (!event) return c.json({ error: "Audit event not found" }, 404);
+  if (!event) throw new NotFoundError("AuditEvent", id);
 
   return c.json(event);
 });
