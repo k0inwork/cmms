@@ -86,6 +86,13 @@ export type TicketStatus =
   | "REOPENED";
 
 export type Priority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+export type Severity = "COSMETIC" | "MINOR" | "MAJOR" | "CRITICAL" | "SAFETY";
+
+export interface TicketUser {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
 
 export interface Ticket {
   id: string;
@@ -93,10 +100,44 @@ export interface Ticket {
   description: string;
   priority: Priority;
   status: TicketStatus;
-  assignee_id?: string;
+  severity: Severity | null;
+  assignee_id: string | null;
   created_by: string;
+  turbine_id: string | null;
+  component_id: string | null;
+  defect_id: string | null;
+  due_date: string | null;
+  sla_target_date: string | null;
+  closed_at: string | null;
   created_at: string;
   updated_at: string;
+  assignee: TicketUser | null;
+  creator: TicketUser;
+  turbine: { id: string; name: string } | null;
+  component: { id: string; name: string } | null;
+  defect: { id: string; severity: string; description: string } | null;
+  _count: { ticket_evidence: number };
+}
+
+export interface TicketAuditEvent {
+  id: string;
+  action: string;
+  userId: string;
+  userName: string | null;
+  details: Record<string, unknown>;
+  metadata: Record<string, unknown> | null;
+  timestamp: string;
+}
+
+export interface TicketDetail extends Ticket {
+  resolution_notes: string | null;
+  root_cause: string | null;
+  ticket_evidence: Array<{
+    id: string;
+    evidence_id: string;
+    evidence: { id: string; media_type: string; thumbnail_url: string | null };
+  }>;
+  audit_events: TicketAuditEvent[];
 }
 
 export type InspectionStatus =
