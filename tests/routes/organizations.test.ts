@@ -139,7 +139,9 @@ describe("Organization routes", () => {
   describe("PATCH /organizations/:id", () => {
     it("updates an organization", async () => {
       const updated = { ...mockOrg, name: "North Sea Wind Corp Updated" };
-      (prisma.organization.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockOrg);
+      (prisma.organization.findFirst as ReturnType<typeof vi.fn>)
+        .mockResolvedValueOnce(mockOrg) // existence check
+        .mockResolvedValueOnce(null); // no duplicate name
       (prisma.organization.update as ReturnType<typeof vi.fn>).mockResolvedValue(updated);
 
       const app = makeApp();
