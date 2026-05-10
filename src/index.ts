@@ -13,6 +13,9 @@ import evidenceRoutes from "./routes/evidence.js";
 import inspectionRoutes from "./routes/inspections.js";
 import syncRoutes from "./routes/sync.js";
 import ticketRoutes from "./routes/tickets.js";
+import technicianRoutes from "./routes/technicians.js";
+import replacementRoutes from "./routes/replacements.js";
+import dispatchRoutes from "./routes/dispatch.js";
 
 const app = new Hono();
 
@@ -33,6 +36,9 @@ app.route("/evidence", evidenceRoutes);
 app.route("/inspections", inspectionRoutes);
 app.route("/sync", syncRoutes);
 app.route("/tickets", ticketRoutes);
+app.route("/technicians", technicianRoutes);
+app.route("/replacements", replacementRoutes);
+app.route("/dispatch", dispatchRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
