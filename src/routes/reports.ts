@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
+import { TicketStatus } from "@prisma/client";
 import prisma from "../lib/prisma.js";
 import { authMiddleware, requireRoles, type AuthEnv } from "../middleware/auth.js";
 
@@ -334,6 +335,87 @@ app.get(
       generated_at: new Date().toISOString(),
       filters: { dateFrom: dateFrom ?? null, dateTo: dateTo ?? null, orgId: orgId ?? null, siteId: siteId ?? null },
       data: rows,
+    });
+  },
+);
+
+// GET /reports/dashboard — aggregated KPIs
+app.get(
+  "/dashboard",
+  authMiddleware(),
+  requireRoles("ADMINISTRATOR", "OPERATIONS_MANAGER", "DISPATCHER"),
+  async (c) => {
+    // Inspections by status
+    const inspectionByStatus = await prisma.inspectionRecord.groupBy({
+      by: ["status"],
+      where: { deleted_at: null },
+      _count: true,
+    });
+    const inspectionsTotal = inspectionByStatus.reduce((sum, s) => sum + s._count, 0);
+
+    // Overdue inspections (due_date < now, not completed)
+    const overdueInspections = await prisma.inspectionRecord.count({
+      where: {
+        deleted_at: null,
+        due_date: { lt: new Date() },
+        status: { notIn: ["SUBMITTED", "APPROVED"] },
+      },
+    });
+
+    // SLA compliance: tickets with sla_target_date that were closed on time vs total with sla_target_date
+    const ticketsWithSLA = await prisma.ticket.findMany({
+      where: { deleted_at: null, sla_target_date: { not: null }, status: "CLOSED" },
+      select: { sla_target_date: true, closed_at: true },
+    });
+    const slaTotal = ticketsWithSLA.length;
+    const slaOnTime = ticketsWithSLA.filter(
+      (t) => t.closed_at && t.closed_at <= t.sla_target_date!,
+    ).length;
+    const slaCompliance = slaTotal > 0 ? slaOnTime / slaTotal : 1;
+
+    // Open tickets by priority
+    const openTicketStatuses: TicketStatus[] = ["NEW", "TRIAGED", "ASSIGNED", "IN_PROGRESS", "PENDING_REVIEW", "REOPENED"];
+    const openTicketsByPriority = await prisma.ticket.groupBy({
+      by: ["priority"],
+      where: { deleted_at: null, status: { in: openTicketStatuses } },
+      _count: true,
+    });
+    const openTicketsTotal = openTicketsByPriority.reduce((sum, t) => sum + (t._count ?? 0), 0);
+
+    // Active work orders
+    const activeWOStatuses: TicketStatus[] = ["NEW", "TRIAGED", "ASSIGNED", "IN_PROGRESS", "PENDING_REVIEW", "REOPENED"];
+    const workOrdersByStatus = await prisma.workOrder.groupBy({
+      by: ["status"],
+      where: { deleted_at: null, status: { in: activeWOStatuses } },
+      _count: true,
+    });
+    const activeWorkOrders = workOrdersByStatus.reduce((sum, w) => sum + (w._count ?? 0), 0);
+
+    // Technician availability summary
+    const techAvailability = await prisma.user.groupBy({
+      by: ["status"],
+      where: { role: "TECHNICIAN", is_active: true, deleted_at: null },
+      _count: true,
+    });
+
+    return c.json({
+      report_type: "dashboard",
+      generated_at: new Date().toISOString(),
+      inspections: {
+        total: inspectionsTotal,
+        by_status: Object.fromEntries(inspectionByStatus.map((s) => [s.status, s._count])),
+        overdue: overdueInspections,
+      },
+      tickets: {
+        open_total: openTicketsTotal,
+        by_priority: Object.fromEntries(openTicketsByPriority.map((t) => [t.priority, t._count])),
+        sla_compliance: slaCompliance,
+      },
+      work_orders: {
+        active_total: activeWorkOrders,
+        by_status: Object.fromEntries(workOrdersByStatus.map((w) => [w.status, w._count])),
+      },
+      technician_availability: Object.fromEntries(techAvailability.map((t) => [t.status, t._count])),
     });
   },
 );
