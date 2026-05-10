@@ -1,6 +1,7 @@
 "use client";
 
 import { Sidebar } from "./sidebar";
+import { MobileNav } from "./mobile-nav";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </main>
+      <MobileNav />
     </div>
   );
 }

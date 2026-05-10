@@ -1,25 +1,30 @@
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
+import { MobileHome } from "./mobile-home";
 
 export default function DashboardPage() {
   const { user } = useAuth();
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-900">
-        Welcome back, {user?.firstName}
-      </h1>
-      <p className="mt-1 text-sm text-slate-500">
-        {user?.role} &middot; {user?.organizationId}
-      </p>
+      <div className="hidden lg:block">
+        <h1 className="text-2xl font-semibold text-slate-900">
+          Welcome back, {user?.firstName}
+        </h1>
+        <p className="mt-1 text-sm text-slate-500">
+          {user?.role} &middot; {user?.organizationId}
+        </p>
+      </div>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 hidden lg:grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Open Tickets" value="—" />
         <StatCard label="Pending Inspections" value="—" />
         <StatCard label="Active Work Orders" value="—" />
         <StatCard label="Overdue Items" value="—" />
       </div>
+
+      <MobileHome />
     </div>
   );
 }

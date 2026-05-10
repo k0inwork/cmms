@@ -165,3 +165,37 @@ export interface WorkOrder {
   created_at: string;
   updated_at: string;
 }
+
+export type EvidenceMediaType = "PHOTO" | "VIDEO" | "PDF" | "DOCUMENT" | "SENSOR_EXPORT";
+export type EvidenceStatus = "PENDING" | "APPROVED" | "FLAGGED";
+
+export interface EvidenceItem {
+  id: string;
+  media_type: EvidenceMediaType;
+  status: EvidenceStatus;
+  file_url: string;
+  thumbnail_url: string | null;
+  file_size_bytes: number;
+  mime_type: string;
+  version: number;
+  uploaded_by: string;
+  asset_id: string | null;
+  inspection_id: string | null;
+  component_id: string | null;
+  description: string | null;
+  metadata: any | null;
+  created_at: string;
+  updated_at: string;
+  uploader?: User;
+  annotations?: EvidenceAnnotation[];
+}
+
+export interface EvidenceAnnotation {
+  id: string;
+  evidence_id: string;
+  author_id: string;
+  annotation_type: "ARROW" | "CIRCLE" | "TEXT";
+  data: any;
+  version: number;
+  created_at: string;
+}

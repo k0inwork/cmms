@@ -157,3 +157,6 @@ export function apiPatch<T>(path: string, body: unknown) {
 export function apiDelete<T>(path: string) {
   return apiClient<T>(path, { method: "DELETE" });
 }
+export function apiPut<T>(path: string, body?: unknown) {
+  return apiClient<T>(path, { method: "PUT", body: body ? JSON.stringify(body) : undefined });
+}
