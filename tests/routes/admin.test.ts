@@ -40,6 +40,7 @@ const mockSkill = {
   description: "Blade inspection and repair",
   created_at: new Date("2026-01-01"),
   updated_at: new Date("2026-01-01"),
+  deleted_at: null,
 };
 
 const mockCert = {
@@ -50,6 +51,7 @@ const mockCert = {
   description: "Global Wind Organisation safety training",
   created_at: new Date("2026-01-01"),
   updated_at: new Date("2026-01-01"),
+  deleted_at: null,
 };
 
 vi.mock("../../src/lib/prisma.js", () => ({
@@ -63,17 +65,17 @@ vi.mock("../../src/lib/prisma.js", () => ({
     },
     skill: {
       findMany: vi.fn(),
+      findFirst: vi.fn(),
       findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
-      delete: vi.fn(),
     },
     certification: {
       findMany: vi.fn(),
+      findFirst: vi.fn(),
       findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
-      delete: vi.fn(),
     },
     userSkill: {
       findUnique: vi.fn(),
@@ -84,6 +86,9 @@ vi.mock("../../src/lib/prisma.js", () => ({
       findUnique: vi.fn(),
       create: vi.fn(),
       delete: vi.fn(),
+    },
+    auditEvent: {
+      create: vi.fn(),
     },
   },
 }));
@@ -419,6 +424,7 @@ describe("Admin routes", () => {
     it("removes a skill from a user", async () => {
       (prisma.user.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockUser);
       (prisma.userSkill.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "us-001" });
+      (prisma.auditEvent.create as ReturnType<typeof vi.fn>).mockResolvedValue({});
       (prisma.userSkill.delete as ReturnType<typeof vi.fn>).mockResolvedValue({ id: "us-001" });
 
       const app = makeApp();
@@ -430,6 +436,15 @@ describe("Admin routes", () => {
       expect(res.status).toBe(200);
       const body = await res.json();
       expect(body.deleted).toBe(true);
+      expect(prisma.auditEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            entity_type: "UserSkill",
+            entity_id: "us-001",
+            action: "DELETE",
+          }),
+        })
+      );
     });
 
     it("returns 404 for missing assignment", async () => {
@@ -502,6 +517,7 @@ describe("Admin routes", () => {
       (prisma.userCertification.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: "uc-001",
       });
+      (prisma.auditEvent.create as ReturnType<typeof vi.fn>).mockResolvedValue({});
       (prisma.userCertification.delete as ReturnType<typeof vi.fn>).mockResolvedValue({
         id: "uc-001",
       });
@@ -513,6 +529,15 @@ describe("Admin routes", () => {
       });
 
       expect(res.status).toBe(200);
+      expect(prisma.auditEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            entity_type: "UserCertification",
+            entity_id: "uc-001",
+            action: "DELETE",
+          }),
+        })
+      );
     });
   });
 
@@ -534,7 +559,7 @@ describe("Admin routes", () => {
 
   describe("POST /admin/skills", () => {
     it("creates a skill", async () => {
-      (prisma.skill.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      (prisma.skill.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
       (prisma.skill.create as ReturnType<typeof vi.fn>).mockResolvedValue(mockSkill);
 
       const app = makeApp();
@@ -548,7 +573,7 @@ describe("Admin routes", () => {
     });
 
     it("rejects duplicate name with 409", async () => {
-      (prisma.skill.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockSkill);
+      (prisma.skill.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockSkill);
 
       const app = makeApp();
       const res = await app.request("/admin/skills", {
@@ -563,7 +588,7 @@ describe("Admin routes", () => {
 
   describe("PATCH /admin/skills/:id", () => {
     it("updates a skill", async () => {
-      (prisma.skill.findUnique as ReturnType<typeof vi.fn>)
+      (prisma.skill.findFirst as ReturnType<typeof vi.fn>)
         .mockResolvedValueOnce(mockSkill)
         .mockResolvedValueOnce(null);
       (prisma.skill.update as ReturnType<typeof vi.fn>).mockResolvedValue({
@@ -584,7 +609,7 @@ describe("Admin routes", () => {
     });
 
     it("returns 404 for missing skill", async () => {
-      (prisma.skill.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      (prisma.skill.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
       const app = makeApp();
       const res = await app.request("/admin/skills/nope", {
@@ -598,9 +623,10 @@ describe("Admin routes", () => {
   });
 
   describe("DELETE /admin/skills/:id", () => {
-    it("deletes a skill", async () => {
-      (prisma.skill.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockSkill);
-      (prisma.skill.delete as ReturnType<typeof vi.fn>).mockResolvedValue(mockSkill);
+    it("soft-deletes a skill", async () => {
+      (prisma.skill.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockSkill);
+      (prisma.skill.update as ReturnType<typeof vi.fn>).mockResolvedValue({ ...mockSkill, deleted_at: new Date() });
+      (prisma.auditEvent.create as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
       const app = makeApp();
       const res = await app.request("/admin/skills/skill-001", {
@@ -611,10 +637,19 @@ describe("Admin routes", () => {
       expect(res.status).toBe(200);
       const body = await res.json();
       expect(body.deleted).toBe(true);
+      expect(prisma.auditEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            entity_type: "Skill",
+            entity_id: "skill-001",
+            action: "DELETE",
+          }),
+        })
+      );
     });
 
     it("returns 404 for missing skill", async () => {
-      (prisma.skill.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      (prisma.skill.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
       const app = makeApp();
       const res = await app.request("/admin/skills/nope", {
@@ -644,7 +679,7 @@ describe("Admin routes", () => {
 
   describe("POST /admin/certifications", () => {
     it("creates a certification", async () => {
-      (prisma.certification.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      (prisma.certification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
       (prisma.certification.create as ReturnType<typeof vi.fn>).mockResolvedValue(mockCert);
 
       const app = makeApp();
@@ -658,7 +693,7 @@ describe("Admin routes", () => {
     });
 
     it("rejects duplicate name with 409", async () => {
-      (prisma.certification.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockCert);
+      (prisma.certification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockCert);
 
       const app = makeApp();
       const res = await app.request("/admin/certifications", {
@@ -673,7 +708,7 @@ describe("Admin routes", () => {
 
   describe("PATCH /admin/certifications/:id", () => {
     it("updates a certification", async () => {
-      (prisma.certification.findUnique as ReturnType<typeof vi.fn>)
+      (prisma.certification.findFirst as ReturnType<typeof vi.fn>)
         .mockResolvedValueOnce(mockCert)
         .mockResolvedValueOnce(null);
       (prisma.certification.update as ReturnType<typeof vi.fn>).mockResolvedValue({
@@ -695,9 +730,10 @@ describe("Admin routes", () => {
   });
 
   describe("DELETE /admin/certifications/:id", () => {
-    it("deletes a certification", async () => {
-      (prisma.certification.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(mockCert);
-      (prisma.certification.delete as ReturnType<typeof vi.fn>).mockResolvedValue(mockCert);
+    it("soft-deletes a certification", async () => {
+      (prisma.certification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockCert);
+      (prisma.certification.update as ReturnType<typeof vi.fn>).mockResolvedValue({ ...mockCert, deleted_at: new Date() });
+      (prisma.auditEvent.create as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
       const app = makeApp();
       const res = await app.request("/admin/certifications/cert-001", {
@@ -708,10 +744,19 @@ describe("Admin routes", () => {
       expect(res.status).toBe(200);
       const body = await res.json();
       expect(body.deleted).toBe(true);
+      expect(prisma.auditEvent.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            entity_type: "Certification",
+            entity_id: "cert-001",
+            action: "DELETE",
+          }),
+        })
+      );
     });
 
     it("returns 404 for missing certification", async () => {
-      (prisma.certification.findUnique as ReturnType<typeof vi.fn>).mockResolvedValue(null);
+      (prisma.certification.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
       const app = makeApp();
       const res = await app.request("/admin/certifications/nope", {

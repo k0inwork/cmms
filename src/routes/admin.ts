@@ -298,6 +298,16 @@ app.delete("/users/:id/skills/:skillId", async (c) => {
   });
   if (!link) throw new NotFoundError("UserSkill", `${userId}/${skillId}`);
 
+  await prisma.auditEvent.create({
+    data: {
+      entity_type: "UserSkill",
+      entity_id: link.id,
+      action: "DELETE",
+      user_id: admin.userId,
+      before_state: { user_id: userId, skill_id: skillId },
+    },
+  });
+
   await prisma.userSkill.delete({
     where: { user_id_skill_id: { user_id: userId, skill_id: skillId } },
   });
@@ -354,6 +364,16 @@ app.delete("/users/:id/certifications/:certId", async (c) => {
   });
   if (!link) throw new NotFoundError("UserCertification", `${userId}/${certId}`);
 
+  await prisma.auditEvent.create({
+    data: {
+      entity_type: "UserCertification",
+      entity_id: link.id,
+      action: "DELETE",
+      user_id: admin.userId,
+      before_state: { user_id: userId, certification_id: certId },
+    },
+  });
+
   await prisma.userCertification.delete({
     where: { user_id_certification_id: { user_id: userId, certification_id: certId } },
   });
@@ -369,6 +389,7 @@ app.get("/skills", zValidator("query", paginationSchema), async (c) => {
   const { cursor, limit } = c.req.valid("query");
 
   const items = await prisma.skill.findMany({
+    where: { deleted_at: null },
     take: limit + 1,
     orderBy: { created_at: "desc" },
     ...buildCursorQuery(cursor),
@@ -380,7 +401,7 @@ app.get("/skills", zValidator("query", paginationSchema), async (c) => {
 app.post("/skills", zValidator("json", createSkillSchema), async (c) => {
   const data = c.req.valid("json");
 
-  const existing = await prisma.skill.findUnique({ where: { name: data.name } });
+  const existing = await prisma.skill.findFirst({ where: { name: data.name, deleted_at: null } });
   if (existing) throw new ConflictError(`Skill with name '${data.name}' already exists`);
 
   const skill = await prisma.skill.create({ data });
@@ -391,11 +412,11 @@ app.patch("/skills/:id", zValidator("json", updateSkillSchema), async (c) => {
   const id = c.req.param("id");
   const data = c.req.valid("json");
 
-  const existing = await prisma.skill.findUnique({ where: { id } });
+  const existing = await prisma.skill.findFirst({ where: { id, deleted_at: null } });
   if (!existing) throw new NotFoundError("Skill", id);
 
   if (data.name && data.name !== existing.name) {
-    const dup = await prisma.skill.findUnique({ where: { name: data.name } });
+    const dup = await prisma.skill.findFirst({ where: { name: data.name, deleted_at: null } });
     if (dup) throw new ConflictError(`Skill with name '${data.name}' already exists`);
   }
 
@@ -413,11 +434,26 @@ app.patch("/skills/:id", zValidator("json", updateSkillSchema), async (c) => {
 
 app.delete("/skills/:id", async (c) => {
   const id = c.req.param("id");
+  const admin = c.get("user");
 
-  const existing = await prisma.skill.findUnique({ where: { id } });
+  const existing = await prisma.skill.findFirst({ where: { id, deleted_at: null } });
   if (!existing) throw new NotFoundError("Skill", id);
 
-  await prisma.skill.delete({ where: { id } });
+  await prisma.skill.update({
+    where: { id },
+    data: { deleted_at: new Date() },
+  });
+
+  await prisma.auditEvent.create({
+    data: {
+      entity_type: "Skill",
+      entity_id: id,
+      action: "DELETE",
+      user_id: admin.userId,
+      before_state: { ...existing },
+    },
+  });
+
   return c.json({ deleted: true, id });
 });
 
@@ -429,6 +465,7 @@ app.get("/certifications", zValidator("query", paginationSchema), async (c) => {
   const { cursor, limit } = c.req.valid("query");
 
   const items = await prisma.certification.findMany({
+    where: { deleted_at: null },
     take: limit + 1,
     orderBy: { created_at: "desc" },
     ...buildCursorQuery(cursor),
@@ -440,7 +477,7 @@ app.get("/certifications", zValidator("query", paginationSchema), async (c) => {
 app.post("/certifications", zValidator("json", createCertSchema), async (c) => {
   const data = c.req.valid("json");
 
-  const existing = await prisma.certification.findUnique({ where: { name: data.name } });
+  const existing = await prisma.certification.findFirst({ where: { name: data.name, deleted_at: null } });
   if (existing) throw new ConflictError(`Certification with name '${data.name}' already exists`);
 
   const cert = await prisma.certification.create({
@@ -458,11 +495,11 @@ app.patch("/certifications/:id", zValidator("json", updateCertSchema), async (c)
   const id = c.req.param("id");
   const data = c.req.valid("json");
 
-  const existing = await prisma.certification.findUnique({ where: { id } });
+  const existing = await prisma.certification.findFirst({ where: { id, deleted_at: null } });
   if (!existing) throw new NotFoundError("Certification", id);
 
   if (data.name && data.name !== existing.name) {
-    const dup = await prisma.certification.findUnique({ where: { name: data.name } });
+    const dup = await prisma.certification.findFirst({ where: { name: data.name, deleted_at: null } });
     if (dup) throw new ConflictError(`Certification with name '${data.name}' already exists`);
   }
 
@@ -481,11 +518,26 @@ app.patch("/certifications/:id", zValidator("json", updateCertSchema), async (c)
 
 app.delete("/certifications/:id", async (c) => {
   const id = c.req.param("id");
+  const admin = c.get("user");
 
-  const existing = await prisma.certification.findUnique({ where: { id } });
+  const existing = await prisma.certification.findFirst({ where: { id, deleted_at: null } });
   if (!existing) throw new NotFoundError("Certification", id);
 
-  await prisma.certification.delete({ where: { id } });
+  await prisma.certification.update({
+    where: { id },
+    data: { deleted_at: new Date() },
+  });
+
+  await prisma.auditEvent.create({
+    data: {
+      entity_type: "Certification",
+      entity_id: id,
+      action: "DELETE",
+      user_id: admin.userId,
+      before_state: { ...existing },
+    },
+  });
+
   return c.json({ deleted: true, id });
 });
 

@@ -273,12 +273,13 @@ model User {
 }
 
 model Skill {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String   @unique
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
   category    String?
   description String?
-  created_at  DateTime @default(now()) @map("created_at")
-  updated_at  DateTime @updatedAt @map("updated_at")
+  created_at  DateTime  @default(now()) @map("created_at")
+  updated_at  DateTime  @updatedAt @map("updated_at")
+  deleted_at  DateTime? @map("deleted_at")
 
   user_skills UserSkill[]
 
@@ -286,13 +287,14 @@ model Skill {
 }
 
 model Certification {
-  id               String   @id @default(uuid()) @db.Uuid
-  name             String   @unique
-  issuing_body     String?  @map("issuing_body")
-  validity_months  Int?     @map("validity_months")
+  id               String    @id @default(uuid()) @db.Uuid
+  name             String    @unique
+  issuing_body     String?   @map("issuing_body")
+  validity_months  Int?      @map("validity_months")
   description      String?
-  created_at       DateTime @default(now()) @map("created_at")
-  updated_at       DateTime @updatedAt @map("updated_at")
+  created_at       DateTime  @default(now()) @map("created_at")
+  updated_at       DateTime  @updatedAt @map("updated_at")
+  deleted_at       DateTime? @map("deleted_at")
 
   user_certifications UserCertification[]
 
