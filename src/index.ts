@@ -21,8 +21,22 @@ import workOrderRoutes from "./routes/work-orders.js";
 import searchRoutes from "./routes/search.js";
 import auditRoutes from "./routes/audit.js";
 import reportRoutes from "./routes/reports.js";
+import {
+  prodCors,
+  prodSecureHeaders,
+  prodRequestId,
+  structuredLogger,
+  rateLimiter,
+} from "./middleware/production.js";
 
 const app = new Hono();
+
+// Apply production middleware
+app.use("*", prodRequestId());
+app.use("*", structuredLogger());
+app.use("*", prodSecureHeaders());
+app.use("*", prodCors());
+app.use("*", rateLimiter());
 
 app.get("/", (c) => c.json({ status: "ok", service: "cmms", version: "0.1.0" }));
 
