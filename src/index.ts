@@ -10,6 +10,7 @@ import componentRoutes from "./routes/components.js";
 import assetRoutes from "./routes/assets.js";
 import adminRoutes from "./routes/admin.js";
 import inspectionRoutes from "./routes/inspections.js";
+import ticketRoutes from "./routes/tickets.js";
 
 const app = new Hono();
 
@@ -27,6 +28,7 @@ app.route("/organizations/:orgId/sites/:siteId/turbines/:turbineId/subsystems/:s
 app.route("/assets", assetRoutes);
 app.route("/admin", adminRoutes);
 app.route("/inspections", inspectionRoutes);
+app.route("/tickets", ticketRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
