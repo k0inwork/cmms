@@ -1,0 +1,753 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  TECHNICIAN
+  DISPATCHER
+  QA_REVIEWER
+  OPERATIONS_MANAGER
+  ADMINISTRATOR
+}
+
+enum AssetStatus {
+  ACTIVE
+  DECOMMISSIONED
+  MAINTENANCE
+  PLANNED
+}
+
+enum InspectionStatus {
+  ASSIGNED
+  IN_PROGRESS
+  SUBMITTED
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
+}
+
+enum TicketStatus {
+  NEW
+  TRIAGED
+  ASSIGNED
+  IN_PROGRESS
+  PENDING_REVIEW
+  CLOSED
+  REOPENED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum Severity {
+  COSMETIC
+  MINOR
+  MAJOR
+  CRITICAL
+  SAFETY
+}
+
+enum TechnicianStatus {
+  AVAILABLE
+  ASSIGNED
+  TRAVELING
+  ON_SITE
+  ON_BREAK
+  SICK
+  TRAINING
+  LEAVE
+  UNAVAILABLE
+}
+
+enum EvidenceType {
+  PHOTO
+  VIDEO
+  PDF
+  DOCUMENT
+  SENSOR_EXPORT
+}
+
+enum EvidenceStatus {
+  PENDING
+  APPROVED
+  FLAGGED
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCING
+  SYNCED
+  FAILED
+  CONFLICT
+}
+
+enum AbsenceReason {
+  SICK
+  PERSONAL_LEAVE
+  TRAINING
+  VACATION
+  OTHER
+}
+
+enum FieldType {
+  TEXT
+  NUMERIC
+  PASS_FAIL
+  DROPDOWN
+  PHOTO
+  VIDEO
+  ANNOTATION
+  SIGNATURE
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  STATUS_CHANGE
+  ASSIGN
+  APPROVE
+  REJECT
+  SYNC
+  LOGIN
+  LOGOUT
+}
+
+// ─── Asset Hierarchy ──────────────────────────────────────────────────────────
+
+model Organization {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
+  description String?
+  created_at  DateTime  @default(now()) @map("created_at")
+  updated_at  DateTime  @updatedAt @map("updated_at")
+  deleted_at  DateTime? @map("deleted_at")
+
+  sites Site[]
+  users User[]
+
+  @@map("organizations")
+}
+
+model Site {
+  id              String   @id @default(uuid()) @db.Uuid
+  organization_id String   @map("organization_id") @db.Uuid
+  name            String
+  latitude        Float?
+  longitude       Float?
+  time_zone       String   @default("UTC")
+  created_at      DateTime @default(now()) @map("created_at")
+  updated_at      DateTime @updatedAt @map("updated_at")
+  deleted_at      DateTime? @map("deleted_at")
+
+  organization Organization @relation(fields: [organization_id], references: [id])
+  turbines     Turbine[]
+
+  @@unique([organization_id, name])
+  @@map("sites")
+}
+
+model Turbine {
+  id         String       @id @default(uuid()) @db.Uuid
+  site_id    String       @map("site_id") @db.Uuid
+  name       String
+  status     AssetStatus  @default(ACTIVE)
+  model      String?
+  latitude   Float?
+  longitude  Float?
+  created_at DateTime     @default(now()) @map("created_at")
+  updated_at DateTime     @updatedAt @map("updated_at")
+  deleted_at DateTime?    @map("deleted_at")
+
+  site               Site                 @relation(fields: [site_id], references: [id])
+  subsystems         Subsystem[]
+  inspection_records InspectionRecord[]
+  tickets            Ticket[]
+  work_orders        WorkOrder[]
+
+  @@unique([site_id, name])
+  @@map("turbines")
+}
+
+model Subsystem {
+  id         String   @id @default(uuid()) @db.Uuid
+  turbine_id String   @map("turbine_id") @db.Uuid
+  name       String
+  type       String?
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt @map("updated_at")
+  deleted_at DateTime? @map("deleted_at")
+
+  turbine   Turbine     @relation(fields: [turbine_id], references: [id])
+  components Component[]
+
+  @@unique([turbine_id, name])
+  @@map("subsystems")
+}
+
+model Component {
+  id           String      @id @default(uuid()) @db.Uuid
+  subsystem_id String      @map("subsystem_id") @db.Uuid
+  name         String
+  status       AssetStatus @default(ACTIVE)
+  created_at   DateTime    @default(now()) @map("created_at")
+  updated_at   DateTime    @updatedAt @map("updated_at")
+  deleted_at   DateTime?   @map("deleted_at")
+
+  subsystem          Subsystem           @relation(fields: [subsystem_id], references: [id])
+  defects            Defect[]
+  inspection_records InspectionRecord[]
+  tickets            Ticket[]
+  work_orders        WorkOrder[]
+  evidence_items     EvidenceItem[]
+
+  @@unique([subsystem_id, name])
+  @@map("components")
+}
+
+// ─── User & Auth ──────────────────────────────────────────────────────────────
+
+model RefreshToken {
+  id         String    @id @default(uuid()) @db.Uuid
+  token_hash String    @unique @map("token_hash")
+  user_id    String    @map("user_id") @db.Uuid
+  expires_at DateTime  @map("expires_at")
+  revoked_at DateTime? @map("revoked_at")
+  created_at DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+  @@index([expires_at])
+  @@map("refresh_tokens")
+}
+
+model User {
+  id              String           @id @default(uuid()) @db.Uuid
+  email           String           @unique
+  password_hash   String           @map("password_hash")
+  first_name      String           @map("first_name")
+  last_name       String           @map("last_name")
+  role            Role
+  status          TechnicianStatus @default(AVAILABLE)
+  is_active       Boolean          @default(true) @map("is_active")
+  organization_id String           @map("organization_id") @db.Uuid
+  created_at      DateTime         @default(now()) @map("created_at")
+  updated_at      DateTime         @updatedAt @map("updated_at")
+  deleted_at      DateTime?        @map("deleted_at")
+
+  organization Organization @relation(fields: [organization_id], references: [id])
+
+  refresh_tokens          RefreshToken[]
+  user_skills             UserSkill[]
+  user_certifications     UserCertification[]
+  inspection_records      InspectionRecord[]              @relation("InspectionTechnician")
+  reviewed_inspections    InspectionRecord[]              @relation("InspectionReviewer")
+  template_versions       InspectionTemplateVersion[]
+  assigned_tickets        Ticket[]                        @relation("TicketAssignee")
+  created_tickets         Ticket[]                        @relation("TicketCreator")
+  assigned_work_orders    WorkOrder[]                     @relation("WorkOrderAssignee")
+  created_work_orders     WorkOrder[]                     @relation("WorkOrderCreator")
+  evidence_items          EvidenceItem[]
+  availability_slots      AvailabilitySlot[]
+  absence_records         AbsenceRecord[]
+  approved_absences       AbsenceRecord[]                 @relation("AbsenceApprover")
+  assignments             Assignment[]                    @relation("AssignmentUser")
+  assignments_as_assigner Assignment[]                    @relation("AssignmentAssigner")
+  audit_events            AuditEvent[]
+  sync_events             SyncEvent[]
+  replacement_suggestions ReplacementSuggestion[]    @relation("ReplacementSuggestion")
+
+  @@map("users")
+}
+
+model Skill {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  category    String?
+  description String?
+  created_at  DateTime @default(now()) @map("created_at")
+  updated_at  DateTime @updatedAt @map("updated_at")
+
+  user_skills UserSkill[]
+
+  @@map("skills")
+}
+
+model Certification {
+  id               String   @id @default(uuid()) @db.Uuid
+  name             String   @unique
+  issuing_body     String?  @map("issuing_body")
+  validity_months  Int?     @map("validity_months")
+  description      String?
+  created_at       DateTime @default(now()) @map("created_at")
+  updated_at       DateTime @updatedAt @map("updated_at")
+
+  user_certifications UserCertification[]
+
+  @@map("certifications")
+}
+
+model UserSkill {
+  id               String   @id @default(uuid()) @db.Uuid
+  user_id          String   @map("user_id") @db.Uuid
+  skill_id         String   @map("skill_id") @db.Uuid
+  proficiency_level Int     @map("proficiency_level")
+  acquired_date    DateTime @map("acquired_date")
+  created_at       DateTime @default(now()) @map("created_at")
+  updated_at       DateTime @updatedAt @map("updated_at")
+
+  user  User  @relation(fields: [user_id], references: [id])
+  skill Skill @relation(fields: [skill_id], references: [id])
+
+  @@unique([user_id, skill_id])
+  @@map("user_skills")
+}
+
+model UserCertification {
+  id               String    @id @default(uuid()) @db.Uuid
+  user_id          String    @map("user_id") @db.Uuid
+  certification_id String    @map("certification_id") @db.Uuid
+  issued_date      DateTime  @map("issued_date")
+  expiry_date      DateTime? @map("expiry_date")
+  certificate_url  String?   @map("certificate_url")
+  created_at       DateTime  @default(now()) @map("created_at")
+  updated_at       DateTime  @updatedAt @map("updated_at")
+
+  user          User          @relation(fields: [user_id], references: [id])
+  certification Certification @relation(fields: [certification_id], references: [id])
+
+  @@unique([user_id, certification_id])
+  @@map("user_certifications")
+}
+
+// ─── Inspection Templates & Records ──────────────────────────────────────────
+
+model InspectionTemplate {
+  id              String   @id @default(uuid()) @db.Uuid
+  name            String
+  description     String?
+  inspection_type String?  @map("inspection_type")
+  turbine_model   String?  @map("turbine_model")
+  site_id         String?  @map("site_id") @db.Uuid
+  is_active       Boolean  @default(true) @map("is_active")
+  created_at      DateTime @default(now()) @map("created_at")
+  updated_at      DateTime @updatedAt @map("updated_at")
+  deleted_at      DateTime? @map("deleted_at")
+
+  versions           InspectionTemplateVersion[]
+
+  @@map("inspection_templates")
+}
+
+model InspectionTemplateVersion {
+  id          String   @id @default(uuid()) @db.Uuid
+  template_id String   @map("template_id") @db.Uuid
+  version     Int
+  schema      Json
+  changelog   String?
+  created_at  DateTime @default(now()) @map("created_at")
+  created_by  String   @map("created_by") @db.Uuid
+
+  template InspectionTemplate @relation(fields: [template_id], references: [id])
+  creator  User               @relation(fields: [created_by], references: [id])
+  inspection_records InspectionRecord[]
+
+  @@unique([template_id, version])
+  @@map("inspection_template_versions")
+}
+
+model InspectionRecord {
+  id                  String            @id @default(uuid()) @db.Uuid
+  template_version_id String            @map("template_version_id") @db.Uuid
+  technician_id       String            @map("technician_id") @db.Uuid
+  turbine_id          String            @map("turbine_id") @db.Uuid
+  component_id        String?           @map("component_id") @db.Uuid
+  status              InspectionStatus  @default(ASSIGNED)
+  started_at          DateTime?         @map("started_at")
+  completed_at        DateTime?         @map("completed_at")
+  submitted_at        DateTime?         @map("submitted_at")
+  reviewed_at         DateTime?         @map("reviewed_at")
+  reviewed_by         String?           @map("reviewed_by") @db.Uuid
+  review_notes        String?           @map("review_notes")
+  due_date            DateTime?         @map("due_date")
+  sync_status         SyncStatus        @default(SYNCED)
+  client_id           String?           @unique @map("client_id")
+  created_at          DateTime          @default(now()) @map("created_at")
+  updated_at          DateTime          @updatedAt @map("updated_at")
+  deleted_at          DateTime?         @map("deleted_at")
+
+  template_version InspectionTemplateVersion @relation(fields: [template_version_id], references: [id])
+  technician       User                      @relation("InspectionTechnician", fields: [technician_id], references: [id])
+  turbine          Turbine                   @relation(fields: [turbine_id], references: [id])
+  reviewer         User?                     @relation("InspectionReviewer", fields: [reviewed_by], references: [id])
+  component        Component?                @relation(fields: [component_id], references: [id])
+
+  field_data  InspectionFieldData[]
+  defects     Defect[]
+  evidence    EvidenceItem[]
+  assignments Assignment[]
+
+  @@index([technician_id])
+  @@index([turbine_id])
+  @@index([status])
+  @@index([sync_status])
+  @@index([due_date])
+  @@index([component_id])
+  @@map("inspection_records")
+}
+
+model InspectionFieldData {
+  id             String    @id @default(uuid()) @db.Uuid
+  inspection_id  String    @map("inspection_id") @db.Uuid
+  field_key      String    @map("field_key")
+  field_type     FieldType @map("field_type")
+  value_string   String?   @map("value_string")
+  value_numeric  Float?    @map("value_numeric")
+  value_boolean  Boolean?  @map("value_boolean")
+  value_json     Json?     @map("value_json")
+  created_at     DateTime  @default(now()) @map("created_at")
+  updated_at     DateTime  @updatedAt @map("updated_at")
+
+  inspection InspectionRecord @relation(fields: [inspection_id], references: [id], onDelete: Cascade)
+
+  @@unique([inspection_id, field_key])
+  @@map("inspection_field_data")
+}
+
+// ─── Defects & Tickets ───────────────────────────────────────────────────────
+
+model Defect {
+  id              String   @id @default(uuid()) @db.Uuid
+  inspection_id   String   @map("inspection_id") @db.Uuid
+  component_id    String   @map("component_id") @db.Uuid
+  description     String
+  severity        Severity
+  location_detail String?  @map("location_detail")
+  notes           String?
+  created_at      DateTime @default(now()) @map("created_at")
+  updated_at      DateTime @updatedAt @map("updated_at")
+  deleted_at      DateTime? @map("deleted_at")
+
+  inspection InspectionRecord @relation(fields: [inspection_id], references: [id])
+  component  Component        @relation(fields: [component_id], references: [id])
+
+  tickets Ticket[]
+
+  @@index([component_id])
+  @@index([severity])
+  @@map("defects")
+}
+
+model Ticket {
+  id               String       @id @default(uuid()) @db.Uuid
+  defect_id        String?      @map("defect_id") @db.Uuid
+  turbine_id       String?      @map("turbine_id") @db.Uuid
+  component_id     String?      @map("component_id") @db.Uuid
+  title            String
+  description      String
+  priority         Priority     @default(MEDIUM)
+  severity         Severity?
+  status           TicketStatus @default(NEW)
+  assignee_id      String?      @map("assignee_id") @db.Uuid
+  created_by       String       @map("created_by") @db.Uuid
+  due_date         DateTime?    @map("due_date")
+  sla_target_date  DateTime?    @map("sla_target_date")
+  resolution_notes String?      @map("resolution_notes") @db.Text
+  root_cause       String?      @map("root_cause")
+  closed_at        DateTime?    @map("closed_at")
+  sync_status      SyncStatus   @default(SYNCED)
+  client_id        String?      @unique @map("client_id")
+  created_at       DateTime     @default(now()) @map("created_at")
+  updated_at       DateTime     @updatedAt @map("updated_at")
+  deleted_at       DateTime?    @map("deleted_at")
+
+  defect    Defect?    @relation(fields: [defect_id], references: [id])
+  turbine   Turbine?   @relation(fields: [turbine_id], references: [id])
+  component Component? @relation(fields: [component_id], references: [id])
+  assignee  User?      @relation("TicketAssignee", fields: [assignee_id], references: [id])
+  creator   User       @relation("TicketCreator", fields: [created_by], references: [id])
+
+  work_orders     WorkOrder[]
+  ticket_evidence TicketEvidence[]
+
+  @@index([status])
+  @@index([assignee_id])
+  @@index([priority])
+  @@index([due_date])
+  @@index([defect_id])
+  @@index([created_by])
+  @@map("tickets")
+}
+
+model WorkOrder {
+  id               String       @id @default(uuid()) @db.Uuid
+  ticket_id        String       @map("ticket_id") @db.Uuid
+  turbine_id       String?      @map("turbine_id") @db.Uuid
+  component_id     String?      @map("component_id") @db.Uuid
+  assignee_id      String?      @map("assignee_id") @db.Uuid
+  created_by       String       @map("created_by") @db.Uuid
+  title            String
+  description      String
+  priority         Priority     @default(MEDIUM)
+  status           TicketStatus @default(NEW)
+  due_date         DateTime?    @map("due_date")
+  started_at       DateTime?    @map("started_at")
+  completed_at     DateTime?    @map("completed_at")
+  resolution_notes String?      @map("resolution_notes") @db.Text
+  sync_status      SyncStatus   @default(SYNCED)
+  client_id        String?      @unique @map("client_id")
+  created_at       DateTime     @default(now()) @map("created_at")
+  updated_at       DateTime     @updatedAt @map("updated_at")
+  deleted_at       DateTime?    @map("deleted_at")
+
+  ticket    Ticket     @relation(fields: [ticket_id], references: [id])
+  turbine   Turbine?   @relation(fields: [turbine_id], references: [id])
+  component Component? @relation(fields: [component_id], references: [id])
+  assignee  User?      @relation("WorkOrderAssignee", fields: [assignee_id], references: [id])
+  creator   User       @relation("WorkOrderCreator", fields: [created_by], references: [id])
+
+  work_order_evidence WorkOrderEvidence[]
+  assignments        Assignment[]
+
+  @@index([ticket_id])
+  @@index([assignee_id])
+  @@index([status])
+  @@index([due_date])
+  @@map("work_orders")
+}
+
+// ─── Evidence ─────────────────────────────────────────────────────────────────
+
+model EvidenceItem {
+  id              String         @id @default(uuid()) @db.Uuid
+  media_type      EvidenceType   @map("media_type")
+  status          EvidenceStatus @default(PENDING)
+  file_url        String         @map("file_url")
+  thumbnail_url   String?        @map("thumbnail_url")
+  file_size_bytes Int            @map("file_size_bytes")
+  mime_type       String         @map("mime_type")
+  version         Int            @default(1)
+  uploaded_by     String         @map("uploaded_by") @db.Uuid
+  asset_id        String?        @map("asset_id") @db.Uuid
+  inspection_id   String?        @map("inspection_id") @db.Uuid
+  component_id    String?        @map("component_id") @db.Uuid
+  description     String?
+  metadata        Json?
+  sync_status     SyncStatus     @default(SYNCED)
+  client_id       String?        @unique @map("client_id")
+  created_at      DateTime       @default(now()) @map("created_at")
+  updated_at      DateTime       @updatedAt @map("updated_at")
+  deleted_at      DateTime?      @map("deleted_at")
+
+  uploader   User              @relation(fields: [uploaded_by], references: [id])
+  inspection InspectionRecord? @relation(fields: [inspection_id], references: [id])
+  component  Component?        @relation(fields: [component_id], references: [id])
+
+  annotations          EvidenceAnnotation[]
+  ticket_evidence      TicketEvidence[]
+  work_order_evidence  WorkOrderEvidence[]
+
+  @@index([uploaded_by])
+  @@index([media_type])
+  @@index([status])
+  @@index([inspection_id])
+  @@index([component_id])
+  @@index([created_at])
+  @@map("evidence_items")
+}
+
+model EvidenceAnnotation {
+  id              String   @id @default(uuid()) @db.Uuid
+  evidence_id     String   @map("evidence_id") @db.Uuid
+  author_id       String   @map("author_id") @db.Uuid
+  annotation_type String   @map("annotation_type")
+  data            Json
+  version         Int      @default(1)
+  created_at      DateTime @default(now()) @map("created_at")
+  updated_at      DateTime @updatedAt @map("updated_at")
+
+  evidence EvidenceItem @relation(fields: [evidence_id], references: [id], onDelete: Cascade)
+
+  @@index([evidence_id])
+  @@map("evidence_annotations")
+}
+
+model TicketEvidence {
+  id         String   @id @default(uuid()) @db.Uuid
+  ticket_id  String   @map("ticket_id") @db.Uuid
+  evidence_id String  @map("evidence_id") @db.Uuid
+  linked_by  String   @map("linked_by") @db.Uuid
+  linked_at  DateTime @default(now()) @map("linked_at")
+
+  ticket   Ticket       @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+  evidence EvidenceItem @relation(fields: [evidence_id], references: [id])
+
+  @@unique([ticket_id, evidence_id])
+  @@index([ticket_id])
+  @@index([evidence_id])
+  @@map("ticket_evidence")
+}
+
+model WorkOrderEvidence {
+  id            String   @id @default(uuid()) @db.Uuid
+  work_order_id String   @map("work_order_id") @db.Uuid
+  evidence_id   String   @map("evidence_id") @db.Uuid
+  linked_by     String   @map("linked_by") @db.Uuid
+  linked_at     DateTime @default(now()) @map("linked_at")
+
+  work_order WorkOrder    @relation(fields: [work_order_id], references: [id], onDelete: Cascade)
+  evidence   EvidenceItem @relation(fields: [evidence_id], references: [id])
+
+  @@unique([work_order_id, evidence_id])
+  @@index([work_order_id])
+  @@index([evidence_id])
+  @@map("work_order_evidence")
+}
+
+// ─── Availability & Dispatch ──────────────────────────────────────────────────
+
+model AvailabilitySlot {
+  id         String           @id @default(uuid()) @db.Uuid
+  user_id    String           @map("user_id") @db.Uuid
+  status     TechnicianStatus @default(AVAILABLE)
+  start_time DateTime         @map("start_time")
+  end_time   DateTime         @map("end_time")
+  site_id    String?          @map("site_id") @db.Uuid
+  notes      String?
+  created_at DateTime         @default(now()) @map("created_at")
+  updated_at DateTime         @updatedAt @map("updated_at")
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([start_time, end_time])
+  @@index([status])
+  @@map("availability_slots")
+}
+
+model AbsenceRecord {
+  id                   String        @id @default(uuid()) @db.Uuid
+  user_id              String        @map("user_id") @db.Uuid
+  reason               AbsenceReason
+  start_date           DateTime      @map("start_date")
+  expected_return_date DateTime?     @map("expected_return_date")
+  actual_return_date   DateTime?     @map("actual_return_date")
+  is_approved          Boolean       @default(false) @map("is_approved")
+  approved_by          String?       @map("approved_by") @db.Uuid
+  notes                String?
+  created_at           DateTime      @default(now()) @map("created_at")
+  updated_at           DateTime      @updatedAt @map("updated_at")
+
+  user     User  @relation(fields: [user_id], references: [id])
+  approver User? @relation("AbsenceApprover", fields: [approved_by], references: [id])
+
+  replacement_suggestions ReplacementSuggestion[]
+
+  @@index([user_id])
+  @@index([start_date])
+  @@index([is_approved])
+  @@map("absence_records")
+}
+
+model Assignment {
+  id              String           @id @default(uuid()) @db.Uuid
+  user_id         String           @map("user_id") @db.Uuid
+  inspection_id   String?          @map("inspection_id") @db.Uuid
+  work_order_id   String?          @map("work_order_id") @db.Uuid
+  status          TechnicianStatus @default(ASSIGNED)
+  assigned_by     String           @map("assigned_by") @db.Uuid
+  assigned_at     DateTime         @default(now()) @map("assigned_at")
+  accepted_at     DateTime?        @map("accepted_at")
+  declined_at     DateTime?        @map("declined_at")
+  decline_reason  String?          @map("decline_reason")
+  created_at      DateTime         @default(now()) @map("created_at")
+  updated_at      DateTime         @updatedAt @map("updated_at")
+
+  user        User              @relation("AssignmentUser", fields: [user_id], references: [id])
+  inspection  InspectionRecord? @relation(fields: [inspection_id], references: [id])
+  work_order  WorkOrder?        @relation(fields: [work_order_id], references: [id])
+  assigner    User              @relation("AssignmentAssigner", fields: [assigned_by], references: [id])
+
+  @@index([user_id])
+  @@index([inspection_id])
+  @@index([work_order_id])
+  @@index([status])
+  @@map("assignments")
+}
+
+model ReplacementSuggestion {
+  id                  String   @id @default(uuid()) @db.Uuid
+  absence_record_id   String   @map("absence_record_id") @db.Uuid
+  suggested_user_id   String   @map("suggested_user_id") @db.Uuid
+  skill_match_score   Float    @map("skill_match_score")
+  cert_match_score    Float    @map("cert_match_score")
+  proximity_score     Float    @map("proximity_score")
+  workload_score      Float    @map("workload_score")
+  familiarity_score   Float    @map("familiarity_score")
+  total_score         Float    @map("total_score")
+  is_above_threshold  Boolean  @default(false) @map("is_above_threshold")
+  created_at          DateTime @default(now()) @map("created_at")
+
+  absence_record AbsenceRecord @relation(fields: [absence_record_id], references: [id])
+  suggested_user User          @relation("ReplacementSuggestion", fields: [suggested_user_id], references: [id])
+
+  @@index([absence_record_id])
+  @@index([total_score(sort: Desc)])
+  @@index([suggested_user_id])
+  @@map("replacement_suggestions")
+}
+
+// ─── Audit & Sync ─────────────────────────────────────────────────────────────
+
+model AuditEvent {
+  id           String      @id @default(uuid()) @db.Uuid
+  entity_type  String      @map("entity_type")
+  entity_id    String      @map("entity_id") @db.Uuid
+  action       AuditAction
+  user_id      String?     @map("user_id") @db.Uuid
+  before_state Json?       @map("before_state")
+  after_state  Json?       @map("after_state")
+  metadata     Json?
+  created_at   DateTime    @default(now()) @map("created_at")
+
+  user User? @relation(fields: [user_id], references: [id])
+
+  @@index([entity_type, entity_id])
+  @@index([action])
+  @@index([user_id])
+  @@index([created_at])
+  @@map("audit_events")
+}
+
+model SyncEvent {
+  id            String     @id @default(uuid()) @db.Uuid
+  user_id       String     @map("user_id") @db.Uuid
+  entity_type   String     @map("entity_type")
+  entity_id     String     @map("entity_id") @db.Uuid
+  sync_status   SyncStatus
+  conflict_data Json?      @map("conflict_data")
+  error_message String?    @map("error_message")
+  retry_count   Int        @default(0) @map("retry_count")
+  synced_at     DateTime?  @map("synced_at")
+  created_at    DateTime   @default(now()) @map("created_at")
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@index([user_id])
+  @@index([entity_type, entity_id])
+  @@index([sync_status])
+  @@index([created_at])
+  @@map("sync_events")
+}
