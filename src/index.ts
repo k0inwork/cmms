@@ -16,6 +16,7 @@ import ticketRoutes from "./routes/tickets.js";
 import technicianRoutes from "./routes/technicians.js";
 import replacementRoutes from "./routes/replacements.js";
 import dispatchRoutes from "./routes/dispatch.js";
+import workOrderRoutes from "./routes/work-orders.js";
 
 const app = new Hono();
 
@@ -39,6 +40,7 @@ app.route("/tickets", ticketRoutes);
 app.route("/technicians", technicianRoutes);
 app.route("/replacements", replacementRoutes);
 app.route("/dispatch", dispatchRoutes);
+app.route("/work-orders", workOrderRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {
