@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/auth-context";
+import { useLogoutConfirm, LogoutConfirmDialog } from "@/components/auth/logout-confirm";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -41,9 +42,10 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export function Sidebar() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { showConfirm, requestLogout, cancel, confirm } = useLogoutConfirm();
 
   const filtered = NAV_ITEMS.filter(
     (item) => !item.roles || (user && item.roles.includes(user.role)),
@@ -86,7 +88,7 @@ export function Sidebar() {
           <span className="font-mono text-[10px]">{user?.role}</span>
         </div>
         <button
-          onClick={logout}
+          onClick={requestLogout}
           className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-slate-600 hover:bg-slate-50"
         >
           <LogOut className="h-4 w-4" />
@@ -129,6 +131,8 @@ export function Sidebar() {
           </aside>
         </div>
       )}
+
+      <LogoutConfirmDialog open={showConfirm} onCancel={cancel} onConfirm={confirm} />
     </>
   );
 }

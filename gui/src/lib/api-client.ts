@@ -109,7 +109,23 @@ export async function apiClient<T>(
     headers,
   });
 
-  if (res.status === 401 && token) {
+  if (res.status === 401) {
+    // Try refresh once before giving up
+    const hdrs = (options.headers as Record<string, string>) ?? {};
+    if (token && !hdrs["X-Retry"]) {
+      try {
+        await refreshAccessToken();
+        const newToken = getAccessToken();
+        if (newToken) {
+          return apiClient<T>(path, {
+            ...options,
+            headers: { ...hdrs, "X-Retry": "true" },
+          });
+        }
+      } catch {
+        // refresh failed, fall through to logout
+      }
+    }
     clearTokens();
     if (typeof window !== "undefined") {
       window.location.href = "/login";

@@ -22,6 +22,11 @@ vi.mock("../../src/lib/prisma.js", () => ({
     },
     user: {
       findMany: vi.fn(),
+      groupBy: vi.fn(),
+    },
+    ticket: {
+      findMany: vi.fn(),
+      groupBy: vi.fn(),
     },
   },
 }));
@@ -57,7 +62,7 @@ describe("Reports API", () => {
   // ── Auth ──────────────────────────────────────────────────────────────────
 
   it("requires auth for all endpoints", async () => {
-    const endpoints = ["/reports/compliance", "/reports/inspections", "/reports/work-orders", "/reports/technician-productivity"];
+    const endpoints = ["/reports/compliance", "/reports/inspections", "/reports/work-orders", "/reports/technician-productivity", "/reports/dashboard"];
     for (const ep of endpoints) {
       const res = await app.request(ep);
       expect(res.status).toBe(401);
@@ -65,7 +70,7 @@ describe("Reports API", () => {
   });
 
   it("rejects TECHNICIAN role from all endpoints", async () => {
-    const endpoints = ["/reports/compliance", "/reports/inspections", "/reports/work-orders", "/reports/technician-productivity"];
+    const endpoints = ["/reports/compliance", "/reports/inspections", "/reports/work-orders", "/reports/technician-productivity", "/reports/dashboard"];
     for (const ep of endpoints) {
       const res = await app.request(ep, { headers: authHeader("TECHNICIAN") });
       expect(res.status).toBe(403);
@@ -265,6 +270,72 @@ describe("Reports API", () => {
       const text = await res.text();
       expect(text).toContain("technician_id,name,email");
       expect(text).toContain("tech-001,Jane Doe,jane@test.com");
+    });
+  });
+
+  // ── GET /reports/dashboard ──────────────────────────────────────────────────
+
+  describe("GET /reports/dashboard", () => {
+    it("returns dashboard KPIs", async () => {
+      vi.mocked(prisma.inspectionRecord.groupBy).mockResolvedValue([
+        { status: "ASSIGNED", _count: 4 },
+        { status: "APPROVED", _count: 12 },
+      ] as any);
+      vi.mocked(prisma.inspectionRecord.count).mockResolvedValue(2);
+      vi.mocked(prisma.ticket.findMany).mockResolvedValue([
+        { sla_target_date: new Date("2026-01-10"), closed_at: new Date("2026-01-08") },
+        { sla_target_date: new Date("2026-01-10"), closed_at: new Date("2026-01-12") },
+      ] as any);
+      vi.mocked(prisma.ticket.groupBy).mockResolvedValue([
+        { priority: "HIGH", _count: 3 },
+        { priority: "LOW", _count: 7 },
+      ] as any);
+      vi.mocked(prisma.workOrder.groupBy).mockResolvedValue([
+        { status: "IN_PROGRESS", _count: 5 },
+        { status: "ASSIGNED", _count: 3 },
+      ] as any);
+      vi.mocked(prisma.user.groupBy).mockResolvedValue([
+        { status: "AVAILABLE", _count: 8 },
+        { status: "ON_SITE", _count: 4 },
+      ] as any);
+
+      const res = await app.request("/reports/dashboard", { headers: authHeader("DISPATCHER") });
+      expect(res.status).toBe(200);
+
+      const body = await res.json();
+      expect(body.report_type).toBe("dashboard");
+      expect(body.inspections.total).toBe(16);
+      expect(body.inspections.by_status.ASSIGNED).toBe(4);
+      expect(body.inspections.overdue).toBe(2);
+      expect(body.tickets.open_total).toBe(10);
+      expect(body.tickets.by_priority.HIGH).toBe(3);
+      expect(body.tickets.sla_compliance).toBeCloseTo(0.5); // 1 of 2 on time
+      expect(body.work_orders.active_total).toBe(8);
+      expect(body.work_orders.by_status.IN_PROGRESS).toBe(5);
+      expect(body.technician_availability.AVAILABLE).toBe(8);
+      expect(body.technician_availability.ON_SITE).toBe(4);
+    });
+
+    it("returns 100% SLA compliance when no tickets with SLA", async () => {
+      vi.mocked(prisma.inspectionRecord.groupBy).mockResolvedValue([] as any);
+      vi.mocked(prisma.inspectionRecord.count).mockResolvedValue(0);
+      vi.mocked(prisma.ticket.findMany).mockResolvedValue([] as any);
+      vi.mocked(prisma.ticket.groupBy).mockResolvedValue([] as any);
+      vi.mocked(prisma.workOrder.groupBy).mockResolvedValue([] as any);
+      vi.mocked(prisma.user.groupBy).mockResolvedValue([] as any);
+
+      const res = await app.request("/reports/dashboard", { headers: authHeader("OPERATIONS_MANAGER") });
+      expect(res.status).toBe(200);
+
+      const body = await res.json();
+      expect(body.tickets.sla_compliance).toBe(1);
+      expect(body.inspections.total).toBe(0);
+      expect(body.work_orders.active_total).toBe(0);
+    });
+
+    it("rejects QA_REVIEWER role", async () => {
+      const res = await app.request("/reports/dashboard", { headers: authHeader("QA_REVIEWER") });
+      expect(res.status).toBe(403);
     });
   });
 });
