@@ -3,7 +3,7 @@ import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
 import prisma from "../lib/prisma.js";
 import { paginationSchema, buildCursorQuery, paginatedResponse } from "../utils/pagination.js";
-import { NotFoundError } from "../utils/errors.js";
+import { NotFoundError, ForbiddenError } from "../utils/errors.js";
 import { authMiddleware, requireRoles, type AuthEnv } from "../middleware/auth.js";
 
 const app = new Hono<AuthEnv>();
@@ -100,7 +100,7 @@ app.patch("/:id/status", authMiddleware(), zValidator("json", statusSchema), asy
 
   // Tech can update own status; dispatcher/admin can update any
   if (user.userId !== id && !["DISPATCHER", "ADMINISTRATOR"].includes(user.role)) {
-    return c.json({ error: "Cannot update another technician's status" }, 403);
+    throw new ForbiddenError("Cannot update another technician's status");
   }
 
   const existing = await prisma.user.findFirst({ where: { id, deleted_at: null } });
