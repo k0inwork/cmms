@@ -4,8 +4,10 @@ import { z } from "zod";
 import prisma from "../lib/prisma.js";
 import { paginationSchema, buildCursorQuery, paginatedResponse } from "../utils/pagination.js";
 import { AssetError } from "../utils/errors.js";
+import { authMiddleware, requireRoles, AuthEnv } from "../middleware/auth.js";
 
-const app = new Hono();
+const app = new Hono<AuthEnv>();
+app.use("*", authMiddleware());
 
 const componentNameSchema = z.string().min(1).max(200);
 
@@ -63,7 +65,7 @@ app.get("/", zValidator("query", paginationSchema), async (c) => {
 });
 
 // POST /components — create
-app.post("/", zValidator("json", createComponentSchema), async (c) => {
+app.post("/", requireRoles("ADMINISTRATOR"), zValidator("json", createComponentSchema), async (c) => {
   const subsystemId = c.req.param("subsystemId")!;
   const turbineId = c.req.param("turbineId")!;
   const siteId = c.req.param("siteId")!;
@@ -102,7 +104,7 @@ app.get("/:id", async (c) => {
 });
 
 // PATCH /components/:id — update
-app.patch("/:id", zValidator("json", updateComponentSchema), async (c) => {
+app.patch("/:id", requireRoles("ADMINISTRATOR"), zValidator("json", updateComponentSchema), async (c) => {
   const subsystemId = c.req.param("subsystemId")!;
   const turbineId = c.req.param("turbineId")!;
   const siteId = c.req.param("siteId")!;
@@ -130,7 +132,7 @@ app.patch("/:id", zValidator("json", updateComponentSchema), async (c) => {
 });
 
 // DELETE /components/:id — soft delete
-app.delete("/:id", async (c) => {
+app.delete("/:id", requireRoles("ADMINISTRATOR"), async (c) => {
   const subsystemId = c.req.param("subsystemId")!;
   const turbineId = c.req.param("turbineId")!;
   const siteId = c.req.param("siteId")!;

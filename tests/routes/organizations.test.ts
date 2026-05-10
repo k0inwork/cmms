@@ -1,6 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// ── Mock Prisma ─────────────────────────────────────────────────────────────
+// ── Mocks ─────────────────────────────────────────────────────────────────────
+
+vi.mock("../../src/utils/jwt.js", () => ({
+  verifyAccessToken: vi.fn(() => ({
+    userId: "admin-001",
+    email: "admin@test.com",
+    role: "ADMINISTRATOR",
+    organizationId: "org-001",
+  })),
+  signAccessToken: vi.fn(() => "test-token"),
+  signRefreshToken: vi.fn(() => "test-refresh"),
+  verifyRefreshToken: vi.fn(),
+}));
 
 const mockOrg = {
   id: "org-001",
@@ -26,6 +38,8 @@ import { Hono } from "hono";
 import prisma from "../../src/lib/prisma.js";
 import organizationRoutes from "../../src/routes/organizations.js";
 
+const authHeader = { Authorization: "Bearer test-token" };
+
 function makeApp() {
   const app = new Hono();
   app.route("/organizations", organizationRoutes);
@@ -44,7 +58,7 @@ describe("Organization routes", () => {
       (prisma.organization.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([mockOrg]);
 
       const app = makeApp();
-      const res = await app.request("/organizations");
+      const res = await app.request("/organizations", { headers: authHeader });
       expect(res.status).toBe(200);
 
       const body = await res.json();
@@ -57,12 +71,18 @@ describe("Organization routes", () => {
       (prisma.organization.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([mockOrg]);
 
       const app = makeApp();
-      const res = await app.request("/organizations?limit=1");
+      const res = await app.request("/organizations?limit=1", { headers: authHeader });
       expect(res.status).toBe(200);
 
       expect(prisma.organization.findMany).toHaveBeenCalledWith(
         expect.objectContaining({ take: 2 })
       );
+    });
+
+    it("rejects unauthenticated requests with 401", async () => {
+      const app = makeApp();
+      const res = await app.request("/organizations");
+      expect(res.status).toBe(401);
     });
   });
 
@@ -76,7 +96,7 @@ describe("Organization routes", () => {
       const app = makeApp();
       const res = await app.request("/organizations", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "North Sea Wind Corp", description: "Offshore wind energy" }),
       });
 
@@ -91,7 +111,7 @@ describe("Organization routes", () => {
       const app = makeApp();
       const res = await app.request("/organizations", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "North Sea Wind Corp" }),
       });
 
@@ -102,11 +122,30 @@ describe("Organization routes", () => {
       const app = makeApp();
       const res = await app.request("/organizations", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "" }),
       });
 
       expect(res.status).toBe(400);
+    });
+
+    it("rejects non-admin with 403", async () => {
+      const { verifyAccessToken } = await import("../../src/utils/jwt.js");
+      (verifyAccessToken as ReturnType<typeof vi.fn>).mockReturnValueOnce({
+        userId: "tech-001",
+        email: "tech@test.com",
+        role: "TECHNICIAN",
+        organizationId: "org-001",
+      });
+
+      const app = makeApp();
+      const res = await app.request("/organizations", {
+        method: "POST",
+        headers: { ...authHeader, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "New Org" }),
+      });
+
+      expect(res.status).toBe(403);
     });
   });
 
@@ -117,7 +156,7 @@ describe("Organization routes", () => {
       (prisma.organization.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockOrg);
 
       const app = makeApp();
-      const res = await app.request("/organizations/org-001");
+      const res = await app.request("/organizations/org-001", { headers: authHeader });
 
       expect(res.status).toBe(200);
       const body = await res.json();
@@ -128,7 +167,7 @@ describe("Organization routes", () => {
       (prisma.organization.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
       const app = makeApp();
-      const res = await app.request("/organizations/nope");
+      const res = await app.request("/organizations/nope", { headers: authHeader });
 
       expect(res.status).toBe(404);
     });
@@ -147,7 +186,7 @@ describe("Organization routes", () => {
       const app = makeApp();
       const res = await app.request("/organizations/org-001", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "North Sea Wind Corp Updated" }),
       });
 
@@ -162,7 +201,7 @@ describe("Organization routes", () => {
       const app = makeApp();
       const res = await app.request("/organizations/nope", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "X" }),
       });
 
@@ -177,7 +216,7 @@ describe("Organization routes", () => {
       const app = makeApp();
       const res = await app.request("/organizations/org-001", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Taken Name" }),
       });
 
@@ -196,7 +235,10 @@ describe("Organization routes", () => {
       });
 
       const app = makeApp();
-      const res = await app.request("/organizations/org-001", { method: "DELETE" });
+      const res = await app.request("/organizations/org-001", {
+        method: "DELETE",
+        headers: authHeader,
+      });
 
       expect(res.status).toBe(200);
       const body = await res.json();
@@ -214,7 +256,10 @@ describe("Organization routes", () => {
       (prisma.organization.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
       const app = makeApp();
-      const res = await app.request("/organizations/nope", { method: "DELETE" });
+      const res = await app.request("/organizations/nope", {
+        method: "DELETE",
+        headers: authHeader,
+      });
 
       expect(res.status).toBe(404);
     });

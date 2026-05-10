@@ -1,6 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
 
+// ── Mocks ─────────────────────────────────────────────────────────────────────
+
+vi.mock("../../src/utils/jwt.js", () => ({
+  verifyAccessToken: vi.fn(() => ({
+    userId: "admin-001",
+    email: "admin@test.com",
+    role: "ADMINISTRATOR",
+    organizationId: "org-001",
+  })),
+  signAccessToken: vi.fn(() => "test-token"),
+  signRefreshToken: vi.fn(() => "test-refresh"),
+  verifyRefreshToken: vi.fn(),
+}));
+
 const mockSite = {
   id: "site-001",
   organization_id: "org-001",
@@ -46,6 +60,8 @@ vi.mock("../../src/lib/prisma.js", () => ({
 import prisma from "../../src/lib/prisma.js";
 import subsystemRoutes from "../../src/routes/subsystems.js";
 
+const authHeader = { Authorization: "Bearer test-token" };
+
 function makeApp() {
   const app = new Hono();
   app.route(
@@ -73,7 +89,7 @@ describe("Subsystem routes", () => {
       mockParentChain();
       (prisma.subsystem.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([mockSubsystem]);
 
-      const res = await makeApp().request(basePath);
+      const res = await makeApp().request(basePath, { headers: authHeader });
       expect(res.status).toBe(200);
       const body = await res.json();
       expect(body.data).toHaveLength(1);
@@ -83,8 +99,13 @@ describe("Subsystem routes", () => {
       (prisma.site.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockSite);
       (prisma.turbine.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
-      const res = await makeApp().request(basePath);
+      const res = await makeApp().request(basePath, { headers: authHeader });
       expect(res.status).toBe(404);
+    });
+
+    it("rejects unauthenticated requests with 401", async () => {
+      const res = await makeApp().request(basePath);
+      expect(res.status).toBe(401);
     });
   });
 
@@ -96,7 +117,7 @@ describe("Subsystem routes", () => {
 
       const res = await makeApp().request(basePath, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Gearbox", type: "Drivetrain" }),
       });
 
@@ -111,11 +132,30 @@ describe("Subsystem routes", () => {
 
       const res = await makeApp().request(basePath, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Gearbox" }),
       });
 
       expect(res.status).toBe(409);
+    });
+
+    it("rejects non-admin with 403", async () => {
+      const { verifyAccessToken } = await import("../../src/utils/jwt.js");
+      (verifyAccessToken as ReturnType<typeof vi.fn>).mockReturnValueOnce({
+        userId: "tech-001",
+        email: "tech@test.com",
+        role: "TECHNICIAN",
+        organizationId: "org-001",
+      });
+
+      mockParentChain();
+      const res = await makeApp().request(basePath, {
+        method: "POST",
+        headers: { ...authHeader, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "New Subsystem" }),
+      });
+
+      expect(res.status).toBe(403);
     });
   });
 
@@ -124,7 +164,7 @@ describe("Subsystem routes", () => {
       mockParentChain();
       (prisma.subsystem.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockSubsystem);
 
-      const res = await makeApp().request(`${basePath}/sub-001`);
+      const res = await makeApp().request(`${basePath}/sub-001`, { headers: authHeader });
       expect(res.status).toBe(200);
     });
 
@@ -132,7 +172,7 @@ describe("Subsystem routes", () => {
       mockParentChain();
       (prisma.subsystem.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
-      const res = await makeApp().request(`${basePath}/nope`);
+      const res = await makeApp().request(`${basePath}/nope`, { headers: authHeader });
       expect(res.status).toBe(404);
     });
   });
@@ -150,7 +190,7 @@ describe("Subsystem routes", () => {
 
       const res = await makeApp().request(`${basePath}/sub-001`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Gearbox Updated" }),
       });
 
@@ -165,7 +205,7 @@ describe("Subsystem routes", () => {
 
       const res = await makeApp().request(`${basePath}/sub-001`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Taken" }),
       });
 
@@ -182,7 +222,10 @@ describe("Subsystem routes", () => {
         deleted_at: new Date(),
       });
 
-      const res = await makeApp().request(`${basePath}/sub-001`, { method: "DELETE" });
+      const res = await makeApp().request(`${basePath}/sub-001`, {
+        method: "DELETE",
+        headers: authHeader,
+      });
       expect(res.status).toBe(200);
       const body = await res.json();
       expect(body.deleted).toBe(true);

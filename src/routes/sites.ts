@@ -4,8 +4,10 @@ import { z } from "zod";
 import prisma from "../lib/prisma.js";
 import { paginationSchema, buildCursorQuery, paginatedResponse } from "../utils/pagination.js";
 import { NotFoundError, ConflictError } from "../utils/errors.js";
+import { authMiddleware, requireRoles, AuthEnv } from "../middleware/auth.js";
 
-const app = new Hono();
+const app = new Hono<AuthEnv>();
+app.use("*", authMiddleware());
 
 // ── Validation schemas ──────────────────────────────────────────────────────
 
@@ -54,7 +56,7 @@ app.get("/", zValidator("query", paginationSchema), async (c) => {
 });
 
 // POST /organizations/:orgId/sites — create
-app.post("/", zValidator("json", createSiteSchema), async (c) => {
+app.post("/", requireRoles("ADMINISTRATOR"), zValidator("json", createSiteSchema), async (c) => {
   const orgId = c.req.param("orgId")!;
   await requireOrg(orgId);
   const { name, latitude, longitude, time_zone } = c.req.valid("json");
@@ -87,7 +89,7 @@ app.get("/:id", async (c) => {
 });
 
 // PATCH /organizations/:orgId/sites/:id — update
-app.patch("/:id", zValidator("json", updateSiteSchema), async (c) => {
+app.patch("/:id", requireRoles("ADMINISTRATOR"), zValidator("json", updateSiteSchema), async (c) => {
   const orgId = c.req.param("orgId")!;
   const id = c.req.param("id")!;
   await requireOrg(orgId);
@@ -117,7 +119,7 @@ app.patch("/:id", zValidator("json", updateSiteSchema), async (c) => {
 });
 
 // DELETE /organizations/:orgId/sites/:id — soft delete
-app.delete("/:id", async (c) => {
+app.delete("/:id", requireRoles("ADMINISTRATOR"), async (c) => {
   const orgId = c.req.param("orgId")!;
   const id = c.req.param("id")!;
   await requireOrg(orgId);

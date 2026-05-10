@@ -4,8 +4,10 @@ import { z } from "zod";
 import prisma from "../lib/prisma.js";
 import { paginationSchema, buildCursorQuery, paginatedResponse } from "../utils/pagination.js";
 import { NotFoundError, ConflictError } from "../utils/errors.js";
+import { authMiddleware, requireRoles, AuthEnv } from "../middleware/auth.js";
 
-const app = new Hono();
+const app = new Hono<AuthEnv>();
+app.use("*", authMiddleware());
 
 // ── Validation schemas ──────────────────────────────────────────────────────
 
@@ -38,7 +40,7 @@ app.get("/", zValidator("query", paginationSchema), async (c) => {
 });
 
 // POST /organizations — create
-app.post("/", zValidator("json", createOrgSchema), async (c) => {
+app.post("/", requireRoles("ADMINISTRATOR"), zValidator("json", createOrgSchema), async (c) => {
   const { name, description } = c.req.valid("json");
 
   const existing = await prisma.organization.findFirst({
@@ -65,7 +67,7 @@ app.get("/:id", async (c) => {
 });
 
 // PATCH /organizations/:id — update
-app.patch("/:id", zValidator("json", updateOrgSchema), async (c) => {
+app.patch("/:id", requireRoles("ADMINISTRATOR"), zValidator("json", updateOrgSchema), async (c) => {
   const id = c.req.param("id");
   const data = c.req.valid("json");
 
@@ -88,8 +90,8 @@ app.patch("/:id", zValidator("json", updateOrgSchema), async (c) => {
 });
 
 // DELETE /organizations/:id — soft delete
-app.delete("/:id", async (c) => {
-  const id = c.req.param("id");
+app.delete("/:id", requireRoles("ADMINISTRATOR"), async (c) => {
+  const id = c.req.param("id")!;
 
   const org = await prisma.organization.findFirst({
     where: { id, deleted_at: null },

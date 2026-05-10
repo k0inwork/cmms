@@ -1,6 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Hono } from "hono";
 
+// ── Mocks ─────────────────────────────────────────────────────────────────────
+
+vi.mock("../../src/utils/jwt.js", () => ({
+  verifyAccessToken: vi.fn(() => ({
+    userId: "admin-001",
+    email: "admin@test.com",
+    role: "ADMINISTRATOR",
+    organizationId: "org-001",
+  })),
+  signAccessToken: vi.fn(() => "test-token"),
+  signRefreshToken: vi.fn(() => "test-refresh"),
+  verifyRefreshToken: vi.fn(),
+}));
+
 const mockSite = {
   id: "site-001",
   organization_id: "org-001",
@@ -40,6 +54,8 @@ vi.mock("../../src/lib/prisma.js", () => ({
 import prisma from "../../src/lib/prisma.js";
 import turbineRoutes from "../../src/routes/turbines.js";
 
+const authHeader = { Authorization: "Bearer test-token" };
+
 function makeApp() {
   const app = new Hono();
   app.route("/organizations/:orgId/sites/:siteId/turbines", turbineRoutes);
@@ -61,7 +77,7 @@ describe("Turbine routes", () => {
       (prisma.turbine.findMany as ReturnType<typeof vi.fn>).mockResolvedValue([mockTurbine]);
 
       const app = makeApp();
-      const res = await app.request(basePath);
+      const res = await app.request(basePath, { headers: authHeader });
       expect(res.status).toBe(200);
 
       const body = await res.json();
@@ -74,8 +90,14 @@ describe("Turbine routes", () => {
       (prisma.site.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
       const app = makeApp();
-      const res = await app.request(basePath);
+      const res = await app.request(basePath, { headers: authHeader });
       expect(res.status).toBe(404);
+    });
+
+    it("rejects unauthenticated requests with 401", async () => {
+      const app = makeApp();
+      const res = await app.request(basePath);
+      expect(res.status).toBe(401);
     });
   });
 
@@ -90,7 +112,7 @@ describe("Turbine routes", () => {
       const app = makeApp();
       const res = await app.request(basePath, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "WTG-01", model: "Vestas V164" }),
       });
 
@@ -106,7 +128,7 @@ describe("Turbine routes", () => {
       const app = makeApp();
       const res = await app.request(basePath, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "WTG-01" }),
       });
 
@@ -119,11 +141,30 @@ describe("Turbine routes", () => {
       const app = makeApp();
       const res = await app.request(basePath, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "@invalid!" }),
       });
 
       expect(res.status).toBe(400);
+    });
+
+    it("rejects non-admin with 403", async () => {
+      const { verifyAccessToken } = await import("../../src/utils/jwt.js");
+      (verifyAccessToken as ReturnType<typeof vi.fn>).mockReturnValueOnce({
+        userId: "tech-001",
+        email: "tech@test.com",
+        role: "TECHNICIAN",
+        organizationId: "org-001",
+      });
+
+      const app = makeApp();
+      const res = await app.request(basePath, {
+        method: "POST",
+        headers: { ...authHeader, "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "WTG-NEW" }),
+      });
+
+      expect(res.status).toBe(403);
     });
   });
 
@@ -135,7 +176,7 @@ describe("Turbine routes", () => {
       (prisma.turbine.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(mockTurbine);
 
       const app = makeApp();
-      const res = await app.request(`${basePath}/turb-001`);
+      const res = await app.request(`${basePath}/turb-001`, { headers: authHeader });
       expect(res.status).toBe(200);
     });
 
@@ -144,7 +185,7 @@ describe("Turbine routes", () => {
       (prisma.turbine.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
       const app = makeApp();
-      const res = await app.request(`${basePath}/nope`);
+      const res = await app.request(`${basePath}/nope`, { headers: authHeader });
       expect(res.status).toBe(404);
     });
   });
@@ -163,7 +204,7 @@ describe("Turbine routes", () => {
       const app = makeApp();
       const res = await app.request(`${basePath}/turb-001`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "WTG-01 Updated" }),
       });
 
@@ -179,7 +220,7 @@ describe("Turbine routes", () => {
       const app = makeApp();
       const res = await app.request(`${basePath}/nope`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "X" }),
       });
 
@@ -195,7 +236,7 @@ describe("Turbine routes", () => {
       const app = makeApp();
       const res = await app.request(`${basePath}/turb-001`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ name: "Taken Name" }),
       });
 
@@ -215,7 +256,10 @@ describe("Turbine routes", () => {
       });
 
       const app = makeApp();
-      const res = await app.request(`${basePath}/turb-001`, { method: "DELETE" });
+      const res = await app.request(`${basePath}/turb-001`, {
+        method: "DELETE",
+        headers: authHeader,
+      });
 
       expect(res.status).toBe(200);
       const body = await res.json();
@@ -227,7 +271,10 @@ describe("Turbine routes", () => {
       (prisma.turbine.findFirst as ReturnType<typeof vi.fn>).mockResolvedValue(null);
 
       const app = makeApp();
-      const res = await app.request(`${basePath}/nope`, { method: "DELETE" });
+      const res = await app.request(`${basePath}/nope`, {
+        method: "DELETE",
+        headers: authHeader,
+      });
       expect(res.status).toBe(404);
     });
   });
