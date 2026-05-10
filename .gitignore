@@ -8,3 +8,4 @@ dist/
 .dolt/
 *.db
 .beads-credential-key
+scripts/jules.keys.json
