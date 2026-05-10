@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#f7fafc"/>
+
+  <!-- Top Navigation Bar -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">Dispatcher Board</text>
+
+  <!-- Nav tabs -->
+  <text x="300" y="36" fill="#718096" font-size="14">Dashboard</text>
+  <text x="420" y="36" fill="#718096" font-size="14">Assets</text>
+  <text x="520" y="36" fill="#718096" font-size="14">Inspections</text>
+  <text x="640" y="36" fill="#2c5282" font-size="14" font-weight="600" text-decoration="underline">Dispatch</text>
+  <text x="740" y="36" fill="#718096" font-size="14">Tickets</text>
+  <text x="830" y="36" fill="#718096" font-size="14">Admin</text>
+
+  <!-- User menu -->
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">TM</text>
+  <text x="1350" y="33" fill="#718096" font-size="13">Tom Miller</text>
+
+  <!-- Filter Bar -->
+  <rect x="24" y="72" width="1392" height="48" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <rect x="36" y="82" width="120" height="28" fill="#edf2f7" rx="6"/>
+  <text x="96" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Site: All ▾</text>
+  <rect x="168" y="82" width="140" height="28" fill="#edf2f7" rx="6"/>
+  <text x="238" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Priority: All ▾</text>
+  <rect x="320" y="82" width="140" height="28" fill="#edf2f7" rx="6"/>
+  <text x="390" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Status: Open ▾</text>
+  <rect x="472" y="82" width="140" height="28" fill="#edf2f7" rx="6"/>
+  <text x="542" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Date: Today ▾</text>
+
+  <!-- SLA Risk Banner -->
+  <rect x="668" y="82" width="200" height="28" fill="#fed7d7" rx="6"/>
+  <text x="768" y="101" text-anchor="middle" fill="#9b2c2c" font-size="12" font-weight="600">⚠ 3 tickets at SLA risk</text>
+
+  <text x="1392" y="101" text-anchor="end" fill="#718096" font-size="12">Showing 8 unassigned</text>
+
+  <!-- Main Content: Two-column layout -->
+  <!-- Left: Unassigned Tickets -->
+  <text x="24" y="148" fill="#1a202c" font-size="16" font-weight="700">Unassigned Tickets (8)</text>
+
+  <!-- Ticket row 1 -->
+  <rect x="24" y="160" width="700" height="64" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <rect x="24" y="160" width="4" height="64" fill="#e53e3e" rx="2"/>
+  <text x="40" y="182" fill="#1a202c" font-size="14" font-weight="600">TKT-2025-0042</text>
+  <text x="180" y="182" fill="#1a202c" font-size="13">Blade Trailing Edge Crack</text>
+  <text x="40" y="204" fill="#718096" font-size="12">WTG-HR-01 · Trailing Edge · Blade Assembly</text>
+  <rect x="540" y="170" width="70" height="22" fill="#fed7d7" rx="4"/>
+  <text x="575" y="185" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">CRITICAL</text>
+  <rect x="618" y="170" width="90" height="22" fill="#fed7d7" rx="4"/>
+  <text x="663" y="185" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">SLA: 18h</text>
+  <text x="40" y="218" fill="#e53e3e" font-size="11" font-weight="500">Requires: Blade inspection cert, Rope access</text>
+
+  <!-- Ticket row 2 -->
+  <rect x="24" y="232" width="700" height="64" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <rect x="24" y="232" width="4" height="64" fill="#e53e3e" rx="2"/>
+  <text x="40" y="254" fill="#1a202c" font-size="14" font-weight="600">TKT-2025-0043</text>
+  <text x="180" y="254" fill="#1a202c" font-size="13">Gearbox Oil Leak</text>
+  <text x="40" y="276" fill="#718096" font-size="12">WTG-HR-22 · Gearbox · Drivetrain</text>
+  <rect x="540" y="242" width="70" height="22" fill="#fed7d7" rx="4"/>
+  <text x="575" y="257" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">MAJOR</text>
+  <rect x="618" y="242" width="90" height="22" fill="#fefcbf" rx="4"/>
+  <text x="663" y="257" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">SLA: 2d</text>
+  <text x="40" y="290" fill="#e53e3e" font-size="11" font-weight="500">Requires: Mechanical cert, Confined space</text>
+
+  <!-- Ticket row 3 -->
+  <rect x="24" y="304" width="700" height="64" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <rect x="24" y="304" width="4" height="64" fill="#ecc94b" rx="2"/>
+  <text x="40" y="326" fill="#1a202c" font-size="14" font-weight="600">TKT-2025-0044</text>
+  <text x="180" y="326" fill="#1a202c" font-size="13">Yaw Bearing Noise</text>
+  <text x="40" y="348" fill="#718096" font-size="12">WTG-HR-15 · Yaw System · Nacelle</text>
+  <rect x="540" y="314" width="70" height="22" fill="#fefcbf" rx="4"/>
+  <text x="575" y="329" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">MINOR</text>
+  <rect x="618" y="314" width="90" height="22" fill="#c6f6d5" rx="4"/>
+  <text x="663" y="329" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">SLA: 5d</text>
+
+  <!-- Ticket row 4 (partial) -->
+  <rect x="24" y="376" width="700" height="64" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <rect x="24" y="376" width="4" height="64" fill="#3182ce" rx="2"/>
+  <text x="40" y="398" fill="#1a202c" font-size="14" font-weight="600">TKT-2025-0045</text>
+  <text x="180" y="398" fill="#1a202c" font-size="13">Sensor Calibration — Anemometer</text>
+  <text x="40" y="420" fill="#718096" font-size="12">WTG-HR-08 · Meteorology · Sensors</text>
+  <rect x="540" y="386" width="70" height="22" fill="#bee3f8" rx="4"/>
+  <text x="575" y="401" text-anchor="middle" fill="#2a4365" font-size="10" font-weight="600">LOW</text>
+  <rect x="618" y="386" width="90" height="22" fill="#c6f6d5" rx="4"/>
+  <text x="663" y="401" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">SLA: 7d</text>
+
+  <!-- Right: Technician Coverage Panel -->
+  <text x="748" y="148" fill="#1a202c" font-size="16" font-weight="700">Technician Coverage</text>
+  <text x="1416" y="148" text-anchor="end" fill="#718096" font-size="12">6 on-site · 2 unavailable</text>
+
+  <!-- Technician card 1 -->
+  <rect x="748" y="160" width="340" height="100" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <circle cx="780" cy="192" r="20" fill="#c6f6d5"/>
+  <text x="780" y="197" text-anchor="middle" fill="#276749" font-size="13" font-weight="600">AP</text>
+  <text x="812" y="184" fill="#1a202c" font-size="14" font-weight="600">Alex Petrov</text>
+  <rect x="920" y="172" width="60" height="20" fill="#c6f6d5" rx="4"/>
+  <text x="950" y="186" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">FREE</text>
+  <text x="812" y="204" fill="#718096" font-size="12">Blade Insp. · Rope Access · NDT Level 2</text>
+  <text x="812" y="224" fill="#718096" font-size="11">Workload: 1/3 · Proximity: On-site</text>
+  <text x="812" y="244" fill="#718096" font-size="11">Score: —</text>
+  <rect x="1030" y="180" width="40" height="28" fill="#2c5282" rx="4"/>
+  <text x="1050" y="199" text-anchor="middle" fill="white" font-size="11" font-weight="600">Assign</text>
+
+  <!-- Technician card 2 -->
+  <rect x="748" y="268" width="340" height="100" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <circle cx="780" cy="300" r="20" fill="#fefcbf"/>
+  <text x="780" y="305" text-anchor="middle" fill="#744210" font-size="13" font-weight="600">MK</text>
+  <text x="812" y="292" fill="#1a202c" font-size="14" font-weight="600">Maria Kowalski</text>
+  <rect x="940" y="280" width="80" height="20" fill="#fefcbf" rx="4"/>
+  <text x="980" y="294" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">IN-PROGRESS</text>
+  <text x="812" y="312" fill="#718096" font-size="12">Mechanical · Gearbox · Hydraulic</text>
+  <text x="812" y="332" fill="#718096" font-size="11">Workload: 2/3 · Proximity: WTG-HR-22</text>
+  <text x="812" y="352" fill="#718096" font-size="11">Score: 72%</text>
+  <rect x="1030" y="288" width="40" height="28" fill="#2c5282" rx="4"/>
+  <text x="1050" y="307" text-anchor="middle" fill="white" font-size="11" font-weight="600">Assign</text>
+
+  <!-- Technician card 3 -->
+  <rect x="748" y="376" width="340" height="100" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <circle cx="780" cy="408" r="20" fill="#fed7d7"/>
+  <text x="780" y="413" text-anchor="middle" fill="#9b2c2c" font-size="13" font-weight="600">JB</text>
+  <text x="812" y="400" fill="#1a202c" font-size="14" font-weight="600">James Brown</text>
+  <rect x="920" y="388" width="80" height="20" fill="#fed7d7" rx="4"/>
+  <text x="960" y="402" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">OFFLINE</text>
+  <text x="812" y="420" fill="#718096" font-size="12">Electrical · Controls · SCADA</text>
+  <text x="812" y="440" fill="#718096" font-size="11">Workload: 1/3 · Last seen: 4h ago</text>
+  <text x="812" y="460" fill="#718096" font-size="11">Score: —</text>
+  <rect x="1030" y="396" width="40" height="28" fill="#cbd5e0" rx="4"/>
+  <text x="1050" y="415" text-anchor="middle" fill="#718096" font-size="11" font-weight="600">Assign</text>
+
+  <!-- Right sidebar: Replacement suggestions -->
+  <rect x="1108" y="160" width="308" height="280" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="1124" y="188" fill="#1a202c" font-size="14" font-weight="700">Replacement Suggestions</text>
+  <text x="1392" y="188" text-anchor="end" fill="#2c5282" font-size="12" font-weight="600">Auto-suggest</text>
+
+  <text x="1124" y="216" fill="#718096" font-size="12" font-style="italic">Based on Alex Petrov going absent</text>
+
+  <text x="1124" y="244" fill="#1a202c" font-size="12" font-weight="600">For: Blade Insp. — WTG-HR-01</text>
+  <text x="1124" y="264" fill="#718096" font-size="11">1. Lena Berg — Score: 87%</text>
+  <rect x="1320" y="252" width="80" height="22" fill="#2c5282" rx="4"/>
+  <text x="1360" y="267" text-anchor="middle" fill="white" font-size="10" font-weight="600">Execute</text>
+  <text x="1124" y="288" fill="#718096" font-size="11">2. Karl Nilsen — Score: 74%</text>
+  <text x="1124" y="308" fill="#718096" font-size="11">3. Sven Andersen — Score: 61%</text>
+
+  <line x1="1124" y1="320" x2="1396" y2="320" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="1124" y="344" fill="#1a202c" font-size="12" font-weight="600">For: Gearbox Insp. — WTG-HR-22</text>
+  <text x="1124" y="364" fill="#718096" font-size="11">1. Maria Kowalski — Score: 91%</text>
+  <rect x="1320" y="352" width="80" height="22" fill="#2c5282" rx="4"/>
+  <text x="1360" y="367" text-anchor="middle" fill="white" font-size="10" font-weight="600">Execute</text>
+  <text x="1124" y="388" fill="#718096" font-size="11">2. Hans Mueller — Score: 68%</text>
+  <text x="1124" y="408" fill="#718096" font-size="11">3. Pierre Dupont — Score: 52%</text>
+
+  <!-- Bottom: SLA Timeline -->
+  <rect x="24" y="460" width="1392" height="120" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="40" y="488" fill="#1a202c" font-size="14" font-weight="700">SLA Timeline — Next 24 Hours</text>
+
+  <!-- Timeline bar -->
+  <rect x="40" y="500" width="1360" height="24" fill="#edf2f7" rx="4"/>
+  <text x="40" y="516" fill="#718096" font-size="10">Now</text>
+  <text x="340" y="516" fill="#718096" font-size="10">6h</text>
+  <text x="640" y="516" fill="#718096" font-size="10">12h</text>
+  <text x="940" y="516" fill="#718096" font-size="10">18h</text>
+  <text x="1240" y="516" fill="#718096" font-size="10">24h</text>
+
+  <!-- SLA markers -->
+  <rect x="40" y="530" width="280" height="8" fill="#e53e3e" rx="4"/>
+  <text x="40" y="552" fill="#e53e3e" font-size="10" font-weight="600">TKT-0042 · 18h left</text>
+
+  <rect x="40" y="562" width="680" height="8" fill="#ecc94b" rx="4"/>
+  <text x="40" y="576" fill="#744210" font-size="10" font-weight="600">TKT-0043 · 2d left</text>
+
+  <!-- Pagination -->
+  <text x="700" y="610" text-anchor="middle" fill="#718096" font-size="13">← 1 2 3 →</text>
+</svg>

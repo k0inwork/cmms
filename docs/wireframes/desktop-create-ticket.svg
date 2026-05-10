@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Modal overlay -->
+  <rect width="1440" height="900" fill="rgba(0,0,0,0.3)"/>
+  <!-- Modal -->
+  <rect x="220" y="60" width="1000" height="780" fill="white" rx="12" filter="drop-shadow(0 8px 24px rgba(0,0,0,0.15))"/>
+
+  <!-- Header -->
+  <text x="260" y="100" fill="#1a202c" font-size="20" font-weight="700">Create Ticket from Inspection Defect</text>
+  <text x="1180" y="100" fill="#718096" font-size="20">✕</text>
+  <line x1="260" y1="116" x2="1180" y2="116" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Source context -->
+  <rect x="260" y="132" width="920" height="80" fill="#ebf8ff" rx="8"/>
+  <text x="276" y="158" fill="#2a4365" font-size="13" font-weight="700">Source: INS-2025-0087 — Blade Inspection</text>
+  <text x="276" y="178" fill="#4a5568" font-size="12">WTG-HR-01 · Trailing Edge · Submitted May 8 by Alex Petrov</text>
+  <text x="276" y="198" fill="#e53e3e" font-size="12" font-weight="500">Defect: Trailing Edge Damage = FAIL · Crack Length: 145mm · Severity: MAJOR</text>
+
+  <!-- Form -->
+  <text x="260" y="248" fill="#1a202c" font-size="13" font-weight="600">Title *</text>
+  <rect x="260" y="258" width="920" height="40" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="276" y="283" fill="#1a202c" font-size="13">Blade Trailing Edge Crack — WTG-HR-01</text>
+
+  <text x="260" y="322" fill="#1a202c" font-size="13" font-weight="600">Description</text>
+  <rect x="260" y="332" width="920" height="80" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="276" y="356" fill="#1a202c" font-size="13">Trailing edge crack detected during quarterly blade inspection.</text>
+  <text x="276" y="376" fill="#1a202c" font-size="13">Crack length: 145mm with visible delamination. Requires immediate assessment.</text>
+
+  <!-- Two columns -->
+  <text x="260" y="440" fill="#1a202c" font-size="13" font-weight="600">Asset *</text>
+  <rect x="260" y="450" width="440" height="36" fill="#f7fafc" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="276" y="473" fill="#2c5282" font-size="12" font-weight="500">WTG-HR-01 · Blade Assembly A · Trailing Edge</text>
+  <text x="276" y="488" fill="#718096" font-size="10">Auto-populated from inspection</text>
+
+  <text x="740" y="440" fill="#1a202c" font-size="13" font-weight="600">Priority *</text>
+  <rect x="740" y="450" width="440" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <rect x="760" y="456" width="80" height="24" fill="#fed7d7" rx="4"/>
+  <text x="800" y="472" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">CRITICAL ▾</text>
+
+  <text x="260" y="520" fill="#1a202c" font-size="13" font-weight="600">Severity *</text>
+  <rect x="260" y="530" width="440" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <rect x="280" y="536" width="60" height="24" fill="#fed7d7" rx="4"/>
+  <text x="310" y="552" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">MAJOR ▾</text>
+
+  <text x="740" y="520" fill="#1a202c" font-size="13" font-weight="600">Assign to</text>
+  <rect x="740" y="530" width="440" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="760" y="553" fill="#a0aec0" font-size="12">Select technician or leave unassigned ▾</text>
+
+  <text x="260" y="596" fill="#1a202c" font-size="13" font-weight="600">SLA Target</text>
+  <rect x="260" y="606" width="440" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="276" y="629" fill="#a0aec0" font-size="12">Auto-calculated based on priority: 24 hours</text>
+
+  <text x="740" y="596" fill="#1a202c" font-size="13" font-weight="600">Due Date</text>
+  <rect x="740" y="606" width="440" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="760" y="629" fill="#1a202c" font-size="12">May 9, 2025 14:00</text>
+
+  <!-- Linked Evidence -->
+  <text x="260" y="674" fill="#1a202c" font-size="13" font-weight="600">Linked Evidence (auto-attached)</text>
+  <rect x="260" y="684" width="200" height="44" fill="#edf2f7" rx="6"/>
+  <text x="276" y="704" fill="#1a202c" font-size="11">📷 crack_01.jpg</text>
+  <text x="276" y="720" fill="#718096" font-size="10">Auto-linked from INS-0087</text>
+  <rect x="472" y="684" width="200" height="44" fill="#edf2f7" rx="6"/>
+  <text x="488" y="704" fill="#1a202c" font-size="11">📷 crack_02.jpg</text>
+  <text x="488" y="720" fill="#718096" font-size="10">Auto-linked from INS-0087</text>
+  <rect x="684" y="684" width="200" height="44" fill="#edf2f7" rx="6"/>
+  <text x="700" y="704" fill="#1a202c" font-size="11">🎬 drone_vid.mp4</text>
+  <text x="700" y="720" fill="#718096" font-size="10">Auto-linked from INS-0087</text>
+  <rect x="896" y="684" width="120" height="44" fill="white" rx="6" stroke="#2c5282" stroke-width="1" stroke-dasharray="4"/>
+  <text x="956" y="710" text-anchor="middle" fill="#2c5282" font-size="12" font-weight="600">+ Add More</text>
+
+  <!-- Actions -->
+  <rect x="260" y="752" width="200" height="44" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="360" y="779" text-anchor="middle" fill="#4a5568" font-size="14" font-weight="600">Cancel</text>
+  <rect x="480" y="752" width="200" height="44" fill="#2c5282" rx="8"/>
+  <text x="580" y="779" text-anchor="middle" fill="white" font-size="14" font-weight="600">Create Ticket</text>
+  <rect x="700" y="752" width="280" height="44" fill="#38a169" rx="8"/>
+  <text x="840" y="779" text-anchor="middle" fill="white" font-size="14" font-weight="600">Create &amp; Assign to Alex</text>
+</svg>

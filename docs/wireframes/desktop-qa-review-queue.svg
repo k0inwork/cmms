@@ -1,0 +1,160 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Top Nav -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">QA Review Queue</text>
+  <text x="300" y="36" fill="#718096" font-size="14">Dashboard</text>
+  <text x="420" y="36" fill="#718096" font-size="14">Assets</text>
+  <text x="520" y="36" fill="#718096" font-size="14">Inspections</text>
+  <text x="640" y="36" fill="#718096" font-size="14">Dispatch</text>
+  <text x="740" y="36" fill="#718096" font-size="14">Tickets</text>
+  <text x="830" y="36" fill="#718096" font-size="14">Admin</text>
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">LB</text>
+
+  <!-- Tabs -->
+  <rect x="24" y="68" width="1392" height="36" fill="white" rx="4"/>
+  <text x="40" y="92" fill="#2c5282" font-size="13" font-weight="600">Inspections (5)</text>
+  <line x1="40" y1="98" x2="160" y2="98" stroke="#2c5282" stroke-width="2"/>
+  <text x="180" y="92" fill="#718096" font-size="13">Ticket Closures (3)</text>
+  <text x="360" y="92" fill="#718096" font-size="13">Evidence (7)</text>
+
+  <!-- Summary cards -->
+  <rect x="24" y="116" width="220" height="64" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="40" y="140" fill="#718096" font-size="11" font-weight="600">AWAITING REVIEW</text>
+  <text x="40" y="166" fill="#e53e3e" font-size="24" font-weight="700">5</text>
+
+  <rect x="260" y="116" width="220" height="64" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="276" y="140" fill="#718096" font-size="11" font-weight="600">APPROVED TODAY</text>
+  <text x="276" y="166" fill="#38a169" font-size="24" font-weight="700">12</text>
+
+  <rect x="496" y="116" width="220" height="64" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="512" y="140" fill="#718096" font-size="11" font-weight="600">REJECTED TODAY</text>
+  <text x="512" y="166" fill="#e53e3e" font-size="24" font-weight="700">1</text>
+
+  <rect x="732" y="116" width="220" height="64" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="748" y="140" fill="#718096" font-size="11" font-weight="600">AVG. REVIEW TIME</text>
+  <text x="748" y="166" fill="#1a202c" font-size="24" font-weight="700">2.4h</text>
+
+  <!-- Review Item 1 -->
+  <rect x="24" y="196" width="920" height="120" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <rect x="24" y="196" width="4" height="120" fill="#e53e3e" rx="2"/>
+  <text x="44" y="222" fill="#2c5282" font-size="13" font-weight="600">INS-2025-0087</text>
+  <rect x="160" y="208" width="90" height="20" fill="#fed7d7" rx="4"/>
+  <text x="205" y="222" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">3 DEFECTS</text>
+  <text x="44" y="248" fill="#1a202c" font-size="15" font-weight="600">Blade Inspection — WTG-HR-01</text>
+  <text x="44" y="268" fill="#718096" font-size="12">Submitted by Alex Petrov · May 8, 14:30 · Trailing Edge</text>
+  <text x="44" y="290" fill="#e53e3e" font-size="12" font-weight="500">⚠ CRITICAL: Trailing edge crack (145mm) · Auto-ticket pending review</text>
+  <!-- Evidence thumbnails -->
+  <rect x="640" y="208" width="48" height="36" fill="#edf2f7" rx="4"/>
+  <text x="664" y="230" text-anchor="middle" fill="#a0aec0" font-size="16">📷</text>
+  <rect x="696" y="208" width="48" height="36" fill="#edf2f7" rx="4"/>
+  <text x="720" y="230" text-anchor="middle" fill="#a0aec0" font-size="16">📷</text>
+  <rect x="752" y="208" width="48" height="36" fill="#edf2f7" rx="4"/>
+  <text x="776" y="230" text-anchor="middle" fill="#a0aec0" font-size="16">🎬</text>
+  <text x="640" y="260" fill="#718096" font-size="11">3 evidence items</text>
+  <!-- Actions -->
+  <rect x="640" y="276" width="90" height="28" fill="#38a169" rx="6"/>
+  <text x="685" y="294" text-anchor="middle" fill="white" font-size="12" font-weight="600">Approve</text>
+  <rect x="740" y="276" width="80" height="28" fill="#e53e3e" rx="6"/>
+  <text x="780" y="294" text-anchor="middle" fill="white" font-size="12" font-weight="600">Reject</text>
+  <rect x="830" y="276" width="100" height="28" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="880" y="294" text-anchor="middle" fill="#4a5568" font-size="12" font-weight="600">Request Info</text>
+
+  <!-- Review Item 2 -->
+  <rect x="24" y="328" width="920" height="100" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <rect x="24" y="328" width="4" height="100" fill="#ecc94b" rx="2"/>
+  <text x="44" y="354" fill="#2c5282" font-size="13" font-weight="600">INS-2025-0086</text>
+  <rect x="160" y="340" width="80" height="20" fill="#fefcbf" rx="4"/>
+  <text x="200" y="354" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">1 DEFECT</text>
+  <text x="44" y="380" fill="#1a202c" font-size="15" font-weight="600">Gearbox Inspection — WTG-HR-22</text>
+  <text x="44" y="400" fill="#718096" font-size="12">Submitted by Maria Kowalski · May 8, 16:45 · Main Bearing</text>
+  <rect x="640" y="340" width="48" height="36" fill="#edf2f7" rx="4"/>
+  <text x="664" y="362" text-anchor="middle" fill="#a0aec0" font-size="16">📷</text>
+  <text x="640" y="392" fill="#718096" font-size="11">1 evidence item</text>
+  <rect x="640" y="396" width="90" height="28" fill="#38a169" rx="6"/>
+  <text x="685" y="414" text-anchor="middle" fill="white" font-size="12" font-weight="600">Approve</text>
+  <rect x="740" y="396" width="80" height="28" fill="#e53e3e" rx="6"/>
+  <text x="780" y="414" text-anchor="middle" fill="white" font-size="12" font-weight="600">Reject</text>
+  <rect x="830" y="396" width="100" height="28" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="880" y="414" text-anchor="middle" fill="#4a5568" font-size="12" font-weight="600">Request Info</text>
+
+  <!-- Review Item 3 -->
+  <rect x="24" y="440" width="920" height="100" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <rect x="24" y="440" width="4" height="100" fill="#38a169" rx="2"/>
+  <text x="44" y="466" fill="#2c5282" font-size="13" font-weight="600">INS-2025-0085</text>
+  <rect x="160" y="452" width="80" height="20" fill="#c6f6d5" rx="4"/>
+  <text x="200" y="466" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">CLEAN</text>
+  <text x="44" y="492" fill="#1a202c" font-size="15" font-weight="600">Electrical Inspection — WTG-HR-08</text>
+  <text x="44" y="512" fill="#718096" font-size="12">Submitted by Sven Andersen · May 8, 11:20 · Control System</text>
+  <rect x="640" y="508" width="90" height="28" fill="#38a169" rx="6"/>
+  <text x="685" y="526" text-anchor="middle" fill="white" font-size="12" font-weight="600">Approve</text>
+  <rect x="740" y="508" width="80" height="28" fill="#e53e3e" rx="6"/>
+  <text x="780" y="526" text-anchor="middle" fill="white" font-size="12" font-weight="600">Reject</text>
+  <rect x="830" y="508" width="100" height="28" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="880" y="526" text-anchor="middle" fill="#4a5568" font-size="12" font-weight="600">Request Info</text>
+
+  <!-- Right Panel: Detail Preview -->
+  <rect x="960" y="196" width="456" height="680" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <text x="976" y="224" fill="#1a202c" font-size="16" font-weight="700">INS-2025-0087 — Review</text>
+  <line x1="976" y1="236" x2="1396" y2="236" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Form data -->
+  <text x="976" y="262" fill="#718096" font-size="12">Asset</text>
+  <text x="1100" y="262" fill="#1a202c" font-size="12" font-weight="500">WTG-HR-01 · Trailing Edge</text>
+  <text x="976" y="284" fill="#718096" font-size="12">Technician</text>
+  <text x="1100" y="284" fill="#1a202c" font-size="12" font-weight="500">Alex Petrov</text>
+  <text x="976" y="306" fill="#718096" font-size="12">Submitted</text>
+  <text x="1100" y="306" fill="#1a202c" font-size="12" font-weight="500">May 8, 2025 · 14:30</text>
+
+  <line x1="976" y1="320" x2="1396" y2="320" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="976" y="344" fill="#1a202c" font-size="13" font-weight="700">Form Data</text>
+
+  <text x="976" y="370" fill="#718096" font-size="11">1. Trailing Edge Damage</text>
+  <rect x="1100" y="356" width="50" height="20" fill="#fed7d7" rx="4"/>
+  <text x="1125" y="370" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">FAIL</text>
+  <text x="976" y="392" fill="#718096" font-size="11">2. Crack Length</text>
+  <text x="1100" y="392" fill="#e53e3e" font-size="11" font-weight="500">145 mm</text>
+  <text x="976" y="414" fill="#718096" font-size="11">3. Notes</text>
+  <text x="1100" y="414" fill="#1a202c" font-size="11">Visible crack with delamination...</text>
+  <text x="976" y="436" fill="#718096" font-size="11">4. Damage Photo</text>
+  <text x="1100" y="436" fill="#2c5282" font-size="11" font-weight="500">2 photos attached →</text>
+  <text x="976" y="458" fill="#718096" font-size="11">5. Severity</text>
+  <rect x="1100" y="444" width="50" height="20" fill="#fed7d7" rx="4"/>
+  <text x="1125" y="458" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">MAJOR</text>
+  <text x="976" y="480" fill="#718096" font-size="11">6. Signature</text>
+  <text x="1100" y="480" fill="#38a169" font-size="11">✓ Signed</text>
+
+  <line x1="976" y1="496" x2="1396" y2="496" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="976" y="520" fill="#1a202c" font-size="13" font-weight="700">Evidence (3)</text>
+
+  <rect x="976" y="534" width="130" height="90" fill="#edf2f7" rx="6"/>
+  <text x="1041" y="576" text-anchor="middle" fill="#a0aec0" font-size="24">📷</text>
+  <text x="1041" y="614" text-anchor="middle" fill="#718096" font-size="9">crack_01.jpg</text>
+  <rect x="1116" y="534" width="130" height="90" fill="#edf2f7" rx="6"/>
+  <text x="1181" y="576" text-anchor="middle" fill="#a0aec0" font-size="24">📷</text>
+  <text x="1181" y="614" text-anchor="middle" fill="#718096" font-size="9">crack_02.jpg</text>
+  <rect x="1256" y="534" width="130" height="90" fill="#edf2f7" rx="6"/>
+  <text x="1321" y="576" text-anchor="middle" fill="#a0aec0" font-size="24">🎬</text>
+  <text x="1321" y="614" text-anchor="middle" fill="#718096" font-size="9">drone_vid.mp4</text>
+
+  <!-- Review decision -->
+  <line x1="976" y1="640" x2="1396" y2="640" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="976" y="666" fill="#1a202c" font-size="13" font-weight="700">Review Decision</text>
+  <rect x="976" y="680" width="406" height="60" fill="#edf2f7" rx="6"/>
+  <text x="992" y="702" fill="#a0aec0" font-size="12">Add review comments...</text>
+
+  <rect x="976" y="752" width="130" height="36" fill="#38a169" rx="6"/>
+  <text x="1041" y="775" text-anchor="middle" fill="white" font-size="13" font-weight="600">✓ Approve</text>
+  <rect x="1116" y="752" width="130" height="36" fill="#e53e3e" rx="6"/>
+  <text x="1181" y="775" text-anchor="middle" fill="white" font-size="13" font-weight="600">✕ Reject</text>
+  <rect x="1256" y="752" width="130" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1321" y="775" text-anchor="middle" fill="#4a5568" font-size="13" font-weight="600">? Request Info</text>
+
+  <!-- Auto-ticket note -->
+  <rect x="976" y="800" width="406" height="36" fill="#fffff0" rx="6"/>
+  <text x="992" y="822" fill="#744210" font-size="11">⚠ Approval will auto-create ticket TKT-2025-0042 for defect items</text>
+</svg>

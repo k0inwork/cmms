@@ -1,0 +1,1202 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# cmms — Unified orchestration: beads → CC agents / Jules
+# Tracker: JSONL at /tmp/cmms-tasks.jsonl
+# Format: {"bead":"<id>","type":"cc|jl|jr","target":"<pane|session>","status":"..."}
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SESSION="$(tmux display-message -p '#{session_name}')"
+JULES_API_BASE="https://jules.googleapis.com/v1alpha"
+JULES_LOCAL_API_BASE="${JULES_LOCAL_URL:-http://localhost:8080}"
+JULES_KEYS_FILE="${JULES_KEYS_FILE:-$SCRIPT_DIR/jules.keys.json}"
+
+# Load project config
+PROJECT_NAME="$(python3 -c "import json; print(json.load(open('$JULES_KEYS_FILE')).get('project',{}).get('name','cmms'))" 2>/dev/null || echo cmms)"
+BEAD_PREFIX="$(python3 -c "import json; print(json.load(open('$JULES_KEYS_FILE')).get('project',{}).get('beadPrefix','cmms'))" 2>/dev/null || echo cmms)"
+PROJECT_REPO="$(python3 -c "import json; print(json.load(open('$JULES_KEYS_FILE')).get('project',{}).get('repo',''))" 2>/dev/null || true)"
+
+# Namespaced paths (multi-project safe)
+TRACKER="${ORCH_TRACKER:-/tmp/orch-tasks-${PROJECT_NAME}.jsonl}"
+[[ -f "$TRACKER" ]] || touch "$TRACKER"
+
+# --- Helpers ---
+
+get_line() {
+  local bead="$1"
+  grep "\"bead\":\"$bead\"" "$TRACKER" | tail -1
+}
+
+set_field() {
+  local bead="$1" field="$2" value="$3"
+  local tmp="$(mktemp)"
+  if grep -q "\"bead\":\"$bead\"" "$TRACKER"; then
+    # Try to update existing field
+    if grep "\"bead\":\"$bead\"" "$TRACKER" | grep -q "\"$field\":\""; then
+      sed "/\"bead\":\"$bead\"/s|\"$field\":\"[^\"]*\"|\"$field\":\"$value\"|" "$TRACKER" > "$tmp" && mv "$tmp" "$TRACKER"
+    else
+      # Field doesn't exist — inject it before the closing }
+      sed "/\"bead\":\"$bead\"/s|}|,\"$field\":\"$value\"}|" "$TRACKER" > "$tmp" && mv "$tmp" "$TRACKER"
+    fi
+  else
+    echo "{\"bead\":\"$bead\",\"type\":\"\",\"target\":\"\",\"status\":\"pending\",\"$field\":\"$value\"}" >> "$TRACKER"
+  fi
+}
+
+# Set status with auto-timestamping
+set_status() {
+  local bead="$1" status="$2"
+  local now
+  now="$(date -u +%s)"
+  case "$status" in
+    running)
+      # Only set started_at if not already set (avoid overwriting on re-runs)
+      local existing
+      existing="$(get_line "$bead")"
+      if ! echo "$existing" | grep -q '"started_at":"'; then
+        set_field "$bead" "started_at" "$now"
+      fi
+      ;;
+    completed|done|pulled|failed|killed)
+      set_field "$bead" "completed_at" "$now"
+      ;;
+  esac
+  set_field "$bead" "status" "$status"
+}
+
+JULES_PY="$SCRIPT_DIR/jules_api.py"
+
+jules_api() {
+  local method="${1:-GET}" endpoint="$2" body="${3:-}"
+  python3 "$JULES_PY" remote "$method" "$endpoint" "$body" 2>/dev/null
+}
+
+jules_api_local() {
+  local method="${1:-GET}" endpoint="$2" body="${3:-}"
+  python3 "$JULES_PY" local "$method" "$endpoint" "$body" 2>/dev/null
+}
+
+# Route to local or remote API based on type
+jules_api_for_type() {
+  local type="$1"; shift
+  if [[ "$type" == "jl" ]]; then
+    jules_api_local "$@"
+  else
+    jules_api "$@"
+  fi
+}
+
+jules_state() {
+  local sid="$1"
+  local type="${2:-jr}"
+  if ! echo "$sid" | grep -qE '^([a-f0-9]{8}-|[0-9]{5,})'; then
+    echo "UNSUBMITTED"
+    return
+  fi
+  jules_api_for_type "$type" GET "/sessions/$sid" 2>/dev/null | python3 -c "
+import json, sys
+raw = sys.stdin.read()
+idx = raw.find('{')
+if idx < 0: print('UNKNOWN'); sys.exit(0)
+d = json.loads(raw[idx:])
+print(d.get('state', 'UNKNOWN'))
+" 2>/dev/null || echo "ERROR"
+}
+
+free_panes() {
+  local used
+  used="$(grep '"type":"cc"' "$TRACKER" 2>/dev/null | grep -oE '"target":"[0-9]+"' | grep -oE '[0-9]+' | sort -u || true)"
+  tmux list-panes -t "$SESSION" -F '#{pane_index}' | while read -r p; do
+    if ! echo "$used" | grep -qw "$p"; then
+      echo "$p"
+    fi
+  done
+}
+
+build_prompt() {
+  local bead="$1"
+  local bd_output
+  bd_output="$(bd show "$bead" 2>/dev/null)" || return 1
+  local title desc notes
+  title="$(echo "$bd_output" | head -1 | sed 's/^[○◐●✓❄] //' | sed 's/\[[^]]*\]//g' | sed 's/^[[:space:]]*//' | head -1)"
+  [[ -z "$title" ]] && title="$bead"
+  desc="$(echo "$bd_output" | sed -n '/^DESCRIPTION$/,/^$/p' | tail -n +2 | head -20 || true)"
+  notes="$(echo "$bd_output" | sed -n '/^NOTES$/,/^$/p' | tail -n +2 | head -10 || true)"
+  cat << PROMPT
+$bead — $title
+
+$( [[ -n "$desc" ]] && echo "DESCRIPTION:" && echo "$desc" )
+$( [[ -n "$notes" ]] && echo "NOTES:" && echo "$notes" )
+
+INSTRUCTIONS:
+1. Claim: bd update $bead --claim
+2. Read relevant code — understand before changing
+3. Implement the fix/feature
+4. Test: npm run build && npm test
+5. Commit: git add <files> && git commit -m "Description"
+6. Push: git push
+7. Close: bd close $bead
+
+KNOWLEDGE:
+- Before starting: bd memories "$title" (find relevant past insights)
+- After learning something: bd remember "insight" --key bug:topic|arch:topic|test:topic
+- bd dolt push after remembering so other agents can access it
+PROMPT
+}
+
+jules_submit() {
+  local prompt_file="$1" local_mode="$2"
+  local repo="${ORCH_JULES_REPO:-${PROJECT_REPO:-$(git remote get-url origin 2>/dev/null | sed 's|.*github.com[:/]||' | sed 's|\.git$||')}}"
+  [[ -z "$repo" ]] && repo="k0inwork/cmms"
+  local session_id
+  if [[ "$local_mode" == "true" ]]; then
+    session_id=$(bash -ilc "jules new --repo $repo" < "$prompt_file" 2>&1 | grep -oE '(session-[a-zA-Z0-9_-]+|[0-9]{10,})' | head -1)
+    [[ -z "$session_id" ]] && session_id="local-$(date +%s)"
+    echo "Submitted to Jules LOCAL: $session_id"
+  else
+    session_id=$(ssh vpn2 "bash -ilc 'jules new --repo $repo'" < "$prompt_file" 2>&1 | grep -oE '(session-[a-zA-Z0-9_-]+|[0-9]{10,})' | head -1)
+    [[ -z "$session_id" ]] && session_id="remote-$(date +%s)"
+    echo "Submitted to Jules REMOTE: $session_id"
+  fi
+  echo "$session_id"
+}
+
+bd_close_if_open() {
+  local bead="$1"
+  if bd show "$bead" &>/dev/null; then
+    bd close "$bead" 2>&1 || true
+  fi
+}
+
+# --- Commands ---
+
+cmd_assign() {
+  local beads="${1:-}" type="" target="" local_jules="false" complexity="M"
+
+  [[ -z "$beads" ]] && { echo "Usage: orch assign <bead> --cc [pane] | --jules [--local] [--complexity S|M|L|XL]"; return 1; }
+  shift || true
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --cc)
+        type="cc"
+        if [[ -n "${2:-}" && "$2" =~ ^[0-9]+$ ]]; then
+          target="$2"; shift
+        else
+          target="$(free_panes | head -1)"
+          if [[ -z "$target" ]]; then
+            echo "No free panes. Run: orch spawn"
+            return 1
+          fi
+        fi
+        ;;
+      --jules)
+        type="jr"
+        ;;
+      --local)
+        type="jl"
+        local_jules="true"
+        ;;
+      --complexity)
+        complexity="${2:-M}"; shift
+        ;;
+      *)
+        echo "Unknown flag: $1"; return 1
+        ;;
+    esac
+    shift || true
+  done
+
+  if [[ -z "$type" ]]; then
+    echo "Specify --cc [pane] or --jules [--local]"
+    return 1
+  fi
+
+  # CC: simple mapping to pane
+  if [[ "$type" == "cc" ]]; then
+    local bead="$beads"
+    # Look up branch from pane→worktree mapping
+    local branch=""
+    branch="$(grep "^${target}:" "/tmp/orch-worktrees-${PROJECT_NAME}.txt" 2>/dev/null | cut -d: -f3)" || true
+    if grep -q "\"bead\":\"$bead\"" "$TRACKER"; then
+      set_field "$bead" "type" "cc"
+      set_field "$bead" "target" "$target"
+      set_field "$bead" "complexity" "$complexity"
+      [[ -n "$branch" ]] && set_field "$bead" "branch" "$branch"
+      echo "Updated $bead → CC pane $target${branch:+ ($branch)}"
+    else
+      echo "{\"bead\":\"$bead\",\"type\":\"cc\",\"target\":\"$target\",\"status\":\"pending\",\"complexity\":\"$complexity\"${branch:+,\"branch\":\"$branch\"}}" >> "$TRACKER"
+      echo "Assigned $bead → CC pane $target${branch:+ ($branch)}"
+    fi
+    return
+  fi
+
+  # Jules: auto-build prompt and submit
+  IFS=',' read -ra bead_list <<< "$beads"
+
+  # Warn if any bead is already actively assigned
+  local dupes=""
+  for b in "${bead_list[@]}"; do
+    local existing_status
+    existing_status="$(grep "\"bead\":\"$b\"" "$TRACKER" 2>/dev/null | tail -1 | grep -oE '"status":"[^"]+"' | head -1 | cut -d'"' -f4 || true)"
+    case "$existing_status" in
+      pending|submitted|running) dupes="$dupes $b" ;;
+    esac
+  done
+  if [[ -n "$dupes" ]]; then
+    echo "WARNING: Already assigned:$dupes"
+    echo "  This will create a NEW Jules session (old one becomes orphaned)."
+    echo "  Run 'orch rm <bead>' first if this is intentional."
+    return 1
+  fi
+
+  local prompt_file
+  prompt_file="$(mktemp)"
+  for b in "${bead_list[@]}"; do
+    build_prompt "$b" >> "$prompt_file" 2>/dev/null || {
+      echo "Could not build prompt for $b"
+      rm -f "$prompt_file"; return 1
+    }
+    echo -e "\n---\n" >> "$prompt_file"
+  done
+
+  echo "--- Submitting ${#bead_list[@]} bead(s) to Jules ---"
+  local output session_id
+  output="$(jules_submit "$prompt_file" "$local_jules")"
+  echo "$output"
+  session_id="$(echo "$output" | grep -oE '(session-[a-zA-Z0-9_-]+|[0-9]{10,}|local-[0-9]+|remote-[0-9]+)' | tail -1)"
+
+  for b in "${bead_list[@]}"; do
+    if grep -q "\"bead\":\"$b\"" "$TRACKER"; then
+      set_field "$b" "type" "$type"
+      set_field "$b" "target" "$session_id"
+      set_field "$b" "complexity" "$complexity"
+      set_status "$b" "submitted"
+    else
+      echo "{\"bead\":\"$b\",\"type\":\"$type\",\"target\":\"$session_id\",\"status\":\"submitted\",\"complexity\":\"$complexity\"}" >> "$TRACKER"
+    fi
+  done
+  rm -f "$prompt_file"
+  echo "Tracking ${#bead_list[@]} bead(s) → session $session_id"
+}
+
+cmd_pull() {
+  local bead="$1"
+  local line
+  line="$(get_line "$bead")"
+
+  if [[ -z "$line" ]]; then
+    echo "Bead $bead not tracked. Run: orch assign $bead ..."
+    return 1
+  fi
+
+  local type target
+  type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+  target="$(echo "$line" | grep -oE '"target":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+  case "$type" in
+    cc)
+      # Get branch from tracker entry
+      local agent_branch=""
+      agent_branch="$(echo "$line" | grep -oE '"branch":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+      if [[ -n "$agent_branch" ]] && git show-ref --verify --quiet "refs/heads/$agent_branch" 2>/dev/null; then
+        echo "Merging $agent_branch into main..."
+        if git merge "$agent_branch" --no-edit 2>&1; then
+          echo "Merged successfully."
+        else
+          echo "Merge conflicts — resolve manually, then: git add <files> && git commit"
+        fi
+      else
+        echo "No worktree branch found for $bead — commits may already be on main."
+      fi
+      set_status "$bead" "pulled"
+      bd_close_if_open "$bead"
+      ;;
+    jl|jr)
+      local patch_file="/tmp/jules-patch-${PROJECT_NAME}-${target}.diff"
+
+      # Check if another bead on the same session was already pulled
+      local already_pulled
+      already_pulled="$(grep "\"status\":\"pulled\"" "$TRACKER" 2>/dev/null | grep "\"target\":\"$target\"" | head -1 || true)"
+      if [[ -n "$already_pulled" ]]; then
+        echo "Session $target already pulled for another bead — reusing cached patch."
+      else
+        if [[ "$type" == "jl" ]]; then
+          echo "Pulling from Jules LOCAL (via jules CLI)..."
+        else
+          echo "Pulling from Jules REMOTE (via jules CLI)..."
+        fi
+        ssh -o ConnectTimeout=10 vpn2 "bash -ilc 'jules remote pull --session $target'" 2>/dev/null > "$patch_file"
+        if [[ -s "$patch_file" ]]; then
+          echo "Patch saved to $patch_file ($(wc -l < "$patch_file") lines)"
+          if git apply --check "$patch_file" 2>/dev/null; then
+            git apply "$patch_file"
+            echo "Patch applied."
+          else
+            echo "Conflicts. Manual: git apply --3way $patch_file"
+          fi
+        else
+          echo "No diff found in session $target"
+        fi
+      fi
+      set_status "$bead" "pulled"
+      bd_close_if_open "$bead"
+      ;;
+    *)
+      echo "Unknown type: $type"; return 1
+      ;;
+  esac
+}
+
+cmd_pull_all() {
+  # Pull all completed Jules beads, fetching each unique session only once
+  local pulled_log="/tmp/orch-pulled-sessions-${PROJECT_NAME}.$$.txt"
+  rm -f "$pulled_log"
+  local pulled=0 skipped=0
+
+  while IFS= read -r line; do
+    local bead type target status
+    bead="$(echo "$line" | grep -oE '"bead":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    target="$(echo "$line" | grep -oE '"target":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    status="$(echo "$line" | grep -oE '"status":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+    [[ "$type" != "jl" && "$type" != "jr" ]] && continue
+    [[ "$status" != "completed" && "$status" != "submitted" ]] && continue
+
+    if grep -qx "$target" "$pulled_log" 2>/dev/null; then
+      # Same session already fetched — just mark this bead as pulled
+      set_status "$bead" "pulled"
+      bd_close_if_open "$bead"
+      ((skipped++))
+      echo "  ✓ $bead — session $target already pulled"
+    else
+      echo "$target" >> "$pulled_log"
+      cmd_pull "$bead"
+      ((pulled++))
+    fi
+  done < "$TRACKER"
+
+  rm -f "$pulled_log"
+  echo
+  echo "Pull all done: $pulled session(s) fetched, $skipped bead(s) reused cached patch"
+}
+
+cmd_send() {
+  local bead="$1" msg="$2"
+  local line
+  line="$(get_line "$bead")"
+
+  if [[ -z "$line" ]]; then
+    echo "Bead $bead not tracked. Run: orch assign $bead ..."
+    return 1
+  fi
+
+  local type target
+  type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+  target="$(echo "$line" | grep -oE '"target":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+  case "$type" in
+    cc)
+      local pane_target="$SESSION:0.$target"
+      tmux send-keys -t "$pane_target" "/clear" Enter
+      sleep 0.3
+      if [[ -f "$msg" ]]; then
+        tmux load-buffer "$msg"
+        tmux paste-buffer -t "$pane_target"
+        sleep 0.3
+      else
+        tmux send-keys -t "$pane_target" "$msg"
+      fi
+      tmux send-keys -t "$pane_target" Enter
+      set_status "$bead" "running"
+      echo "Sent to CC pane $target"
+      ;;
+    jl|jr)
+      local body
+      body=$(python3 -c "import json; print(json.dumps({'prompt': '''$msg'''}))")
+      jules_api_for_type "$type" POST "/sessions/$target:sendMessage" "$body" 2>/dev/null
+      set_status "$bead" "running"
+      echo "Sent to Jules session $target"
+      ;;
+    *)
+      echo "Unknown type: $type"; return 1
+      ;;
+  esac
+}
+
+cmd_task() {
+  local bead="$1"
+  local line
+  line="$(get_line "$bead")"
+
+  if [[ -z "$line" ]]; then
+    echo "Bead $bead not tracked. Run: orch assign $bead --cc [pane]"
+    return 1
+  fi
+
+  local type
+  type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+  if [[ "$type" != "cc" ]]; then
+    echo "Bead $bead is type $type. task is for CC agents."
+    return 1
+  fi
+
+  local prompt_file
+  prompt_file="$(mktemp)"
+  build_prompt "$bead" > "$prompt_file" 2>/dev/null || {
+    echo "Could not build prompt for $bead"; rm -f "$prompt_file"; return 1
+  }
+  echo "--- Prompt for $bead ---"
+  cat "$prompt_file"
+  echo ""
+  echo "--- Sending to CC ---"
+  cmd_send "$bead" "$prompt_file"
+  rm -f "$prompt_file"
+}
+
+cmd_info() {
+  local bead="$1"
+  local line
+  line="$(get_line "$bead")"
+  if [[ -z "$line" ]]; then
+    echo "Bead $bead not tracked."; return 1
+  fi
+  local type target
+  type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+  target="$(echo "$line" | grep -oE '"target":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+  if [[ "$type" != "jl" && "$type" != "jr" ]]; then
+    echo "Bead $bead — type: $type, target: $target"
+    return
+  fi
+
+  jules_api_for_type "$type" GET "/sessions/$target" 2>/dev/null | python3 -c "
+import json, sys
+raw = sys.stdin.read()
+idx = raw.find('{')
+if idx < 0: print('No JSON found'); sys.exit(1)
+d = json.loads(raw[idx:])
+print(f'ID:     {d.get(\"id\", \"\")}')
+print(f'Title:  {d.get(\"title\", \"\")}')
+print(f'State:  {d.get(\"state\", \"\")}')
+print(f'URL:    {d.get(\"url\", \"\")}')
+print(f'Created: {d.get(\"createTime\", \"\")}')
+print(f'Updated: {d.get(\"updateTime\", \"\")}')
+if d.get('outputs'):
+    for o in d['outputs']:
+        pr = o.get('pullRequest', {})
+        url = pr.get('url') or pr.get('pullRequestUrl')
+        if url: print(f'PR:     {url}')
+        cs = o.get('changeSet', {})
+        gp = cs.get('gitPatch', {})
+        base = gp.get('baseCommitId', '')
+        if base: print(f'Base:   {base[:12]}')
+        msg = gp.get('suggestedCommitMessage', '')
+        if msg: print(f'Summary: {msg.splitlines()[0]}')
+        diff = gp.get('unidiffPatch', '')
+        if diff:
+            adds = diff.count('\n+')
+            dels = diff.count('\n-')
+            files = diff.count('diff --git')
+            print(f'Diff:   +{adds}/-{dels} across {files} files')
+"
+}
+
+cmd_messages() {
+  local bead="$1"
+  local line
+  line="$(get_line "$bead")"
+  if [[ -z "$line" ]]; then
+    echo "Bead $bead not tracked."; return 1
+  fi
+  local type target
+  type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+  target="$(echo "$line" | grep -oE '"target":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+  if [[ "$type" != "jl" && "$type" != "jr" ]]; then
+    echo "Bead $bead is not a Jules task"; return 1
+  fi
+
+  jules_api_for_type "$type" GET "/sessions/$target/activities" 2>/dev/null | python3 -c "
+import json, sys
+raw = sys.stdin.read()
+idx = raw.find('{')
+if idx < 0: print('No JSON found'); sys.exit(1)
+data = json.loads(raw[idx:])
+count = 0
+for a in data.get('activities', []):
+    if 'agentMessaged' in a:
+        count += 1
+        msg = a['agentMessaged']
+        if isinstance(msg, dict) and 'agentMessage' in msg:
+            text = msg['agentMessage']
+            if isinstance(text, dict): text = text.get('text', json.dumps(text))
+        else:
+            text = str(msg)
+        print(f'[{a.get(\"createTime\", \"\")}] AGENT')
+        print(text[:2000])
+        print('---')
+    elif 'progressUpdated' in a:
+        pu = a['progressUpdated']
+        title = pu.get('title', '')
+        desc = pu.get('description', '')
+        if title or desc:
+            count += 1
+            print(f'[{a.get(\"createTime\", \"\")}] PROGRESS: {title}')
+            if desc:
+                print(desc[:2000])
+            print('---')
+    elif 'sessionCompleted' in a:
+        count += 1
+        print(f'[{a.get(\"createTime\", \"\")}] COMPLETED')
+        print('---')
+print(f'Total messages: {count}')
+
+# Show patch summary for completed sessions
+import subprocess
+session_data = json.loads(raw[idx:])
+state = session_data.get('state', '')
+if state == 'COMPLETED':
+    for o in session_data.get('outputs', []):
+        gp = o.get('changeSet', {}).get('gitPatch', {})
+        msg = gp.get('suggestedCommitMessage', '')
+        base = gp.get('baseCommitId', '')
+        diff = gp.get('unidiffPatch', '')
+        if msg:
+            print(f'Patch summary: {msg.splitlines()[0]}')
+        if base:
+            print(f'Base commit:   {base[:12]}')
+        if diff:
+            adds = diff.count('\n+')
+            dels = diff.count('\n-')
+            files = diff.count('diff --git')
+            print(f'Diff:          +{adds}/-{dels} across {files} files')
+"
+}
+
+cmd_message() {
+  local bead="$1" text="$2"
+  [[ -z "$text" ]] && { echo "Usage: orch message <bead> \"text\""; return 1; }
+
+  local line
+  line="$(get_line "$bead")"
+  if [[ -z "$line" ]]; then
+    echo "Bead $bead not tracked."; return 1
+  fi
+  local type target
+  type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+  target="$(echo "$line" | grep -oE '"target":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+  if [[ "$type" != "jl" && "$type" != "jr" ]]; then
+    echo "Bead $bead is not a Jules task"; return 1
+  fi
+
+  local body
+  body=$(printf '%s' "$text" | python3 -c "import json, sys; print(json.dumps({'prompt': sys.stdin.read()}))")
+  local result
+  result=$(jules_api_for_type "$type" POST "/sessions/$target:sendMessage" "$body" 2>/dev/null)
+  echo "Sent to session $target"
+  echo "Response: $result"
+}
+
+# Resolve Jules session state with caching (temp file for bash 3 compat)
+_session_cache_file=""
+
+session_state_cached() {
+  local sid="$1" type="${2:-jr}"
+  [[ -n "$_session_cache_file" ]] || _session_cache_file="$(mktemp)"
+  # Check cache
+  local cached
+  cached="$(grep "^$sid " "$_session_cache_file" 2>/dev/null | head -1 | cut -d' ' -f2-)"
+  if [[ -n "$cached" ]]; then
+    echo "$cached"
+    return
+  fi
+  # Fetch and cache
+  local state
+  state="$(jules_state "$sid" "$type")"
+  echo "$sid $state" >> "$_session_cache_file"
+  echo "$state"
+}
+
+# Prefetch all Jules session states in parallel (populates cache before display loop)
+prefetch_session_states() {
+  [[ -s "$TRACKER" ]] || return 0
+  [[ -n "$_session_cache_file" ]] || _session_cache_file="$(mktemp)"
+
+  # Collect unique (session_id, type) pairs for active Jules beads
+  local pids=()
+  local tmp_files=()
+  while IFS= read -r pair; do
+    [[ -n "$pair" ]] || continue
+    local sid type
+    sid="$(echo "$pair" | cut -d'|' -f1)"
+    type="$(echo "$pair" | cut -d'|' -f2)"
+    # Skip if already cached
+    grep -q "^$sid " "$_session_cache_file" 2>/dev/null && continue
+    local tmpf
+    tmpf="$(mktemp)"
+    tmp_files+=("$tmpf")
+    ( jules_state "$sid" "$type" > "$tmpf" ) &
+    pids+=($!)
+  done < <(cat "$TRACKER" | python3 -c "
+import json, sys
+seen = set()
+for line in sys.stdin:
+    line = line.strip()
+    if not line: continue
+    try:
+        d = json.loads(line)
+    except: continue
+    t = d.get('type','')
+    if t not in ('jl','jr'): continue
+    s = d.get('status','')
+    if s in ('pulled','completed','done'): continue
+    sid = d.get('target','')
+    if not sid: continue
+    key = sid + '|' + t
+    if key not in seen:
+        seen.add(key)
+        print(key)
+" 2>/dev/null)
+
+  # Wait for all background fetches and populate cache
+  for i in "${!pids[@]}"; do
+    wait "${pids[$i]}" 2>/dev/null || true
+    if [[ -n "${tmp_files[$i]:-}" && -s "${tmp_files[$i]}" ]]; then
+      # Pair output back to sid — we stored one line per pair in same order
+      :
+    fi
+  done
+
+  # Re-read pairs and populate cache from temp files
+  local idx=0
+  while IFS= read -r pair; do
+    [[ -n "$pair" ]] || continue
+    local sid type
+    sid="$(echo "$pair" | cut -d'|' -f1)"
+    grep -q "^$sid " "$_session_cache_file" 2>/dev/null && { idx=$((idx+1)); continue; }
+    if [[ -n "${tmp_files[$idx]:-}" && -s "${tmp_files[$idx]}" ]]; then
+      local state
+      state="$(cat "${tmp_files[$idx]}")"
+      echo "$sid $state" >> "$_session_cache_file"
+    fi
+    idx=$((idx+1))
+  done < <(cat "$TRACKER" | python3 -c "
+import json, sys
+seen = set()
+for line in sys.stdin:
+    line = line.strip()
+    if not line: continue
+    try:
+        d = json.loads(line)
+    except: continue
+    t = d.get('type','')
+    if t not in ('jl','jr'): continue
+    s = d.get('status','')
+    if s in ('pulled','completed','done'): continue
+    sid = d.get('target','')
+    if not sid: continue
+    key = sid + '|' + t
+    if key not in seen:
+        seen.add(key)
+        print(key)
+" 2>/dev/null)
+
+  # Cleanup temp files
+  for f in "${tmp_files[@]+"${tmp_files[@]}"}"; do rm -f "$f"; done
+}
+
+cleanup_session_cache() {
+  [[ -n "$_session_cache_file" && -f "$_session_cache_file" ]] && rm -f "$_session_cache_file"
+  _session_cache_file=""
+}
+
+cmd_status() {
+  if [[ ! -s "$TRACKER" ]]; then
+    echo "(no tasks tracked)"
+    return
+  fi
+
+  _session_cache_file="$(mktemp)"
+  trap cleanup_session_cache RETURN
+
+  # Prefetch all Jules session states in parallel before display loop
+  prefetch_session_states
+
+  printf "%-20s %-5s %-22s %-14s %s\n" "BEAD" "TYPE" "SESSION" "STATUS" "EXECUTOR"
+  echo "-----------------------------------------------------------------------------------------"
+
+  local snapshot
+  snapshot="$(cat "$TRACKER")"
+  while IFS= read -r line <&3; do
+    local bead type target status
+    bead="$(echo "$line" | grep -oE '"bead":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    target="$(echo "$line" | grep -oE '"target":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    status="$(echo "$line" | grep -oE '"status":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+    # Skip fully resolved beads (completed still shown — needs pull)
+    case "$status" in
+      pulled|done) continue ;;
+    esac
+
+    # Resolve live Jules state for active beads
+    local executor_state="-"
+    case "$type" in
+      jl|jr)
+        if [[ -n "$target" ]]; then
+          executor_state="$(session_state_cached "$target" "$type")"
+          case "$executor_state" in
+            COMPLETED) status="completed"; set_status "$bead" "completed" ;;
+            FAILED) status="failed"; set_status "$bead" "failed" ;;
+            IN_PROGRESS) status="running"; set_status "$bead" "running" ;;
+            AWAITING_USER_FEEDBACK) status="awaiting_feedback"; set_status "$bead" "awaiting_feedback" ;;
+            AWAITING_PLAN_APPROVAL) status="awaiting_approval"; set_status "$bead" "awaiting_approval" ;;
+          esac
+        fi
+        ;;
+    esac
+
+    local type_display
+    case "$type" in
+      cc) type_display="CC" ;;
+      jl) type_display="JL" ;;
+      jr) type_display="JR" ;;
+      *) type_display="$type" ;;
+    esac
+
+    # Show last 10 chars of session ID for readability
+    local short_target
+    if [[ ${#target} -gt 10 ]]; then
+      short_target="..${target: -10}"
+    else
+      short_target="$target"
+    fi
+
+    printf "%-20s %-5s %-22s %-14s %s\n" "$bead" "$type_display" "$short_target" "$status" "$executor_state"
+  done 3<<< "$snapshot"
+
+  echo
+  echo "=== bd issues ==="
+  bd list 2>/dev/null || echo "(bd unavailable)"
+
+  echo
+  echo "=== CI ==="
+  cmd_ci 3
+}
+
+cmd_poll() {
+  local updated=0
+
+  _session_cache_file="$(mktemp)"
+  trap cleanup_session_cache RETURN
+
+  # Prefetch all Jules session states in parallel
+  prefetch_session_states
+
+  local snapshot
+  snapshot="$(cat "$TRACKER")"
+  while IFS= read -r line <&3; do
+    local bead type target status
+    bead="$(echo "$line" | grep -oE '"bead":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    target="$(echo "$line" | grep -oE '"target":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    status="$(echo "$line" | grep -oE '"status":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+    [[ "$status" == "running" || "$status" == "pending" || "$status" == "submitted" ]] || continue
+
+    case "$type" in
+      jl|jr)
+        local state
+        state="$(session_state_cached "$target" "$type")"
+        case "$state" in
+          COMPLETED) set_status "$bead" "completed"; ((updated++)); bd_close_if_open "$bead" ;;
+          FAILED) set_status "$bead" "failed"; ((updated++)) ;;
+          IN_PROGRESS) set_status "$bead" "running"; ((updated++)) ;;
+          AWAITING_USER_FEEDBACK) set_status "$bead" "awaiting_feedback"; ((updated++)) ;;
+          AWAITING_PLAN_APPROVAL) set_status "$bead" "awaiting_approval"; ((updated++)) ;;
+        esac
+        echo "  $bead: $state"
+        ;;
+    esac
+  done 3<<< "$snapshot"
+  echo "Poll complete. $updated updates."
+}
+
+cmd_done() {
+  local bead="$1"
+  set_status "$bead" "done"
+  echo "Marked $bead as done"
+  bd_close_if_open "$bead"
+}
+
+cmd_rm() {
+  local bead="$1"
+  local tmp="$(mktemp)"
+  grep -v "\"bead\":\"$bead\"" "$TRACKER" > "$tmp" && mv "$tmp" "$TRACKER"
+  echo "Removed $bead"
+}
+
+cmd_kill() {
+  local bead="$1"
+  local line
+  line="$(get_line "$bead")"
+  if [[ -z "$line" ]]; then
+    echo "Bead $bead not tracked."; return 1
+  fi
+  local type target
+  type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+  target="$(echo "$line" | grep -oE '"target":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+  case "$type" in
+    cc)
+      tmux send-keys -t "$SESSION:0.$target" C-c
+      tmux send-keys -t "$SESSION:0.$target" "/exit" Enter 2>/dev/null || true
+      # Clean up worktree if tracked
+      local wt_file="/tmp/orch-worktrees-${PROJECT_NAME}.txt"
+      if [[ -f "$wt_file" ]]; then
+        local wt_line
+        wt_line="$(grep "^${target}:" "$wt_file" | head -1)" || true
+        if [[ -n "$wt_line" ]]; then
+          local wt_path wt_branch
+          wt_path="$(echo "$wt_line" | cut -d: -f2)"
+          wt_branch="$(echo "$wt_line" | cut -d: -f3)"
+          grep -v "^${target}:" "$wt_file" > "${wt_file}.tmp" && mv "${wt_file}.tmp" "$wt_file"
+          git worktree remove "$wt_path" --force 2>/dev/null || true
+          git branch -D "$wt_branch" 2>/dev/null || true
+          echo "Removed worktree $wt_path ($wt_branch)"
+        fi
+      fi
+      echo "Killed CC in pane $target"
+      ;;
+    jl|jr)
+      echo "Cancel Jules session $target (manual: via Jules UI)"
+      ;;
+  esac
+  set_status "$bead" "killed"
+}
+
+cmd_spawn() {
+  local worktree_base=".orch/worktrees"
+  mkdir -p "$worktree_base"
+
+  # Unique branch via timestamp
+  local stamp="$(date +%s)"
+  local wt_path="${worktree_base}/agent-${stamp}"
+  local branch_name="orch/agent-${stamp}"
+
+  git worktree add "$wt_path" -b "$branch_name" HEAD 2>/dev/null || {
+    echo "Failed to create worktree at $wt_path"
+    return 1
+  }
+
+  local abs_path="$(cd "$wt_path" && pwd)"
+
+  local pane_id
+  pane_id=$(tmux split-window -h -P -F '#{pane_index}' "cd '$abs_path' && openclaude --dangerously-skip-permissions")
+
+  # Store pane→worktree mapping
+  echo "${pane_id}:${abs_path}:${branch_name}" >> "/tmp/orch-worktrees-${PROJECT_NAME}.txt"
+
+  echo "Spawned CC in pane $pane_id"
+  echo "  worktree: $wt_path"
+  echo "  branch:   $branch_name"
+}
+
+cmd_despawn() {
+  # Remove all worktrees and branches
+  local wt_file="/tmp/orch-worktrees-${PROJECT_NAME}.txt"
+  if [[ -f "$wt_file" ]]; then
+    while IFS=: read -r pane path branch; do
+      git worktree remove "$path" --force 2>/dev/null
+      git branch -D "$branch" 2>/dev/null
+      echo "Removed worktree $path ($branch)"
+    done < "$wt_file"
+    rm -f "$wt_file"
+  fi
+  echo "All worktrees cleaned up"
+}
+
+cmd_watch() {
+  local interval="${1:-30}"
+  local state_file="/tmp/orch-monitor-state-${PROJECT_NAME}.txt"
+  echo "Watching... (Ctrl+C to stop)"
+  while true; do
+    clear
+    echo "=== $(date '+%Y-%m-%d %H:%M:%S') ==="
+    echo
+    cmd_status | tee "$state_file" || true
+    echo
+    echo "Next refresh in ${interval}s"
+    sleep "$interval"
+  done
+}
+
+cmd_monitor() {
+  local interval="${1:-45}"
+  local pane_id
+
+  # Kill existing monitor if any
+  cmd_monitor_stop 2>/dev/null || true
+
+  # Spawn a bottom pane (20% height) running orch watch
+  pane_id=$(tmux split-window -v -p 20 -P -F '#{pane_id}' "$SCRIPT_DIR/orch watch $interval" 2>/dev/null) || {
+    echo "Error: must be run inside a tmux session"
+    return 1
+  }
+  # Name the pane so agents can find it by name
+  tmux select-pane -t "$pane_id" -T "monitor"
+
+  # Spawn daemon in background — injects state changes into orchestrator pane
+  local daemon_interval=$(( interval * 4 ))  # daemon polls less frequently
+  nohup "$SCRIPT_DIR/orch-daemon.sh" "$daemon_interval" "$SESSION" &>/tmp/orch-daemon-${PROJECT_NAME}.log &
+  local daemon_pid=$!
+
+  echo "Monitor started (refresh: ${interval}s, daemon: ${daemon_interval}s)"
+  echo "  Watch pane: $pane_id (user visible)"
+  echo "  Daemon pid: $daemon_pid (state change → orchestrator pane)"
+  echo ""
+  echo "  CC agent: find pane with: tmux list-panes -F '#{pane_id} #{pane_title}' | grep monitor"
+  echo "  CC agent: read via:       tmux capture-pane -t $pane_id -p -S -40"
+  echo ""
+  echo "To stop: orch monitor-stop"
+}
+
+cmd_monitor_stop() {
+  local pid_file="/tmp/orch-daemon-${PROJECT_NAME}.pid"
+  if [[ -f "$pid_file" ]]; then
+    local pid
+    pid="$(cat "$pid_file")"
+    kill "$pid" 2>/dev/null && echo "Daemon stopped (pid $pid)" || echo "Daemon not running"
+    rm -f "$pid_file"
+  fi
+  # Kill monitor pane if exists
+  local mon_pane
+  mon_pane="$(tmux list-panes -t "$SESSION" -F '#{pane_id} #{pane_title}' 2>/dev/null | grep ' monitor$' | head -1 | cut -d' ' -f1)" || true
+  if [[ -n "$mon_pane" ]]; then
+    tmux kill-pane -t "$mon_pane" 2>/dev/null && echo "Monitor pane killed" || true
+  fi
+}
+
+cmd_ci() {
+  local limit="${1:-5}"
+  echo "Recent CI runs:"
+  gh run list --limit "$limit" --json status,conclusion,headBranch,name,createdAt,databaseId 2>/dev/null | python3 -c "
+import json, sys
+runs = json.loads(sys.stdin.read())
+for r in runs[:int(sys.argv[1])]:
+    status = r.get('status','?')
+    conclusion = r.get('conclusion','')
+    branch = r.get('headBranch','?')
+    rid = r.get('databaseId','')
+    ts = r.get('createdAt','')[:16]
+    if status == 'completed':
+        icon = {'success': 'PASS', 'failure': 'FAIL', 'cancelled': 'SKIP'}.get(conclusion, conclusion)
+    else:
+        icon = status
+    print(f'  {icon:6s} {branch:10s} {ts}  ({rid})')
+" "$limit" 2>/dev/null || echo "  (gh CLI not available or no runs)"
+}
+
+cmd_ci_wait() {
+  local run_id
+  run_id=$(gh run list --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null)
+  if [[ -z "$run_id" ]]; then
+    echo "No CI runs found"
+    return 1
+  fi
+  echo "Waiting for CI run $run_id..."
+  gh run watch "$run_id" --exit-status 2>/dev/null
+  local result=$?
+  if [[ $result -eq 0 ]]; then
+    echo "CI PASSED"
+  else
+    echo "CI FAILED — check: gh run view $run_id"
+  fi
+  return $result
+}
+
+# --- Main ---
+
+CMD="${1:-status}"
+shift || true
+
+cmd_timing() {
+  local now
+  now="$(date -u +%s)"
+
+  echo "=== Task Timing Report ==="
+  echo ""
+  printf "%-12s %-4s %-12s %-12s %-10s %-8s %s\n" "BEAD" "TYPE" "COMPLEXITY" "STARTED" "COMPLETED" "DURATION" "STATUS"
+
+  while IFS= read -r line; do
+    [[ -z "$line" ]] && continue
+    local bead type complexity started completed status duration_str
+    bead="$(echo "$line" | grep -oE '"bead":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    type="$(echo "$line" | grep -oE '"type":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    complexity="$(echo "$line" | grep -oE '"complexity":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    started="$(echo "$line" | grep -oE '"started_at":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    completed="$(echo "$line" | grep -oE '"completed_at":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+    status="$(echo "$line" | grep -oE '"status":"[^"]+"' | head -1 | cut -d'"' -f4)" || true
+
+    [[ -z "$complexity" ]] && complexity="-"
+
+    if [[ -n "$started" && -n "$completed" ]]; then
+      local secs=$(( completed - started ))
+      if [[ $secs -ge 3600 ]]; then
+        duration_str="$(printf '%dh%dm' $((secs/3600)) $((secs%3600/60)))"
+      elif [[ $secs -ge 60 ]]; then
+        duration_str="$(printf '%dm%ds' $((secs/60)) $((secs%60)))"
+      else
+        duration_str="${secs}s"
+      fi
+    elif [[ -n "$started" ]]; then
+      local secs=$(( now - started ))
+      if [[ $secs -ge 3600 ]]; then
+        duration_str="$(printf '%dh%dm (ongoing)' $((secs/3600)) $((secs%3600/60)))"
+      elif [[ $secs -ge 60 ]]; then
+        duration_str="$(printf '%dm%ds (ongoing)' $((secs/60)) $((secs%60)))"
+      else
+        duration_str="${secs}s (ongoing)"
+      fi
+    else
+      duration_str="-"
+    fi
+
+    [[ -z "$bead" ]] && continue
+
+    [[ -z "$started" ]] && started="-"
+    [[ -z "$completed" ]] && completed="-"
+
+    printf "%-12s %-4s %-12s %-12s %-12s %-8s %s\n" "$bead" "$type" "$complexity" "$started" "$completed" "$duration_str" "$status"
+  done < "$TRACKER"
+
+  # Averages by type
+  echo ""
+  echo "=== Averages by Type ==="
+  python3 -c "
+import json, sys
+now = $(date -u +%s)
+by_type = {}
+for line in open('$TRACKER'):
+    line = line.strip()
+    if not line: continue
+    try:
+        d = json.loads(line)
+    except: continue
+    t = d.get('type','?')
+    s = d.get('started_at')
+    c = d.get('completed_at')
+    if s and c:
+        dur = int(c) - int(s)
+        by_type.setdefault(t, []).append(dur)
+    elif s:
+        dur = now - int(s)
+        by_type.setdefault(t, []).append(dur)
+
+for t in sorted(by_type):
+    durs = by_type[t]
+    avg = sum(durs) / len(durs)
+    if avg >= 3600:
+        print(f'  {t:4s}: avg {avg/3600:.1f}h ({len(durs)} tasks)')
+    elif avg >= 60:
+        print(f'  {t:4s}: avg {avg/60:.1f}m ({len(durs)} tasks)')
+    else:
+        print(f'  {t:4s}: avg {avg:.0f}s ({len(durs)} tasks)')
+" 2>/dev/null || echo "  (no completed tasks with timing data yet)"
+
+  # Averages by complexity
+  echo ""
+  echo "=== Averages by Complexity ==="
+  python3 -c "
+import json
+now = $(date -u +%s)
+by_cx = {}
+for line in open('$TRACKER'):
+    line = line.strip()
+    if not line: continue
+    try:
+        d = json.loads(line)
+    except: continue
+    cx = d.get('complexity','-')
+    s = d.get('started_at')
+    c = d.get('completed_at')
+    if s and c:
+        dur = int(c) - int(s)
+        by_cx.setdefault(cx, []).append(dur)
+    elif s:
+        dur = now - int(s)
+        by_cx.setdefault(cx, []).append(dur)
+
+for cx in ['S','M','L','XL','-']:
+    if cx in by_cx:
+        durs = by_cx[cx]
+        avg = sum(durs) / len(durs)
+        if avg >= 3600:
+            print(f'  {cx:3s}: avg {avg/3600:.1f}h ({len(durs)} tasks)')
+        elif avg >= 60:
+            print(f'  {cx:3s}: avg {avg/60:.1f}m ({len(durs)} tasks)')
+        else:
+            print(f'  {cx:3s}: avg {avg:.0f}s ({len(durs)} tasks)')
+" 2>/dev/null || echo "  (no completed tasks with timing data yet)"
+}
+
+case "$CMD" in
+  assign)    cmd_assign "$@" ;;
+  task)      cmd_task "$@" ;;
+  pull)      [[ "${1:-}" == "--all" ]] && cmd_pull_all || cmd_pull "$@" ;;
+  send)      cmd_send "$@" ;;
+  info)      cmd_info "$@" ;;
+  messages)  cmd_messages "$@" ;;
+  message)   cmd_message "$@" ;;
+  approve)   [[ -z "${1:-}" ]] && { echo "Usage: orch approve <bead>"; exit 1; }; cmd_message "$1" "yes, looks good. continue" ;;
+  status)    cmd_status ;;
+  poll)      cmd_poll ;;
+  done)      cmd_done "$@" ;;
+  rm)        cmd_rm "$@" ;;
+  kill)      cmd_kill "$@" ;;
+  spawn)     cmd_spawn ;;
+  despawn)   cmd_despawn ;;
+  ci)        cmd_ci "${2:-5}" ;;
+  ci-wait)   cmd_ci_wait ;;
+  watch)         cmd_watch "$@" ;;
+  monitor)       cmd_monitor "$@" ;;
+  monitor-stop)  cmd_monitor_stop ;;
+  timing)        cmd_timing ;;
+  *)
+    echo "Usage: orch <command> [args]"
+    echo ""
+    echo "Assign:"
+    echo "  assign <bead> --cc [pane]         CC agent (auto-picks pane if omitted)"
+    echo "  assign <bead> --jules [--local]   Jules remote (or local with --local)"
+    echo "  assign <b1>,<b2> --jules          Multi-bead → one Jules session"
+    echo "  --complexity S|M|L|XL             Estimated task complexity (default: M)"
+    echo ""
+    echo "Actions:"
+    echo "  task <bead>                        Build prompt + send to CC agent"
+    echo "  pull <bead>                        Pull result (auto-detects type)"
+    echo "  send <bead> <msg|file>            Send message/file to target"
+    echo "  done <bead>                        Mark done + close in bd"
+    echo ""
+    echo "Jules:"
+    echo "  info <bead>                        Session details"
+    echo "  messages <bead>                    Show agent messages"
+    echo "  message <bead> \"text\"             Respond to question"
+    echo ""
+    echo "Overview:"
+    echo "  status                             All beads + bd + CI"
+    echo "  timing                             Task duration stats by type/complexity"
+    echo "  poll                               Check Jules sessions"
+    echo "  ci [limit=5]                       CI runs"
+    echo "  ci-wait                            Wait for latest CI"
+    echo "  watch [interval]                   Live dashboard (in current pane)"
+    echo "  monitor [interval=15]              Watch pane + daemon (state changes → orchestrator)"
+    echo "  monitor-stop                       Stop daemon + kill monitor pane"
+    echo ""
+    echo "Manage:"
+    echo "  rm <bead>                          Remove mapping"
+    echo "  kill <bead>                        Kill target"
+    echo "  spawn                              New CC pane"
+    ;;
+esac

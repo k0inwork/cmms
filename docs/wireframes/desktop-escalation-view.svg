@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Top Nav -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">Dispatch</text>
+  <text x="300" y="36" fill="#718096" font-size="14">Dashboard</text>
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">TM</text>
+
+  <!-- Escalation alert banner -->
+  <rect x="24" y="72" width="1392" height="48" fill="#fff5f5" rx="8" stroke="#fed7d7" stroke-width="1"/>
+  <text x="40" y="101" fill="#e53e3e" font-size="14" font-weight="700">⚠ ESCALATION: 2 tickets have no available replacement — immediate action required</text>
+  <rect x="1240" y="82" width="160" height="28" fill="#e53e3e" rx="6"/>
+  <text x="1320" y="101" text-anchor="middle" fill="white" font-size="12" font-weight="600">View All Escalations</text>
+
+  <!-- Left: Escalation cards -->
+  <rect x="24" y="136" width="700" height="740" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="40" y="164" fill="#1a202c" font-size="15" font-weight="700">Unresolved Escalations</text>
+
+  <!-- Escalation 1 -->
+  <rect x="32" y="180" width="684" height="160" fill="#fff5f5" rx="8" stroke="#fed7d7" stroke-width="1"/>
+  <rect x="40" y="188" width="60" height="20" fill="#e53e3e" rx="4"/>
+  <text x="70" y="202" text-anchor="middle" fill="white" font-size="10" font-weight="700">CRITICAL</text>
+  <text x="112" y="202" fill="#1a202c" font-size="14" font-weight="600">TKT-2025-0042: Blade Crack Repair</text>
+  <text x="40" y="226" fill="#718096" font-size="12">Original: James Brown (Sick since May 9)</text>
+  <text x="40" y="246" fill="#718096" font-size="12">Due: May 9, 14:00 — 3 hours remaining</text>
+  <text x="40" y="266" fill="#e53e3e" font-size="12" font-weight="600">No qualified replacement found</text>
+
+  <!-- Replacement attempts -->
+  <text x="40" y="290" fill="#718096" font-size="11" font-weight="600">ATTEMPTED REPLACEMENTS:</text>
+  <text x="40" y="308" fill="#718096" font-size="11">✕ Alex Petrov — Score 92% — DECLINED (schedule conflict)</text>
+  <text x="40" y="326" fill="#718096" font-size="11">✕ Maria Kowalski — Score 78% — DECLINED (no rope access cert)</text>
+
+  <!-- Escalation actions -->
+  <rect x="40" y="336" width="120" height="28" fill="#e53e3e" rx="4"/>
+  <text x="100" y="354" text-anchor="middle" fill="white" font-size="11" font-weight="600">Force Assign</text>
+  <rect x="172" y="336" width="120" height="28" fill="white" rx="4" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="232" y="354" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="600">Extend Deadline</text>
+  <rect x="304" y="336" width="140" height="28" fill="white" rx="4" stroke="#2c5282" stroke-width="1"/>
+  <text x="374" y="354" text-anchor="middle" fill="#2c5282" font-size="11" font-weight="600">Contact Contractor</text>
+
+  <!-- Escalation 2 -->
+  <rect x="32" y="352" width="684" height="140" fill="#fffff0" rx="8" stroke="#ecc94b" stroke-width="1"/>
+  <rect x="40" y="360" width="55" height="20" fill="#ecc94b" rx="4"/>
+  <text x="67" y="374" text-anchor="middle" fill="#744210" font-size="10" font-weight="700">HIGH</text>
+  <text x="107" y="374" fill="#1a202c" font-size="14" font-weight="600">TKT-2025-0045: Generator Bearing Inspection</text>
+  <text x="40" y="398" fill="#718096" font-size="12">Original: Karl Nilsen (Training May 10-11)</text>
+  <text x="40" y="418" fill="#718096" font-size="12">Due: May 11, 2025 — 2 days remaining</text>
+  <text x="40" y="438" fill="#ecc94b" font-size="12" font-weight="600">Partial match found — needs approval</text>
+  <text x="40" y="462" fill="#718096" font-size="11">△ Lena Berg — Score 65% — Missing bearing inspection cert (can shadow)</text>
+
+  <rect x="40" y="472" width="140" height="28" fill="#ecc94b" rx="4"/>
+  <text x="110" y="490" text-anchor="middle" fill="#744210" font-size="11" font-weight="600">Assign + Shadow</text>
+  <rect x="192" y="472" width="120" height="28" fill="white" rx="4" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="252" y="490" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="600">Skip Training</text>
+
+  <!-- Right: Available options -->
+  <rect x="740" y="136" width="676" height="400" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="756" y="164" fill="#1a202c" font-size="15" font-weight="700">Available Technicians (4)</text>
+
+  <!-- Tech 1 -->
+  <rect x="748" y="180" width="660" height="60" fill="#f7fafc" rx="6"/>
+  <circle cx="772" cy="210" r="14" fill="#bee3f8"/>
+  <text x="772" y="214" text-anchor="middle" fill="#2a4365" font-size="11" font-weight="600">AP</text>
+  <text x="796" y="202" fill="#1a202c" font-size="13" font-weight="500">Alex Petrov</text>
+  <text x="796" y="220" fill="#718096" font-size="11">Electrical · 2 active · Workload: 70%</text>
+  <rect x="1100" y="194" width="50" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="1125" y="207" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">FREE</text>
+  <text x="1160" y="210" fill="#e53e3e" font-size="11">Declined TKT-0042</text>
+  <rect x="1300" y="196" width="100" height="28" fill="white" rx="4" stroke="#e53e3e" stroke-width="1"/>
+  <text x="1350" y="214" text-anchor="middle" fill="#e53e3e" font-size="11" font-weight="600">Force Assign</text>
+
+  <!-- Tech 2 -->
+  <rect x="748" y="248" width="660" height="60" fill="white" rx="6"/>
+  <circle cx="772" cy="278" r="14" fill="#fed7d7"/>
+  <text x="772" y="282" text-anchor="middle" fill="#9b2c2c" font-size="11" font-weight="600">MK</text>
+  <text x="796" y="270" fill="#1a202c" font-size="13" font-weight="500">Maria Kowalski</text>
+  <text x="796" y="288" fill="#718096" font-size="11">Mechanical · 3 active · Workload: 85%</text>
+  <rect x="1100" y="264" width="50" height="18" fill="#fed7d7" rx="3"/>
+  <text x="1125" y="277" text-anchor="middle" fill="#9b2c2c" font-size="9" font-weight="600">BUSY</text>
+  <text x="1160" y="278" fill="#ecc94b" font-size="11">No rope access cert</text>
+  <rect x="1300" y="264" width="100" height="28" fill="white" rx="4" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1350" y="282" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="600">Override</text>
+
+  <!-- Tech 3 -->
+  <rect x="748" y="316" width="660" height="60" fill="white" rx="6"/>
+  <circle cx="772" cy="346" r="14" fill="#c6f6d5"/>
+  <text x="772" y="350" text-anchor="middle" fill="#276749" font-size="11" font-weight="600">LB</text>
+  <text x="796" y="338" fill="#1a202c" font-size="13" font-weight="500">Lena Berg</text>
+  <text x="796" y="356" fill="#718096" font-size="11">Multi-trade · 1 active · Workload: 40%</text>
+  <rect x="1100" y="330" width="50" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="1125" y="343" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">FREE</text>
+  <text x="1160" y="346" fill="#ecc94b" font-size="11">Missing bearing cert</text>
+  <rect x="1300" y="332" width="100" height="28" fill="#38a169" rx="4"/>
+  <text x="1350" y="350" text-anchor="middle" fill="white" font-size="11" font-weight="600">Assign</text>
+
+  <!-- Tech 4 -->
+  <rect x="748" y="384" width="660" height="60" fill="white" rx="6"/>
+  <circle cx="772" cy="414" r="14" fill="#edf2f7"/>
+  <text x="772" y="418" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="600">KN</text>
+  <text x="796" y="406" fill="#1a202c" font-size="13" font-weight="500">Karl Nilsen</text>
+  <text x="796" y="424" fill="#718096" font-size="11">Mechanical · 2 active · Workload: 60%</text>
+  <rect x="1100" y="398" width="70" height="18" fill="#e9d8fd" rx="3"/>
+  <text x="1135" y="411" text-anchor="middle" fill="#553c9a" font-size="9" font-weight="600">TRAINING</text>
+  <text x="1160" y="414" fill="#9b59b6" font-size="11">Training May 10-11</text>
+  <rect x="1300" y="400" width="100" height="28" fill="white" rx="4" stroke="#ecc94b" stroke-width="1"/>
+  <text x="1350" y="418" text-anchor="middle" fill="#744210" font-size="11" font-weight="600">Skip Train</text>
+
+  <!-- External options -->
+  <rect x="740" y="552" width="676" height="324" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="756" y="580" fill="#1a202c" font-size="15" font-weight="700">External Options</text>
+
+  <rect x="748" y="596" width="660" height="56" fill="#f7fafc" rx="6"/>
+  <text x="764" y="618" fill="#1a202c" font-size="13" font-weight="500">Contractor Pool — WindServ GmbH</text>
+  <text x="764" y="638" fill="#718096" font-size="11">2 technicians with rope access + composite repair · Available within 24h</text>
+  <rect x="1300" y="610" width="100" height="28" fill="#2c5282" rx="4"/>
+  <text x="1350" y="628" text-anchor="middle" fill="white" font-size="11" font-weight="600">Request</text>
+
+  <rect x="748" y="662" width="660" height="56" fill="#f7fafc" rx="6"/>
+  <text x="764" y="684" fill="#1a202c" font-size="13" font-weight="500">Cross-site — Baltic Wind Farm</text>
+  <text x="764" y="704" fill="#718096" font-size="11">Sven Andersen available · Can travel · ETA 6 hours</text>
+  <rect x="1300" y="676" width="100" height="28" fill="white" rx="4" stroke="#2c5282" stroke-width="1"/>
+  <text x="1350" y="694" text-anchor="middle" fill="#2c5282" font-size="11" font-weight="600">Request</text>
+
+  <rect x="748" y="728" width="660" height="56" fill="#f7fafc" rx="6"/>
+  <text x="764" y="750" fill="#1a202c" font-size="13" font-weight="500">Overtime — Current Team</text>
+  <text x="764" y="770" fill="#718096" font-size="11">Request overtime approval for weekend work · Requires manager sign-off</text>
+  <rect x="1300" y="742" width="100" height="28" fill="white" rx="4" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1350" y="760" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="600">Submit</text>
+</svg>

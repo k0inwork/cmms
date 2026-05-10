@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 812" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="375" height="812" fill="#0a0a0a"/>
+
+  <!-- Header -->
+  <rect width="375" height="56" fill="#1a1a1a"/>
+  <text x="20" y="36" fill="white" font-size="20">←</text>
+  <text x="56" y="35" fill="white" font-size="17" font-weight="600">Evidence Viewer</text>
+  <text x="351" y="35" text-anchor="end" fill="#2c5282" font-size="14" font-weight="600">Edit</text>
+
+  <!-- Image Viewer Area -->
+  <rect x="0" y="56" width="375" height="380" fill="#2d2d2d"/>
+  <!-- Placeholder image representation -->
+  <rect x="40" y="96" width="295" height="280" fill="#3d3d3d" rx="8"/>
+  <text x="187" y="224" text-anchor="middle" fill="#666" font-size="48">📷</text>
+  <text x="187" y="260" text-anchor="middle" fill="#888" font-size="14">crack_trailing_edge_01.jpg</text>
+  <text x="187" y="280" text-anchor="middle" fill="#666" font-size="12">2.4 MB · 4032 × 3024</text>
+
+  <!-- Zoom controls -->
+  <circle cx="339" cy="400" r="20" fill="rgba(0,0,0,0.6)"/>
+  <text x="339" y="407" text-anchor="middle" fill="white" font-size="18">+</text>
+  <circle cx="291" cy="400" r="20" fill="rgba(0,0,0,0.6)"/>
+  <text x="291" y="407" text-anchor="middle" fill="white" font-size="18">−</text>
+
+  <!-- Annotation badge -->
+  <rect x="16" y="400" width="90" height="28" fill="rgba(44,82,130,0.8)" rx="14"/>
+  <text x="61" y="419" text-anchor="middle" fill="white" font-size="11" font-weight="600">2 Annotations</text>
+
+  <!-- Thumbnail Strip -->
+  <rect x="0" y="440" width="375" height="80" fill="#1a1a1a"/>
+  <rect x="12" y="450" width="56" height="56" fill="#3d3d3d" rx="6" stroke="#2c5282" stroke-width="2"/>
+  <text x="40" y="482" text-anchor="middle" fill="#888" font-size="9">IMG_01</text>
+  <rect x="76" y="450" width="56" height="56" fill="#3d3d3d" rx="6"/>
+  <text x="104" y="482" text-anchor="middle" fill="#888" font-size="9">IMG_02</text>
+  <rect x="140" y="450" width="56" height="56" fill="#3d3d3d" rx="6"/>
+  <text x="168" y="482" text-anchor="middle" fill="#888" font-size="9">IMG_03</text>
+  <rect x="204" y="450" width="56" height="56" fill="#3d3d3d" rx="6"/>
+  <text x="232" y="482" text-anchor="middle" fill="#888" font-size="9">VID_01</text>
+  <!-- Count badge -->
+  <circle cx="248" cy="454" r="10" fill="#e53e3e"/>
+  <text x="248" y="458" text-anchor="middle" fill="white" font-size="9" font-weight="700">+2</text>
+
+  <!-- Metadata Section -->
+  <rect x="0" y="528" width="375" height="284" fill="#1a1a1a"/>
+  <text x="24" y="558" fill="white" font-size="14" font-weight="700">Details</text>
+
+  <text x="24" y="586" fill="#888" font-size="12">Type</text>
+  <text x="140" y="586" fill="white" font-size="13">Photo — JPEG</text>
+
+  <text x="24" y="610" fill="#888" font-size="12">Captured</text>
+  <text x="140" y="610" fill="white" font-size="13">May 8, 2025 · 14:32</text>
+
+  <text x="24" y="634" fill="#888" font-size="12">GPS</text>
+  <text x="140" y="634" fill="#2c5282" font-size="13">53.787°N, 1.752°E →</text>
+
+  <text x="24" y="658" fill="#888" font-size="12">Source</text>
+  <text x="140" y="658" fill="white" font-size="13">Camera (Device)</text>
+
+  <text x="24" y="682" fill="#888" font-size="12">Inspection</text>
+  <text x="140" y="682" fill="#2c5282" font-size="13">INS-2025-0087 →</text>
+
+  <text x="24" y="706" fill="#888" font-size="12">Status</text>
+  <rect x="140" y="693" width="90" height="22" fill="#c6f6d5" rx="4"/>
+  <text x="185" y="709" text-anchor="middle" fill="#276749" font-size="11" font-weight="600">APPROVED</text>
+
+  <!-- Annotations List -->
+  <line x1="24" y1="724" x2="351" y2="724" stroke="#333" stroke-width="1"/>
+  <text x="24" y="748" fill="white" font-size="14" font-weight="700">Annotations</text>
+
+  <circle cx="32" cy="774" r="6" fill="#e53e3e"/>
+  <text x="48" y="778" fill="white" font-size="13">Crack origin point — 145mm length</text>
+
+  <circle cx="32" cy="798" r="6" fill="#ecc94b"/>
+  <text x="48" y="802" fill="white" font-size="13">Delamination zone — approx 80mm</text>
+
+  <!-- Home indicator -->
+  <rect x="120" y="794" width="135" height="5" fill="#cbd5e0" rx="3"/>
+</svg>

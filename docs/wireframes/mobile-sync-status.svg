@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 812" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="375" height="812" fill="#f7fafc"/>
+
+  <!-- Header -->
+  <rect width="375" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="375" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="56" y="35" fill="#1a202c" font-size="17" font-weight="600">Sync Status</text>
+  <text x="20" y="36" fill="#2c5282" font-size="20">←</text>
+
+  <!-- Connection Status -->
+  <rect x="16" y="68" width="343" height="72" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <circle cx="44" cy="104" r="16" fill="#c6f6d5"/>
+  <text x="44" y="109" text-anchor="middle" fill="#276749" font-size="16">✓</text>
+  <text x="72" y="96" fill="#1a202c" font-size="16" font-weight="600">Connected</text>
+  <text x="72" y="116" fill="#718096" font-size="13">Last sync: 2 minutes ago</text>
+
+  <!-- Summary Cards -->
+  <rect x="16" y="156" width="163" height="72" fill="#c6f6d5" rx="10" opacity="0.5"/>
+  <text x="97" y="186" text-anchor="middle" fill="#276749" font-size="28" font-weight="700">45</text>
+  <text x="97" y="210" text-anchor="middle" fill="#276749" font-size="12" font-weight="600">SYNCED</text>
+
+  <rect x="196" y="156" width="163" height="72" fill="#fefcbf" rx="10" opacity="0.5"/>
+  <text x="277" y="186" text-anchor="middle" fill="#744210" font-size="28" font-weight="700">3</text>
+  <text x="277" y="210" text-anchor="middle" fill="#744210" font-size="12" font-weight="600">PENDING</text>
+
+  <rect x="16" y="240" width="163" height="72" fill="#fed7d7" rx="10" opacity="0.5"/>
+  <text x="97" y="270" text-anchor="middle" fill="#9b2c2c" font-size="28" font-weight="700">1</text>
+  <text x="97" y="294" text-anchor="middle" fill="#9b2c2c" font-size="12" font-weight="600">FAILED</text>
+
+  <rect x="196" y="240" width="163" height="72" fill="#e9d8fd" rx="10" opacity="0.5"/>
+  <text x="277" y="270" text-anchor="middle" fill="#553c9a" font-size="28" font-weight="700">0</text>
+  <text x="277" y="294" text-anchor="middle" fill="#553c9a" font-size="12" font-weight="600">CONFLICTS</text>
+
+  <!-- Pending Records -->
+  <text x="24" y="348" fill="#1a202c" font-size="16" font-weight="700">Pending Upload</text>
+
+  <rect x="16" y="362" width="343" height="64" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <circle cx="44" cy="394" r="4" fill="#ecc94b"/>
+  <text x="60" y="388" fill="#1a202c" font-size="14" font-weight="500">Blade Insp. — WTG-HR-01</text>
+  <text x="60" y="408" fill="#718096" font-size="12">3 photos, 1 form · 12.4 MB</text>
+  <rect x="280" y="382" width="63" height="24" fill="#fefcbf" rx="4"/>
+  <text x="311" y="399" text-anchor="middle" fill="#744210" font-size="11" font-weight="600">PENDING</text>
+
+  <rect x="16" y="434" width="343" height="64" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <circle cx="44" cy="466" r="4" fill="#ecc94b"/>
+  <text x="60" y="460" fill="#1a202c" font-size="14" font-weight="500">Gearbox Insp. — WTG-HR-22</text>
+  <text x="60" y="480" fill="#718096" font-size="12">1 form · 0.8 MB</text>
+  <rect x="280" y="454" width="63" height="24" fill="#fefcbf" rx="4"/>
+  <text x="311" y="471" text-anchor="middle" fill="#744210" font-size="11" font-weight="600">PENDING</text>
+
+  <rect x="16" y="506" width="343" height="64" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <circle cx="44" cy="538" r="4" fill="#ecc94b"/>
+  <text x="60" y="532" fill="#1a202c" font-size="14" font-weight="500">Status update — Available</text>
+  <text x="60" y="552" fill="#718096" font-size="12">0.1 MB</text>
+  <rect x="280" y="526" width="63" height="24" fill="#fefcbf" rx="4"/>
+  <text x="311" y="543" text-anchor="middle" fill="#744210" font-size="11" font-weight="600">PENDING</text>
+
+  <!-- Failed Records -->
+  <text x="24" y="604" fill="#1a202c" font-size="16" font-weight="700">Failed</text>
+
+  <rect x="16" y="618" width="343" height="64" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <circle cx="44" cy="650" r="4" fill="#e53e3e"/>
+  <text x="60" y="644" fill="#1a202c" font-size="14" font-weight="500">Video — WTG-RB-05</text>
+  <text x="60" y="664" fill="#e53e3e" font-size="12">Upload failed: Network timeout</text>
+  <rect x="260" y="638" width="83" height="24" fill="#fed7d7" rx="4"/>
+  <text x="301" y="655" text-anchor="middle" fill="#9b2c2c" font-size="11" font-weight="600">↻ RETRY</text>
+
+  <!-- Sync All Button -->
+  <rect x="16" y="704" width="343" height="48" fill="#2c5282" rx="8"/>
+  <text x="187" y="733" text-anchor="middle" fill="white" font-size="16" font-weight="600">Sync All Now</text>
+
+  <rect x="120" y="794" width="135" height="5" fill="#cbd5e0" rx="3"/>
+</svg>

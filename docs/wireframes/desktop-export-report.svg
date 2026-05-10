@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Background: Dashboard visible behind modal -->
+  <rect width="1440" height="900" fill="rgba(0,0,0,0.3)"/>
+
+  <!-- Modal -->
+  <rect x="320" y="120" width="800" height="660" fill="white" rx="12" filter="drop-shadow(0 8px 24px rgba(0,0,0,0.15))"/>
+
+  <!-- Header -->
+  <text x="360" y="160" fill="#1a202c" font-size="20" font-weight="700">Export Report</text>
+  <text x="1080" y="160" fill="#718096" font-size="20">✕</text>
+  <line x1="360" y1="176" x2="1080" y2="176" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Report type -->
+  <text x="360" y="210" fill="#1a202c" font-size="13" font-weight="600">Report Type</text>
+
+  <rect x="360" y="222" width="230" height="44" fill="#ebf8ff" rx="8" stroke="#2c5282" stroke-width="2"/>
+  <text x="475" y="248" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">📊 Dashboard Summary</text>
+
+  <rect x="602" y="222" width="230" height="44" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="717" y="248" text-anchor="middle" fill="#4a5568" font-size="13" font-weight="500">📋 Ticket Report</text>
+
+  <rect x="844" y="222" width="230" height="44" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="959" y="248" text-anchor="middle" fill="#4a5568" font-size="13" font-weight="500">🔧 Asset Report</text>
+
+  <!-- Date range -->
+  <text x="360" y="300" fill="#1a202c" font-size="13" font-weight="600">Date Range</text>
+  <rect x="360" y="310" width="180" height="36" fill="#edf2f7" rx="6" stroke="#2c5282" stroke-width="1"/>
+  <text x="380" y="332" fill="#2c5282" font-size="12" font-weight="500">Last 30 days ▾</text>
+  <rect x="552" y="310" width="140" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="572" y="332" fill="#1a202c" font-size="12">Apr 9, 2025</text>
+  <text x="700" y="332" fill="#718096" font-size="12">to</text>
+  <rect x="722" y="310" width="140" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="742" y="332" fill="#1a202c" font-size="12">May 9, 2025</text>
+
+  <!-- Sections -->
+  <text x="360" y="380" fill="#1a202c" font-size="13" font-weight="600">Include Sections</text>
+
+  <rect x="360" y="392" width="340" height="32" fill="#f7fafc" rx="6"/>
+  <rect x="372" y="402" width="14" height="14" fill="#2c5282" rx="3"/>
+  <text x="376" y="413" text-anchor="middle" fill="white" font-size="10" font-weight="700">✓</text>
+  <text x="396" y="412" fill="#1a202c" font-size="12">KPI Summary (tickets, coverage, SLA)</text>
+
+  <rect x="360" y="430" width="340" height="32" fill="#f7fafc" rx="6"/>
+  <rect x="372" y="440" width="14" height="14" fill="#2c5282" rx="3"/>
+  <text x="376" y="451" text-anchor="middle" fill="white" font-size="10" font-weight="700">✓</text>
+  <text x="396" y="450" fill="#1a202c" font-size="12">Ticket aging breakdown</text>
+
+  <rect x="360" y="468" width="340" height="32" fill="#f7fafc" rx="6"/>
+  <rect x="372" y="478" width="14" height="14" fill="#2c5282" rx="3"/>
+  <text x="376" y="489" text-anchor="middle" fill="white" font-size="10" font-weight="700">✓</text>
+  <text x="396" y="488" fill="#1a202c" font-size="12">Coverage &amp; risk assessment</text>
+
+  <rect x="720" y="392" width="340" height="32" fill="#f7fafc" rx="6"/>
+  <rect x="732" y="402" width="14" height="14" fill="#2c5282" rx="3"/>
+  <text x="736" y="413" text-anchor="middle" fill="white" font-size="10" font-weight="700">✓</text>
+  <text x="756" y="412" fill="#1a202c" font-size="12">Weekly trend charts</text>
+
+  <rect x="720" y="430" width="340" height="32" fill="#f7fafc" rx="6"/>
+  <rect x="732" y="440" width="14" height="14" fill="white" rx="3" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="756" y="450" fill="#718096" font-size="12">Absence history</text>
+
+  <rect x="720" y="468" width="340" height="32" fill="#f7fafc" rx="6"/>
+  <rect x="732" y="478" width="14" height="14" fill="white" rx="3" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="756" y="488" fill="#718096" font-size="12">Asset health overview</text>
+
+  <!-- Filters -->
+  <text x="360" y="530" fill="#1a202c" font-size="13" font-weight="600">Filters</text>
+
+  <text x="360" y="552" fill="#718096" font-size="11">Team</text>
+  <rect x="440" y="540" width="180" height="28" fill="#edf2f7" rx="6"/>
+  <text x="460" y="558" fill="#4a5568" font-size="11">All teams ▾</text>
+
+  <text x="640" y="552" fill="#718096" font-size="11">Priority</text>
+  <rect x="700" y="540" width="160" height="28" fill="#edf2f7" rx="6"/>
+  <text x="720" y="558" fill="#4a5568" font-size="11">All priorities ▾</text>
+
+  <text x="880" y="552" fill="#718096" font-size="11">Asset</text>
+  <rect x="920" y="540" width="160" height="28" fill="#edf2f7" rx="6"/>
+  <text x="940" y="558" fill="#4a5568" font-size="11">All assets ▾</text>
+
+  <!-- Format -->
+  <text x="360" y="604" fill="#1a202c" font-size="13" font-weight="600">Export Format</text>
+
+  <rect x="360" y="614" width="120" height="36" fill="#2c5282" rx="6"/>
+  <text x="420" y="636" text-anchor="middle" fill="white" font-size="12" font-weight="600">📄 PDF</text>
+
+  <rect x="492" y="614" width="120" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="552" y="636" text-anchor="middle" fill="#4a5568" font-size="12" font-weight="500">📊 Excel</text>
+
+  <rect x="624" y="614" width="120" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="684" y="636" text-anchor="middle" fill="#4a5568" font-size="12" font-weight="500">📋 CSV</text>
+
+  <!-- Preview -->
+  <rect x="780" y="614" width="320" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="940" y="636" text-anchor="middle" fill="#4a5568" font-size="12" font-weight="500">Preview before download</text>
+
+  <!-- Actions -->
+  <rect x="360" y="700" width="200" height="44" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="460" y="726" text-anchor="middle" fill="#4a5568" font-size="14" font-weight="600">Cancel</text>
+
+  <rect x="580" y="700" width="200" height="44" fill="#2c5282" rx="8"/>
+  <text x="680" y="726" text-anchor="middle" fill="white" font-size="14" font-weight="600">Generate &amp; Download</text>
+
+  <!-- Recent exports -->
+  <text x="360" y="772" fill="#718096" font-size="11" font-weight="600">RECENT EXPORTS</text>
+  <text x="360" y="792" fill="#718096" font-size="11">dashboard_may9.pdf · 2.1 MB · 10 min ago</text>
+  <text x="700" y="792" fill="#2c5282" font-size="11" font-weight="500">Download again →</text>
+  <text x="360" y="812" fill="#718096" font-size="11">tickets_april.pdf · 1.8 MB · Yesterday</text>
+  <text x="700" y="812" fill="#2c5282" font-size="11" font-weight="500">Download again →</text>
+</svg>

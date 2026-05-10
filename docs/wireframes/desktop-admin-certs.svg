@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Top Nav -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">Admin — Skills &amp; Certifications</text>
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">TM</text>
+
+  <!-- Toolbar -->
+  <rect x="24" y="72" width="1392" height="48" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <rect x="36" y="82" width="140" height="28" fill="#2c5282" rx="6"/>
+  <text x="106" y="101" text-anchor="middle" fill="white" font-size="12" font-weight="600">+ Add Certification</text>
+  <rect x="190" y="82" width="140" height="28" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="260" y="101" text-anchor="middle" fill="#4a5568" font-size="12" font-weight="500">+ Add Skill</text>
+  <rect x="350" y="82" width="100" height="28" fill="#edf2f7" rx="6"/>
+  <text x="400" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Category ▾</text>
+  <rect x="462" y="82" width="100" height="28" fill="#edf2f7" rx="6"/>
+  <text x="512" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Status ▾</text>
+
+  <!-- Expiry warning -->
+  <rect x="24" y="132" width="1392" height="36" fill="#fff5f5" rx="6" stroke="#fed7d7" stroke-width="1"/>
+  <text x="40" y="155" fill="#e53e3e" font-size="12" font-weight="600">⚠ 3 certifications expiring within 30 days · 1 already expired</text>
+  <text x="1380" y="155" fill="#2c5282" font-size="12" font-weight="500">Review expiring →</text>
+
+  <!-- Certifications table -->
+  <rect x="24" y="180" width="1392" height="36" fill="#edf2f7" rx="4"/>
+  <text x="40" y="203" fill="#718096" font-size="11" font-weight="700">CERTIFICATION</text>
+  <text x="260" y="203" fill="#718096" font-size="11" font-weight="700">CATEGORY</text>
+  <text x="380" y="203" fill="#718096" font-size="11" font-weight="700">HOLDER</text>
+  <text x="540" y="203" fill="#718096" font-size="11" font-weight="700">ISSUED</text>
+  <text x="650" y="203" fill="#718096" font-size="11" font-weight="700">EXPIRY</text>
+  <text x="770" y="203" fill="#718096" font-size="11" font-weight="700">STATUS</text>
+  <text x="870" y="203" fill="#718096" font-size="11" font-weight="700">REQUIRED FOR</text>
+  <text x="1100" y="203" fill="#718096" font-size="11" font-weight="700">CERT. BODY</text>
+  <text x="1260" y="203" fill="#718096" font-size="11" font-weight="700">ACTIONS</text>
+
+  <!-- Row 1 - expiring soon -->
+  <rect x="24" y="216" width="1392" height="48" fill="#fffff0"/>
+  <line x1="24" y1="264" x2="1416" y2="264" stroke="#f0f0f0" stroke-width="1"/>
+  <rect x="24" y="216" width="3" height="48" fill="#ecc94b"/>
+  <text x="40" y="240" fill="#1a202c" font-size="12" font-weight="600">GWO Basic Safety</text>
+  <text x="40" y="256" fill="#718096" font-size="10">BST-REF-02</text>
+  <text x="260" y="244" fill="#1a202c" font-size="12">Safety</text>
+  <circle cx="394" cy="240" r="10" fill="#bee3f8"/>
+  <text x="394" y="244" text-anchor="middle" fill="#2a4365" font-size="8" font-weight="600">AP</text>
+  <text x="410" y="244" fill="#1a202c" font-size="12">Alex Petrov</text>
+  <text x="540" y="244" fill="#1a202c" font-size="12">Jan 15, 2025</text>
+  <text x="650" y="240" fill="#ecc94b" font-size="12" font-weight="600">Jun 14, 2025</text>
+  <text x="650" y="256" fill="#ecc94b" font-size="10">36 days</text>
+  <rect x="770" y="232" width="80" height="18" fill="#fefcbf" rx="3"/>
+  <text x="810" y="245" text-anchor="middle" fill="#744210" font-size="9" font-weight="600">EXPIRING</text>
+  <text x="870" y="238" fill="#718096" font-size="11">All rope access tasks</text>
+  <text x="870" y="254" fill="#718096" font-size="10">Blade repair, Tower climb</text>
+  <text x="1100" y="244" fill="#1a202c" font-size="12">GWO</text>
+  <rect x="1260" y="230" width="50" height="22" fill="white" rx="4" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1285" y="245" text-anchor="middle" fill="#4a5568" font-size="10">Edit</text>
+  <rect x="1318" y="230" width="70" height="22" fill="#2c5282" rx="4"/>
+  <text x="1353" y="245" text-anchor="middle" fill="white" font-size="10" font-weight="600">Renew</text>
+
+  <!-- Row 2 - valid -->
+  <rect x="24" y="264" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="312" x2="1416" y2="312" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="40" y="288" fill="#1a202c" font-size="12" font-weight="600">Rope Access Level 2</text>
+  <text x="40" y="304" fill="#718096" font-size="10">RA-L2-IRATA</text>
+  <text x="260" y="292" fill="#1a202c" font-size="12">Access</text>
+  <circle cx="394" cy="288" r="10" fill="#bee3f8"/>
+  <text x="394" y="292" text-anchor="middle" fill="#2a4365" font-size="8" font-weight="600">AP</text>
+  <text x="410" y="292" fill="#1a202c" font-size="12">Alex Petrov</text>
+  <text x="540" y="292" fill="#1a202c" font-size="12">Mar 1, 2024</text>
+  <text x="650" y="292" fill="#38a169" font-size="12">Feb 28, 2027</text>
+  <rect x="770" y="280" width="50" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="795" y="293" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">VALID</text>
+  <text x="870" y="286" fill="#718096" font-size="11">Blade inspection/repair</text>
+  <text x="870" y="302" fill="#718096" font-size="10">Nacelle external work</text>
+  <text x="1100" y="292" fill="#1a202c" font-size="12">IRATA</text>
+  <rect x="1260" y="278" width="50" height="22" fill="white" rx="4" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1285" y="293" text-anchor="middle" fill="#4a5568" font-size="10">Edit</text>
+
+  <!-- Row 3 - valid -->
+  <rect x="24" y="312" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="360" x2="1416" y2="360" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="40" y="336" fill="#1a202c" font-size="12" font-weight="600">NDT Level 2 — UT</text>
+  <text x="40" y="352" fill="#718096" font-size="10">NDT-UT-L2</text>
+  <text x="260" y="340" fill="#1a202c" font-size="12">Inspection</text>
+  <circle cx="394" cy="336" r="10" fill="#c6f6d5"/>
+  <text x="394" y="340" text-anchor="middle" fill="#276749" font-size="8" font-weight="600">SA</text>
+  <text x="410" y="340" fill="#1a202c" font-size="12">Sven Andersen</text>
+  <text x="540" y="340" fill="#1a202c" font-size="12">Sep 10, 2023</text>
+  <text x="650" y="340" fill="#38a169" font-size="12">Sep 9, 2028</text>
+  <rect x="770" y="328" width="50" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="795" y="341" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">VALID</text>
+  <text x="870" y="334" fill="#718096" font-size="11">Ultrasonic testing tasks</text>
+  <text x="870" y="350" fill="#718096" font-size="10">Bolt inspection, Weld check</text>
+  <text x="1100" y="340" fill="#1a202c" font-size="12">PCN/ISO</text>
+  <rect x="1260" y="326" width="50" height="22" fill="white" rx="4" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1285" y="341" text-anchor="middle" fill="#4a5568" font-size="10">Edit</text>
+
+  <!-- Row 4 - expired -->
+  <rect x="24" y="360" width="1392" height="48" fill="#fff5f5"/>
+  <line x1="24" y1="408" x2="1416" y2="408" stroke="#f0f0f0" stroke-width="1"/>
+  <rect x="24" y="360" width="3" height="48" fill="#e53e3e"/>
+  <text x="40" y="384" fill="#1a202c" font-size="12" font-weight="600">Composite Repair Specialist</text>
+  <text x="40" y="400" fill="#718096" font-size="10">COMP-REP-01</text>
+  <text x="260" y="388" fill="#1a202c" font-size="12">Repair</text>
+  <circle cx="394" cy="384" r="10" fill="#fed7d7"/>
+  <text x="394" y="388" text-anchor="middle" fill="#9b2c2c" font-size="8" font-weight="600">JB</text>
+  <text x="410" y="388" fill="#1a202c" font-size="12">James Brown</text>
+  <text x="540" y="388" fill="#1a202c" font-size="12">May 1, 2023</text>
+  <text x="650" y="384" fill="#e53e3e" font-size="12" font-weight="600">May 1, 2025</text>
+  <text x="650" y="400" fill="#e53e3e" font-size="10">EXPIRED 8 days ago</text>
+  <rect x="770" y="376" width="60" height="18" fill="#fed7d7" rx="3"/>
+  <text x="800" y="389" text-anchor="middle" fill="#9b2c2c" font-size="9" font-weight="600">EXPIRED</text>
+  <text x="870" y="382" fill="#e53e3e" font-size="11">Blade composite repair</text>
+  <text x="870" y="398" fill="#e53e3e" font-size="10">⚠ Cannot perform WO-0042</text>
+  <text x="1100" y="388" fill="#1a202c" font-size="12">SGRE</text>
+  <rect x="1260" y="374" width="50" height="22" fill="white" rx="4" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1285" y="389" text-anchor="middle" fill="#4a5568" font-size="10">Edit</text>
+  <rect x="1318" y="374" width="70" height="22" fill="#e53e3e" rx="4"/>
+  <text x="1353" y="389" text-anchor="middle" fill="white" font-size="10" font-weight="600">Renew</text>
+
+  <!-- Row 5 -->
+  <rect x="24" y="408" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="456" x2="1416" y2="456" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="40" y="432" fill="#1a202c" font-size="12" font-weight="600">First Aid + CPR</text>
+  <text x="40" y="448" fill="#718096" font-size="10">FA-CPR-01</text>
+  <text x="260" y="436" fill="#1a202c" font-size="12">Safety</text>
+  <circle cx="394" cy="432" r="10" fill="#bee3f8"/>
+  <text x="394" y="436" text-anchor="middle" fill="#2a4365" font-size="8" font-weight="600">MK</text>
+  <text x="410" y="436" fill="#1a202c" font-size="12">Maria Kowalski</text>
+  <text x="540" y="436" fill="#1a202c" font-size="12">Nov 20, 2024</text>
+  <text x="650" y="436" fill="#38a169" font-size="12">Nov 19, 2026</text>
+  <rect x="770" y="424" width="50" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="795" y="437" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">VALID</text>
+  <text x="870" y="430" fill="#718096" font-size="11">All field operations</text>
+  <text x="1100" y="436" fill="#1a202c" font-size="12">Red Cross</text>
+  <rect x="1260" y="422" width="50" height="22" fill="white" rx="4" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1285" y="437" text-anchor="middle" fill="#4a5568" font-size="10">Edit</text>
+
+  <!-- Skills Matrix section -->
+  <text x="24" y="490" fill="#1a202c" font-size="15" font-weight="700">Skills Matrix</text>
+  <rect x="24" y="504" width="1392" height="368" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+
+  <!-- Matrix headers -->
+  <rect x="24" y="504" width="160" height="32" fill="#edf2f7" rx="4"/>
+  <text x="104" y="524" text-anchor="middle" fill="#718096" font-size="11" font-weight="700">TECHNICIAN</text>
+
+  <rect x="184" y="504" width="100" height="32" fill="#edf2f7"/>
+  <text x="234" y="524" text-anchor="middle" fill="#718096" font-size="10" font-weight="700">ELECTRICAL</text>
+
+  <rect x="284" y="504" width="100" height="32" fill="#edf2f7"/>
+  <text x="334" y="524" text-anchor="middle" fill="#718096" font-size="10" font-weight="700">MECHANICAL</text>
+
+  <rect x="384" y="504" width="100" height="32" fill="#edf2f7"/>
+  <text x="434" y="524" text-anchor="middle" fill="#718096" font-size="10" font-weight="700">COMPOSITE</text>
+
+  <rect x="484" y="504" width="100" height="32" fill="#edf2f7"/>
+  <text x="534" y="524" text-anchor="middle" fill="#718096" font-size="10" font-weight="700">ROPE ACCESS</text>
+
+  <rect x="584" y="504" width="100" height="32" fill="#edf2f7"/>
+  <text x="634" y="524" text-anchor="middle" fill="#718096" font-size="10" font-weight="700">NDT</text>
+
+  <rect x="684" y="504" width="100" height="32" fill="#edf2f7"/>
+  <text x="734" y="524" text-anchor="middle" fill="#718096" font-size="10" font-weight="700">HYDRAULIC</text>
+
+  <!-- Alex Petrov -->
+  <rect x="24" y="536" width="160" height="32" fill="white"/>
+  <circle cx="44" cy="552" r="10" fill="#bee3f8"/>
+  <text x="44" y="556" text-anchor="middle" fill="#2a4365" font-size="8" font-weight="600">AP</text>
+  <text x="60" y="556" fill="#1a202c" font-size="11" font-weight="500">Alex Petrov</text>
+
+  <rect x="184" y="536" width="100" height="32" fill="white"/>
+  <circle cx="234" cy="552" r="10" fill="#38a169"/>
+  <text x="234" y="556" text-anchor="middle" fill="white" font-size="9" font-weight="700">E</text>
+
+  <rect x="284" y="536" width="100" height="32" fill="white"/>
+  <circle cx="334" cy="552" r="10" fill="#38a169"/>
+  <text x="334" y="556" text-anchor="middle" fill="white" font-size="9" font-weight="700">A</text>
+
+  <rect x="384" y="536" width="100" height="32" fill="white"/>
+  <circle cx="434" cy="552" r="10" fill="#38a169"/>
+  <text x="434" y="556" text-anchor="middle" fill="white" font-size="9" font-weight="700">E</text>
+
+  <rect x="484" y="536" width="100" height="32" fill="white"/>
+  <circle cx="534" cy="552" r="10" fill="#38a169"/>
+  <text x="534" y="556" text-anchor="middle" fill="white" font-size="9" font-weight="700">E</text>
+
+  <rect x="584" y="536" width="100" height="32" fill="white"/>
+  <circle cx="634" cy="552" r="10" fill="#ecc94b"/>
+  <text x="634" y="556" text-anchor="middle" fill="white" font-size="9" font-weight="700">P</text>
+
+  <rect x="684" y="536" width="100" height="32" fill="white"/>
+  <circle cx="734" cy="552" r="10" fill="#cbd5e0"/>
+  <text x="734" y="556" text-anchor="middle" fill="white" font-size="9" font-weight="700">—</text>
+
+  <!-- Legend -->
+  <circle cx="840" y="524" cx="840" cy="524" r="6" fill="#38a169"/>
+  <text x="852" y="528" fill="#718096" font-size="9">Expert (E)</text>
+  <circle cx="920" cy="524" r="6" fill="#3182ce"/>
+  <text x="932" y="528" fill="#718096" font-size="9">Advanced (A)</text>
+  <circle cx="1010" cy="524" r="6" fill="#ecc94b"/>
+  <text x="1022" y="528" fill="#718096" font-size="9">Proficient (P)</text>
+  <circle cx="1110" cy="524" r="6" fill="#cbd5e0"/>
+  <text x="1122" y="528" fill="#718096" font-size="9">None (—)</text>
+</svg>

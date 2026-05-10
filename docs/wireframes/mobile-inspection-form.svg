@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 812" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="375" height="812" fill="#f7fafc"/>
+
+  <!-- Header -->
+  <rect width="375" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="375" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="56" y="35" fill="#1a202c" font-size="17" font-weight="600">Blade Inspection</text>
+  <!-- Back arrow -->
+  <text x="20" y="36" fill="#2c5282" font-size="20">←</text>
+  <!-- Offline badge -->
+  <rect x="280" y="16" width="75" height="26" fill="#fed7d7" rx="13"/>
+  <text x="317" y="34" text-anchor="middle" fill="#9b2c2c" font-size="11" font-weight="600">OFFLINE</text>
+
+  <!-- Asset Info Bar -->
+  <rect x="16" y="68" width="343" height="52" fill="#ebf8ff" rx="8"/>
+  <text x="32" y="90" fill="#2a4365" font-size="14" font-weight="600">WTG-HR-01 · Trailing Edge</text>
+  <text x="32" y="108" fill="#4a5568" font-size="12">Hornsea Reef · Blade Assembly</text>
+
+  <!-- Progress -->
+  <rect x="16" y="132" width="343" height="4" fill="#e2e8f0" rx="2"/>
+  <rect x="16" y="132" width="200" height="4" fill="#2c5282" rx="2"/>
+  <text x="351" y="150" text-anchor="end" fill="#718096" font-size="12">4 of 6 fields</text>
+
+  <!-- Field 1: Trailing Edge Damage (Pass/Fail) — COMPLETED -->
+  <rect x="16" y="162" width="343" height="72" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <text x="32" y="186" fill="#1a202c" font-size="14" font-weight="600">Trailing Edge Damage *</text>
+  <text x="32" y="204" fill="#38a169" font-size="13">FAIL — Damage detected</text>
+  <circle cx="339" cy="198" r="12" fill="#c6f6d5"/>
+  <text x="339" y="203" text-anchor="middle" fill="#276749" font-size="14">✓</text>
+
+  <!-- Field 2: Crack Length (Numeric) — COMPLETED -->
+  <rect x="16" y="244" width="343" height="72" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <text x="32" y="268" fill="#1a202c" font-size="14" font-weight="600">Crack Length (mm) *</text>
+  <text x="32" y="286" fill="#38a169" font-size="13">145 mm</text>
+  <circle cx="339" cy="280" r="12" fill="#c6f6d5"/>
+  <text x="339" y="285" text-anchor="middle" fill="#276749" font-size="14">✓</text>
+
+  <!-- Field 3: Notes (Text) — COMPLETED -->
+  <rect x="16" y="326" width="343" height="72" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <text x="32" y="350" fill="#1a202c" font-size="14" font-weight="600">Notes</text>
+  <text x="32" y="368" fill="#38a169" font-size="13">Visible crack with delamination...</text>
+  <circle cx="339" cy="362" r="12" fill="#c6f6d5"/>
+  <text x="339" y="367" text-anchor="middle" fill="#276749" font-size="14">✓</text>
+
+  <!-- Field 4: Damage Photo — ACTIVE -->
+  <rect x="16" y="408" width="343" height="140" fill="white" rx="10" stroke="#2c5282" stroke-width="2" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <text x="32" y="434" fill="#2c5282" font-size="14" font-weight="700">Damage Photo *</text>
+  <!-- Photo preview -->
+  <rect x="32" y="446" width="80" height="60" fill="#edf2f7" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="72" y="480" text-anchor="middle" fill="#a0aec0" font-size="10">IMG_001</text>
+  <rect x="120" y="446" width="80" height="60" fill="#edf2f7" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="160" y="480" text-anchor="middle" fill="#a0aec0" font-size="10">IMG_002</text>
+  <!-- Add photo button -->
+  <rect x="208" y="446" width="60" height="60" fill="#ebf8ff" rx="6" stroke="#2c5282" stroke-width="1" stroke-dasharray="4"/>
+  <text x="238" y="478" text-anchor="middle" fill="#2c5282" font-size="24">+</text>
+
+  <!-- Camera button -->
+  <rect x="32" y="516" width="311" height="22" fill="none"/>
+  <text x="187" y="532" text-anchor="middle" fill="#2c5282" font-size="12" font-weight="600">📷 Take Photo  📁 Upload File</text>
+
+  <!-- Field 5: Severity (Dropdown) — UPCOMING -->
+  <rect x="16" y="560" width="343" height="52" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <text x="32" y="582" fill="#1a202c" font-size="14" font-weight="600">Severity *</text>
+  <text x="327" y="582" text-anchor="end" fill="#a0aec0" font-size="13">Select ▾</text>
+  <text x="339" y="582" fill="#a0aec0" font-size="12">○</text>
+
+  <!-- Field 6: Signature — UPCOMING -->
+  <rect x="16" y="622" width="343" height="52" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <text x="32" y="644" fill="#1a202c" font-size="14" font-weight="600">Inspector Signature *</text>
+  <text x="327" y="644" text-anchor="end" fill="#a0aec0" font-size="13">Sign ▾</text>
+  <text x="339" y="644" fill="#a0aec0" font-size="12">○</text>
+
+  <!-- Bottom Action Bar -->
+  <rect x="0" y="690" width="375" height="122" fill="white" filter="drop-shadow(0 -1px 3px rgba(0,0,0,0.08))"/>
+  <line x1="0" y1="690" x2="375" y2="690" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Save Draft -->
+  <rect x="16" y="704" width="163" height="48" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="97" y="733" text-anchor="middle" fill="#4a5568" font-size="14" font-weight="600">Save Draft</text>
+
+  <!-- Submit -->
+  <rect x="196" y="704" width="163" height="48" fill="#2c5282" rx="8"/>
+  <text x="277" y="733" text-anchor="middle" fill="white" font-size="14" font-weight="600">Submit</text>
+
+  <!-- Home indicator -->
+  <rect x="120" y="794" width="135" height="5" fill="#cbd5e0" rx="3"/>
+</svg>

@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#f7fafc"/>
+
+  <!-- Top Navigation Bar -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">Admin — User Management</text>
+
+  <text x="300" y="36" fill="#718096" font-size="14">Dashboard</text>
+  <text x="420" y="36" fill="#718096" font-size="14">Assets</text>
+  <text x="520" y="36" fill="#718096" font-size="14">Inspections</text>
+  <text x="640" y="36" fill="#718096" font-size="14">Dispatch</text>
+  <text x="740" y="36" fill="#718096" font-size="14">Tickets</text>
+  <text x="830" y="36" fill="#2c5282" font-size="14" font-weight="600" text-decoration="underline">Admin</text>
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">TM</text>
+
+  <!-- Sub-nav tabs -->
+  <rect x="24" y="68" width="1392" height="36" fill="white" rx="4"/>
+  <text x="40" y="92" fill="#2c5282" font-size="13" font-weight="600">Users</text>
+  <text x="100" y="92" fill="#718096" font-size="13">Inspection Templates</text>
+  <text x="280" y="92" fill="#718096" font-size="13">Workflow Rules</text>
+  <text x="400" y="92" fill="#718096" font-size="13">Skills &amp; Certifications</text>
+  <text x="570" y="92" fill="#718096" font-size="13">System Settings</text>
+
+  <!-- Toolbar -->
+  <rect x="24" y="116" width="1392" height="48" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <rect x="24" y="116" width="120" height="48" fill="#2c5282" rx="8"/>
+  <text x="84" y="145" text-anchor="middle" fill="white" font-size="13" font-weight="600">+ Invite User</text>
+
+  <rect x="160" y="126" width="240" height="28" fill="#edf2f7" rx="6"/>
+  <text x="180" y="145" fill="#a0aec0" font-size="12">Search by name, email, role...</text>
+
+  <rect x="420" y="126" width="100" height="28" fill="#edf2f7" rx="6"/>
+  <text x="470" y="145" text-anchor="middle" fill="#4a5568" font-size="12">Role ▾</text>
+  <rect x="532" y="126" width="100" height="28" fill="#edf2f7" rx="6"/>
+  <text x="582" y="145" text-anchor="middle" fill="#4a5568" font-size="12">Status ▾</text>
+  <rect x="644" y="126" width="120" height="28" fill="#edf2f7" rx="6"/>
+  <text x="704" y="145" text-anchor="middle" fill="#4a5568" font-size="12">Certification ▾</text>
+
+  <text x="1392" y="145" text-anchor="end" fill="#718096" font-size="12">8 users · All roles</text>
+
+  <!-- Table Header -->
+  <rect x="24" y="176" width="1392" height="36" fill="#edf2f7" rx="4"/>
+  <text x="40" y="199" fill="#718096" font-size="11" font-weight="700">USER</text>
+  <text x="300" y="199" fill="#718096" font-size="11" font-weight="700">ROLE</text>
+  <text x="420" y="199" fill="#718096" font-size="11" font-weight="700">STATUS</text>
+  <text x="530" y="199" fill="#718096" font-size="11" font-weight="700">CERTIFICATIONS</text>
+  <text x="800" y="199" fill="#718096" font-size="11" font-weight="700">CURRENT ASSIGNMENTS</text>
+  <text x="1020" y="199" fill="#718096" font-size="11" font-weight="700">AVAILABILITY</text>
+  <text x="1140" y="199" fill="#718096" font-size="11" font-weight="700">LAST ACTIVE</text>
+  <text x="1280" y="199" fill="#718096" font-size="11" font-weight="700">ACTIONS</text>
+
+  <!-- Row 1 -->
+  <rect x="24" y="216" width="1392" height="56" fill="white"/>
+  <line x1="24" y1="272" x2="1416" y2="272" stroke="#f0f0f0" stroke-width="1"/>
+  <circle cx="52" cy="244" r="18" fill="#c6f6d5"/>
+  <text x="52" y="249" text-anchor="middle" fill="#276749" font-size="12" font-weight="600">AP</text>
+  <text x="80" y="238" fill="#1a202c" font-size="13" font-weight="600">Alex Petrov</text>
+  <text x="80" y="256" fill="#718096" font-size="11">alex.petrov@windco.com</text>
+  <rect x="300" y="232" width="100" height="20" fill="#ebf8ff" rx="4"/>
+  <text x="350" y="246" text-anchor="middle" fill="#2c5282" font-size="10" font-weight="600">TECHNICIAN</text>
+  <circle cx="420" cy="244" r="4" fill="#38a169"/>
+  <text x="432" y="248" fill="#38a169" font-size="11">Online</text>
+  <text x="530" y="240" fill="#1a202c" font-size="11">Blade Insp. · Rope Access</text>
+  <text x="530" y="256" fill="#1a202c" font-size="11">NDT Level 2 · First Aid</text>
+  <text x="800" y="240" fill="#1a202c" font-size="11">WTG-HR-01 · Blade Insp.</text>
+  <text x="800" y="256" fill="#718096" font-size="11">1 active / 3 max</text>
+  <rect x="1020" y="232" width="60" height="20" fill="#c6f6d5" rx="4"/>
+  <text x="1050" y="246" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">FREE</text>
+  <text x="1140" y="248" fill="#718096" font-size="11">5 min ago</text>
+  <text x="1280" y="248" fill="#2c5282" font-size="12" font-weight="500">Edit · More</text>
+
+  <!-- Row 2 -->
+  <rect x="24" y="272" width="1392" height="56" fill="#f7fafc"/>
+  <line x1="24" y1="328" x2="1416" y2="328" stroke="#f0f0f0" stroke-width="1"/>
+  <circle cx="52" cy="300" r="18" fill="#fefcbf"/>
+  <text x="52" y="305" text-anchor="middle" fill="#744210" font-size="12" font-weight="600">MK</text>
+  <text x="80" y="294" fill="#1a202c" font-size="13" font-weight="600">Maria Kowalski</text>
+  <text x="80" y="312" fill="#718096" font-size="11">maria.k@windco.com</text>
+  <rect x="300" y="288" width="100" height="20" fill="#ebf8ff" rx="4"/>
+  <text x="350" y="302" text-anchor="middle" fill="#2c5282" font-size="10" font-weight="600">TECHNICIAN</text>
+  <circle cx="420" cy="300" r="4" fill="#38a169"/>
+  <text x="432" y="304" fill="#38a169" font-size="11">Online</text>
+  <text x="530" y="296" fill="#1a202c" font-size="11">Mechanical · Gearbox</text>
+  <text x="530" y="312" fill="#1a202c" font-size="11">Hydraulic · Confined Space</text>
+  <text x="800" y="296" fill="#1a202c" font-size="11">WTG-HR-22 · Gearbox Insp.</text>
+  <text x="800" y="312" fill="#718096" font-size="11">2 active / 3 max</text>
+  <rect x="1020" y="288" width="70" height="20" fill="#fefcbf" rx="4"/>
+  <text x="1055" y="302" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">IN-PROGRESS</text>
+  <text x="1140" y="304" fill="#718096" font-size="11">15 min ago</text>
+  <text x="1280" y="304" fill="#2c5282" font-size="12" font-weight="500">Edit · More</text>
+
+  <!-- Row 3 -->
+  <rect x="24" y="328" width="1392" height="56" fill="white"/>
+  <line x1="24" y1="384" x2="1416" y2="384" stroke="#f0f0f0" stroke-width="1"/>
+  <circle cx="52" cy="356" r="18" fill="#bee3f8"/>
+  <text x="52" y="361" text-anchor="middle" fill="#2a4365" font-size="12" font-weight="600">LB</text>
+  <text x="80" y="350" fill="#1a202c" font-size="13" font-weight="600">Lena Berg</text>
+  <text x="80" y="368" fill="#718096" font-size="11">lena.berg@windco.com</text>
+  <rect x="300" y="344" width="100" height="20" fill="#ebf8ff" rx="4"/>
+  <text x="350" y="358" text-anchor="middle" fill="#2c5282" font-size="10" font-weight="600">TECHNICIAN</text>
+  <circle cx="420" cy="356" r="4" fill="#38a169"/>
+  <text x="432" y="360" fill="#38a169" font-size="11">Online</text>
+  <text x="530" y="352" fill="#1a202c" font-size="11">Blade Insp. · Rope Access</text>
+  <text x="530" y="368" fill="#1a202c" font-size="11">Electrical · LOTO</text>
+  <text x="800" y="352" fill="#1a202c" font-size="11">WTG-HR-15 · Yaw Bearing</text>
+  <text x="800" y="368" fill="#718096" font-size="11">1 active / 3 max</text>
+  <rect x="1020" y="344" width="95" height="20" fill="#bee3f8" rx="4"/>
+  <text x="1067" y="358" text-anchor="middle" fill="#2a4365" font-size="10" font-weight="600">IN-PROGRESS</text>
+  <text x="1140" y="360" fill="#718096" font-size="11">30 min ago</text>
+  <text x="1280" y="360" fill="#2c5282" font-size="12" font-weight="500">Edit · More</text>
+
+  <!-- Row 4 - Dispatcher -->
+  <rect x="24" y="384" width="1392" height="56" fill="#f7fafc"/>
+  <line x1="24" y1="440" x2="1416" y2="440" stroke="#f0f0f0" stroke-width="1"/>
+  <circle cx="52" cy="412" r="18" fill="#e9d8fd"/>
+  <text x="52" y="417" text-anchor="middle" fill="#553c9a" font-size="12" font-weight="600">TM</text>
+  <text x="80" y="406" fill="#1a202c" font-size="13" font-weight="600">Tom Miller</text>
+  <text x="80" y="424" fill="#718096" font-size="11">tom.miller@windco.com</text>
+  <rect x="300" y="400" width="90" height="20" fill="#e9d8fd" rx="4"/>
+  <text x="345" y="414" text-anchor="middle" fill="#553c9a" font-size="10" font-weight="600">DISPATCHER</text>
+  <circle cx="420" cy="412" r="4" fill="#38a169"/>
+  <text x="432" y="416" fill="#38a169" font-size="11">Online</text>
+  <text x="530" y="416" fill="#a0aec0" font-size="11">—</text>
+  <text x="800" y="416" fill="#a0aec0" font-size="11">N/A</text>
+  <rect x="1020" y="400" width="60" height="20" fill="#c6f6d5" rx="4"/>
+  <text x="1050" y="414" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">FREE</text>
+  <text x="1140" y="416" fill="#718096" font-size="11">Just now</text>
+  <text x="1280" y="416" fill="#2c5282" font-size="12" font-weight="500">Edit · More</text>
+
+  <!-- Row 5 - Offline -->
+  <rect x="24" y="440" width="1392" height="56" fill="white"/>
+  <line x1="24" y1="496" x2="1416" y2="496" stroke="#f0f0f0" stroke-width="1"/>
+  <circle cx="52" cy="468" r="18" fill="#fed7d7"/>
+  <text x="52" y="473" text-anchor="middle" fill="#9b2c2c" font-size="12" font-weight="600">JB</text>
+  <text x="80" y="462" fill="#1a202c" font-size="13" font-weight="600">James Brown</text>
+  <text x="80" y="480" fill="#718096" font-size="11">james.b@windco.com</text>
+  <rect x="300" y="456" width="100" height="20" fill="#ebf8ff" rx="4"/>
+  <text x="350" y="470" text-anchor="middle" fill="#2c5282" font-size="10" font-weight="600">TECHNICIAN</text>
+  <circle cx="420" cy="468" r="4" fill="#e53e3e"/>
+  <text x="432" y="472" fill="#e53e3e" font-size="11">Sick Leave</text>
+  <text x="530" y="464" fill="#1a202c" font-size="11">Electrical · Controls</text>
+  <text x="530" y="480" fill="#1a202c" font-size="11">SCADA · High Voltage</text>
+  <text x="800" y="464" fill="#e53e3e" font-size="11">3 unassigned (reassigned)</text>
+  <text x="800" y="480" fill="#718096" font-size="11">Absent until May 12</text>
+  <rect x="1020" y="456" width="70" height="20" fill="#fed7d7" rx="4"/>
+  <text x="1055" y="470" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">UNAVAILABLE</text>
+  <text x="1140" y="472" fill="#e53e3e" font-size="11">4h ago</text>
+  <text x="1280" y="472" fill="#2c5282" font-size="12" font-weight="500">Edit · More</text>
+
+  <!-- Row 6 -->
+  <rect x="24" y="496" width="1392" height="56" fill="#f7fafc"/>
+  <line x1="24" y1="552" x2="1416" y2="552" stroke="#f0f0f0" stroke-width="1"/>
+  <circle cx="52" cy="524" r="18" fill="#c6f6d5"/>
+  <text x="52" y="529" text-anchor="middle" fill="#276749" font-size="12" font-weight="600">KN</text>
+  <text x="80" y="518" fill="#1a202c" font-size="13" font-weight="600">Karl Nilsen</text>
+  <text x="80" y="536" fill="#718096" font-size="11">karl.n@windco.com</text>
+  <rect x="300" y="512" width="100" height="20" fill="#ebf8ff" rx="4"/>
+  <text x="350" y="526" text-anchor="middle" fill="#2c5282" font-size="10" font-weight="600">TECHNICIAN</text>
+  <circle cx="420" cy="524" r="4" fill="#38a169"/>
+  <text x="432" y="528" fill="#38a169" font-size="11">Online</text>
+  <text x="530" y="524" fill="#1a202c" font-size="11">Mechanical · Hydraulic</text>
+  <text x="530" y="540" fill="#1a202c" font-size="11">Crane Op · Rigging</text>
+  <text x="800" y="518" fill="#1a202c" font-size="11">WTG-HR-03 · Hydraulic Hose</text>
+  <text x="800" y="534" fill="#718096" font-size="11">1 active / 3 max</text>
+  <rect x="1020" y="512" width="70" height="20" fill="#fefcbf" rx="4"/>
+  <text x="1055" y="526" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">IN-REVIEW</text>
+  <text x="1140" y="528" fill="#718096" font-size="11">10 min ago</text>
+  <text x="1280" y="528" fill="#2c5282" font-size="12" font-weight="500">Edit · More</text>
+
+  <!-- Expired cert warning -->
+  <rect x="24" y="564" width="1392" height="36" fill="#fffff0" rx="6" stroke="#fefcbf" stroke-width="1"/>
+  <text x="40" y="587" fill="#ecc94b" font-size="13">⚠</text>
+  <text x="60" y="587" fill="#744210" font-size="12" font-weight="500">2 certifications expiring within 30 days: Karl Nilsen (Crane Op — May 28), Sven Andersen (Rope Access — Jun 2)</text>
+  <text x="1392" y="587" text-anchor="end" fill="#2c5282" font-size="12" font-weight="600">Manage Certs →</text>
+</svg>

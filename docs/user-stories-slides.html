@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMMS MVP — Visual User Stories</title>
+<style>
+  :root {
+    --primary: #2c5282;
+    --primary-light: #ebf8ff;
+    --critical: #e53e3e;
+    --critical-light: #fff5f5;
+    --success: #38a169;
+    --success-light: #f0fff4;
+    --warning: #ecc94b;
+    --warning-light: #fffff0;
+    --purple: #805ad5;
+    --purple-light: #faf5ff;
+    --orange: #dd6b20;
+    --orange-light: #fffaf0;
+    --teal: #319795;
+    --teal-light: #e6fffa;
+    --gray: #718096;
+    --gray-light: #f7fafc;
+    --dark: #1a202c;
+    --border: #e2e8f0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #f7fafc;
+    color: var(--dark);
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: white; border-bottom: 1px solid var(--border);
+    padding: 12px 32px; display: flex; align-items: center; gap: 16px;
+    backdrop-filter: blur(8px);
+  }
+  .nav-brand { font-size: 16px; font-weight: 700; color: var(--primary); }
+  .nav-sep { color: var(--gray); }
+  .nav-title { font-size: 15px; font-weight: 600; }
+  .nav-counter { margin-left: auto; font-size: 13px; color: var(--gray); }
+  .nav-btn {
+    width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 6px;
+    background: white; cursor: pointer; font-size: 14px; display: flex; align-items: center;
+    justify-content: center; transition: all 0.15s;
+  }
+  .nav-btn:hover { background: var(--primary-light); border-color: var(--primary); }
+  .nav-btn:disabled { opacity: 0.3; cursor: default; }
+
+  /* Module overview */
+  .overview {
+    margin-top: 56px; padding: 32px; display: flex; gap: 16px; flex-wrap: wrap;
+  }
+  .overview-card {
+    flex: 1; min-width: 200px; padding: 16px 20px; background: white; border-radius: 10px;
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.15s;
+  }
+  .overview-card:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(44,82,130,0.12); transform: translateY(-1px); }
+  .overview-num { font-size: 24px; font-weight: 800; color: var(--primary); }
+  .overview-label { font-size: 13px; font-weight: 600; margin-top: 2px; }
+  .overview-count { font-size: 11px; color: var(--gray); margin-top: 4px; }
+
+  /* Slide container */
+  .slides { padding: 80px 32px 32px; }
+
+  /* Module header slide */
+  .module-header {
+    max-width: 1200px; margin: 0 auto 32px; padding: 32px 40px;
+    background: white; border-radius: 16px; border: 1px solid var(--border);
+    display: flex; align-items: center; gap: 24px;
+  }
+  .module-icon {
+    width: 64px; height: 64px; border-radius: 16px; display: flex;
+    align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0;
+  }
+  .module-info h2 { font-size: 22px; font-weight: 700; }
+  .module-info p { font-size: 14px; color: var(--gray); margin-top: 4px; }
+  .module-stories { font-size: 12px; color: var(--gray); margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .module-stories span {
+    padding: 2px 8px; background: var(--gray-light); border-radius: 4px;
+    font-weight: 600; font-size: 11px;
+  }
+
+  /* Story slide */
+  .story-slide {
+    max-width: 1200px; margin: 0 auto 20px; background: white;
+    border-radius: 14px; border: 1px solid var(--border); overflow: hidden;
+    transition: all 0.15s;
+  }
+  .story-slide:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+  /* Two-column body: content + thumbnail */
+  .story-body {
+    display: flex; gap: 0;
+  }
+  .story-body-content {
+    flex: 1; min-width: 0;
+  }
+  .story-body-thumb {
+    width: 320px; flex-shrink: 0; background: var(--gray-light);
+    border-left: 1px solid var(--border); display: flex; flex-direction: column;
+  }
+  .story-thumb-label {
+    padding: 8px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--gray); background: white;
+    border-bottom: 1px solid var(--border); text-align: center;
+  }
+  .story-thumb-img {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    padding: 12px; cursor: pointer; position: relative; overflow: hidden;
+  }
+  .story-thumb-img img {
+    width: 100%; height: 100%; max-height: 420px; object-fit: contain;
+    border-radius: 6px; transition: transform 0.2s;
+  }
+  .story-thumb-img:hover img { transform: scale(1.03); }
+  .story-thumb-img::after {
+    content: 'Click to open full size'; position: absolute; bottom: 8px; right: 8px;
+    font-size: 9px; color: white; background: rgba(0,0,0,0.6); padding: 2px 8px;
+    border-radius: 4px; opacity: 0; transition: opacity 0.15s;
+  }
+  .story-thumb-img:hover::after { opacity: 1; }
+
+  .story-header {
+    padding: 20px 28px; display: flex; align-items: flex-start; gap: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .story-id {
+    font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px;
+    white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+  }
+  .story-content { flex: 1; }
+  .story-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
+  .story-narrative {
+    font-size: 14px; color: #4a5568; line-height: 1.6;
+    padding: 12px 16px; background: var(--gray-light); border-radius: 8px;
+    border-left: 3px solid var(--primary);
+  }
+  .story-narrative .role { font-weight: 700; color: var(--primary); }
+  .story-narrative .action { font-weight: 600; color: var(--dark); }
+  .story-narrative .value { color: var(--gray); }
+
+  .story-meta {
+    padding: 12px 28px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+  }
+  .role-badge {
+    font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 12px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .role-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; }
+  .role-tech { background: #bee3f8; color: #2a4365; }
+  .role-tech::before { background: #2a4365; }
+  .role-disp { background: #c6f6d5; color: #276749; }
+  .role-disp::before { background: #276749; }
+  .role-qa { background: #fefcbf; color: #744210; }
+  .role-qa::before { background: #744210; }
+  .role-ops { background: #e9d8fd; color: #553c9a; }
+  .role-ops::before { background: #553c9a; }
+  .role-admin { background: #fed7d7; color: #9b2c2c; }
+  .role-admin::before { background: #9b2c2c; }
+
+  .story-wireframe {
+    font-size: 11px; color: var(--primary); font-weight: 500;
+    padding: 3px 8px; background: var(--primary-light); border-radius: 4px;
+  }
+
+  /* Acceptance criteria */
+  .story-criteria {
+    padding: 16px 28px 20px; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 8px;
+  }
+  .criterion {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.5;
+  }
+  .criterion-check {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; margin-top: 1px;
+  }
+  .criterion.checked .criterion-check { background: var(--success); color: white; }
+  .criterion.checked { background: var(--success-light); }
+
+  /* Role color coding for story IDs */
+  .id-tech { background: #bee3f8; color: #2a4365; }
+  .id-disp { background: #c6f6d5; color: #276749; }
+  .id-qa { background: #fefcbf; color: #744210; }
+  .id-ops { background: #e9d8fd; color: #553c9a; }
+  .id-admin { background: #fed7d7; color: #9b2c2c; }
+  .id-multi { background: var(--gray-light); color: var(--dark); }
+
+  /* Footer */
+  .footer {
+    text-align: center; padding: 32px; color: var(--gray); font-size: 13px;
+  }
+
+  /* Print styles */
+  @media print {
+    .nav { display: none; }
+    .slides { padding-top: 0; }
+    .story-slide { break-inside: avoid; margin-bottom: 16px; }
+    .overview { margin-top: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="nav-brand">CMMS</span>
+  <span class="nav-sep">|</span>
+  <span class="nav-title">Visual User Stories</span>
+  <span class="nav-counter">52 stories · 15 modules</span>
+</div>
+
+<div class="overview" id="overview"></div>
+<div class="slides" id="slides"></div>
+
+<div class="footer">
+  CMMS MVP — 52 User Stories · 5 Roles · 15 Modules · Wind Turbine CMMS/FSM/EAM Platform
+</div>
+
+<script>
+const modules = [
+  {
+    id: 'auth', num: '01', title: 'Authentication & Roles', color: '#2c5282', bg: '#ebf8ff', icon: '🔐',
+    desc: 'Session management, role-based access control, and secure logout',
+    stories: [
+      { id: 'AUTH-01', title: 'Log in with credentials', roles: ['multi'], wireframe: 'mobile-login',
+        asA: 'user', action: 'log in with my credentials', value: 'I can access the system securely',
+        criteria: ['User can log in with email and password', 'Invalid credentials show a clear error message', 'Session expires after configurable inactivity timeout', 'User is redirected to their role-appropriate home screen after login'] },
+      { id: 'AUTH-02', title: 'Role-based access control', roles: ['admin'], wireframe: 'desktop-admin-users',
+        asA: 'administrator', action: 'assign roles to users', value: 'each person only sees and does what they are authorized for',
+        criteria: ['System supports five roles: Technician, Dispatcher, QA Reviewer, Operations Manager, Administrator', 'Each role has a defined set of permitted screens and actions', 'Users cannot access screens or actions outside their role', 'Role changes take effect on next login'] },
+      { id: 'AUTH-03', title: 'Log out', roles: ['multi'], wireframe: 'mobile-logout',
+        asA: 'user', action: 'log out', value: 'my session is secured when I stop working',
+        criteria: ['Logout clears the session and redirects to login screen', 'Local offline data remains accessible after logout (cached for offline use)', 'Pending sync operations resume on next login when online'] }
+    ]
+  },
+  {
+    id: 'asset', num: '02', title: 'Asset Registry', color: '#319795', bg: '#e6fffa', icon: '🏗️',
+    desc: 'Hierarchical asset management: Organization → Site → Turbine → Subsystem → Component',
+    stories: [
+      { id: 'ASSET-01', title: 'Create an organization', roles: ['admin'], wireframe: 'desktop-asset-create',
+        asA: 'administrator', action: 'create an organization record', value: 'sites and assets can be grouped under it',
+        criteria: ['Organization has a unique ID and name', 'Duplicate organization names are rejected with a clear message', 'Organization appears in the asset hierarchy navigation'] },
+      { id: 'ASSET-02', title: 'Create a site (wind farm)', roles: ['admin'], wireframe: 'desktop-asset-create',
+        asA: 'administrator', action: 'create a site under an organization', value: 'turbines can be organized by location',
+        criteria: ['Site has a unique ID, name, location metadata (coordinates), and parent organization', 'Site appears in the hierarchy: Organization → Site', 'Site can be searched and filtered by name and location'] },
+      { id: 'ASSET-03', title: 'Create a turbine (WTG)', roles: ['admin'], wireframe: 'desktop-asset-create',
+        asA: 'administrator', action: 'register a turbine under a site', value: 'it can be tracked and inspected',
+        criteria: ['Turbine has a unique ID conforming to IEC 61400-25 / RDS-PP naming', 'Turbine belongs to exactly one site', 'Turbine has status (active, decommissioned, maintenance), owner, and location metadata', 'Turbine appears in hierarchy: Organization → Site → Turbine'] },
+      { id: 'ASSET-04', title: 'Create a subsystem', roles: ['admin'], wireframe: 'desktop-asset-create',
+        asA: 'administrator', action: 'define subsystems under a turbine (e.g., Gearbox, Blade, Yaw System)', value: 'components can be categorized',
+        criteria: ['Subsystem belongs to exactly one turbine', 'Subsystem has a unique ID, name, and type', 'Subsystem appears in hierarchy: Organization → Site → Turbine → Subsystem'] },
+      { id: 'ASSET-05', title: 'Create a component', roles: ['admin'], wireframe: 'desktop-asset-create',
+        asA: 'administrator', action: 'register components under a subsystem (e.g., Bearing, Trailing Edge)', value: 'defects and inspections can be linked to specific parts',
+        criteria: ['Component has a unique ID, name, and parent subsystem', 'Component has status and complete history of linked inspections and work orders', 'Component appears in hierarchy: Organization → Site → Turbine → Subsystem → Component'] },
+      { id: 'ASSET-06', title: 'Browse asset hierarchy', roles: ['multi'], wireframe: 'desktop-asset-hierarchy',
+        asA: 'user', action: 'navigate the asset hierarchy from organization down to component', value: 'I can find any asset quickly',
+        criteria: ['Hierarchy is displayed as a navigable tree or drill-down list', 'Each level shows relevant status and summary counts', 'Breadcrumb navigation shows the current position in the hierarchy'] },
+      { id: 'ASSET-07', title: 'View asset detail and history', roles: ['multi'], wireframe: 'mobile-asset-detail',
+        asA: 'user', action: 'view an asset\'s full detail and history', value: 'I can understand its condition and past work',
+        criteria: ['Detail view shows asset metadata, status, owner, and location', 'History tab lists all linked inspections, defects, tickets, and work orders chronologically', 'Evidence items attached to any historical record are accessible from the detail view'] },
+      { id: 'ASSET-08', title: 'Prevent duplicate assets', roles: ['admin'], wireframe: 'desktop-asset-create',
+        asA: 'administrator', action: 'be prevented from creating duplicate assets', value: 'data integrity is maintained',
+        criteria: ['System rejects assets with the same name and parent', 'Error message clearly states which field is duplicated'] }
+    ]
+  },
+  {
+    id: 'insp', num: '03', title: 'Inspection Templates & Forms', color: '#805ad5', bg: '#faf5ff', icon: '📋',
+    desc: 'Configurable inspection templates with dynamic form rendering and offline support',
+    stories: [
+      { id: 'INS-01', title: 'Create an inspection template', roles: ['admin'], wireframe: 'desktop-admin-template-builder',
+        asA: 'administrator', action: 'create configurable inspection templates', value: 'forms match the inspection type, turbine model, or site requirements',
+        criteria: ['Template supports field types: text, numeric, pass/fail, dropdown, photo, video, annotation, signature', 'Template is a JSON schema that can be versioned', 'Template can be scoped by inspection type, turbine model, customer, or site'] },
+      { id: 'INS-02', title: 'Edit an inspection template', roles: ['admin'], wireframe: 'desktop-admin-template-builder',
+        asA: 'administrator', action: 'edit existing templates', value: 'I can improve forms based on feedback',
+        criteria: ['Changes create a new version of the template', 'In-progress inspections using the previous version are not affected', 'Version history is viewable'] },
+      { id: 'INS-03', title: 'Render an inspection form from template', roles: ['tech'], wireframe: 'mobile-inspection-form',
+        asA: 'technician', action: 'see a dynamic inspection form generated from the assigned template', value: 'I can fill it out during inspection',
+        criteria: ['Form renders all field types defined in the template', 'Required fields are clearly marked', 'Form validates input before submission', 'Form works fully offline'] },
+      { id: 'INS-04', title: 'Submit an inspection', roles: ['tech'], wireframe: 'mobile-inspection-form',
+        asA: 'technician', action: 'submit a completed inspection form', value: 'findings are recorded and reviewable',
+        criteria: ['Submission includes timestamp, technician ID, asset ID, and all form data', 'If offline, the form is saved locally and queued for sync', 'If online, the form is submitted immediately', 'Duplicate submissions do not create duplicate records (idempotent)'] },
+      { id: 'INS-05', title: 'View inspection history for an asset', roles: ['multi'], wireframe: 'mobile-asset-detail',
+        asA: 'user', action: 'see all past inspections for a given asset', value: 'I can track its condition over time',
+        criteria: ['Inspections are listed in reverse chronological order', 'Each entry shows date, technician, status, and number of defects found', 'Clicking an entry opens the full inspection record with all form data and evidence'] }
+    ]
+  },
+  {
+    id: 'offline', num: '04', title: 'Offline Mobile Capture', color: '#dd6b20', bg: '#fffaf0', icon: '📡',
+    desc: 'Full offline capability with automatic sync, conflict resolution, and idempotent operations',
+    stories: [
+      { id: 'OFF-01', title: 'Work offline without interruption', roles: ['tech'], wireframe: 'mobile-sync-status',
+        asA: 'technician', action: 'continue working in the app when I have no connectivity', value: 'I never lose work due to bad signal',
+        criteria: ['App detects loss of connectivity and displays an offline indicator on every screen', 'All form entry, evidence capture, and status changes work without network', 'Data is stored locally in IndexedDB'] },
+      { id: 'OFF-02', title: 'Pre-load data before a site visit', roles: ['tech'], wireframe: 'mobile-home',
+        asA: 'technician', action: 'pre-load my assigned inspections and reference data before going to a remote site', value: 'I have everything I need offline',
+        criteria: ['Pre-load includes assigned inspections, asset data, templates, and reference materials', 'Pre-load indicator shows which data is available offline', 'Pre-loaded data is stored in IndexedDB and accessible without network'] },
+      { id: 'OFF-03', title: 'Automatic sync when back online', roles: ['tech'], wireframe: 'mobile-sync-status',
+        asA: 'technician', action: 'sync my offline work automatically when connectivity returns', value: 'I don\'t have to remember to upload',
+        criteria: ['Sync starts automatically when network is detected', 'Each record shows sync status: pending, synced, failed, conflict', 'Successful syncs update the status indicator on the affected records', 'Failed syncs are retried with backoff'] },
+      { id: 'OFF-04', title: 'Handle sync conflicts', roles: ['tech'], wireframe: 'mobile-conflict-resolution',
+        asA: 'technician', action: 'be notified when my offline changes conflict with server data', value: 'I can resolve discrepancies',
+        criteria: ['Non-conflicting field changes are auto-merged (field-level merge)', 'Conflicting fields are flagged for QA reviewer resolution', 'Safety-critical data conflicts are rejected entirely and flagged for immediate review', 'Sync conflict events are recorded in the audit trail'] },
+      { id: 'OFF-05', title: 'Idempotent sync', roles: ['tech'], wireframe: 'mobile-sync-status',
+        asA: 'technician', action: 'never accidentally create duplicate records', value: 'my data stays clean even if sync retries',
+        criteria: ['Submitting the same inspection twice does not create a duplicate', 'Each record carries a client-generated unique ID used for deduplication', 'Server rejects duplicates with a success response (not an error)'] }
+    ]
+  },
+  {
+    id: 'evid', num: '05', title: 'Evidence Management', color: '#38a169', bg: '#f0fff4', icon: '📸',
+    desc: 'Photo, video, and file capture with annotations, approval workflows, and searchable library',
+    stories: [
+      { id: 'EVID-01', title: 'Capture photos during inspection', roles: ['tech'], wireframe: 'mobile-inspection-form',
+        asA: 'technician', action: 'take photos directly from the inspection form', value: 'evidence is captured in context',
+        criteria: ['Camera button is prominently placed on the inspection form', 'Photos are tagged with asset ID, inspection ID, timestamp, and technician automatically', 'Photos are saved locally if offline, uploaded when online', 'Supported formats: JPEG, PNG. Max 50 MB per image'] },
+      { id: 'EVID-02', title: 'Capture video during inspection', roles: ['tech'], wireframe: 'mobile-inspection-form',
+        asA: 'technician', action: 'record video during inspection', value: 'I can capture dynamic defect evidence',
+        criteria: ['Video recording is accessible from the inspection form', 'Videos are tagged with asset ID, inspection ID, timestamp, and technician', 'Max 500 MB per video file', 'Server generates a 720p preview for quick viewing'] },
+      { id: 'EVID-03', title: 'Upload files as evidence', roles: ['tech'], wireframe: 'mobile-inspection-form',
+        asA: 'technician', action: 'upload existing files (PDFs, images, documents)', value: 'I can attach pre-existing documentation',
+        criteria: ['File picker supports JPEG, PNG, MP4, PDF formats', 'Files are linked to the current inspection, asset, and ticket', 'Upload progress is visible', 'Failed uploads are retried automatically'] },
+      { id: 'EVID-04', title: 'View and annotate evidence', roles: ['multi'], wireframe: 'mobile-evidence-viewer',
+        asA: 'user', action: 'view evidence items and add annotations', value: 'I can highlight defect locations and add context',
+        criteria: ['Evidence viewer displays the media with zoom and pan', 'Annotation tools allow markup on images (arrows, circles, text labels)', 'Annotations are saved as separate overlay data, not baked into the original', 'Annotations are visible to all users who can view the evidence'] },
+      { id: 'EVID-05', title: 'Search the evidence library', roles: ['multi'], wireframe: 'desktop-evidence-library',
+        asA: 'user', action: 'search for evidence by asset, site, date, or type', value: 'I can reuse evidence across tickets and reports',
+        criteria: ['Search supports filtering by asset ID, site, turbine, component, inspection ID, ticket ID, date range, media type, and author', 'Results show thumbnails with metadata', 'Clicking a result opens the full evidence item with context'] },
+      { id: 'EVID-06', title: 'Evidence versioning', roles: ['multi'], wireframe: 'mobile-evidence-viewer',
+        asA: 'user', action: 'see the version history of evidence items', value: 'I can track changes and annotations over time',
+        criteria: ['Each evidence item has a version history showing upload, annotation, and approval events', 'Original file is always preserved; annotations are separate', 'Version history includes author and timestamp for each change'] }
+    ]
+  },
+  {
+    id: 'ticket', num: '06', title: 'Ticket & Work Order Management', color: '#e53e3e', bg: '#fff5f5', icon: '🎫',
+    desc: 'Full ticket lifecycle from defect to resolution, with work orders and SLA tracking',
+    stories: [
+      { id: 'TKT-01', title: 'Create a ticket from an inspection defect', roles: ['qa'], wireframe: 'desktop-create-ticket',
+        asA: 'QA reviewer', action: 'create a ticket directly from a defect found during inspection', value: 'issues are tracked and assigned without manual re-entry',
+        criteria: ['Defect has a "Create Ticket" action', 'Ticket auto-populates asset link, defect description, severity, and evidence', 'Ticket follows the configured lifecycle starting at "New"'] },
+      { id: 'TKT-02', title: 'View ticket lifecycle', roles: ['multi'], wireframe: 'desktop-ticket-management',
+        asA: 'user', action: 'see the full status history of a ticket', value: 'I understand what happened and when',
+        criteria: ['Ticket status transitions are logged: New → Triaged → Assigned → In Progress → Pending Review → Closed → Reopened', 'Each transition shows who changed it, when, and any notes', 'Invalid status transitions are rejected (enforced by state machine)'] },
+      { id: 'TKT-03', title: 'Assign a ticket', roles: ['disp'], wireframe: 'desktop-dispatcher-board',
+        asA: 'dispatcher', action: 'assign a ticket to a technician', value: 'work is dispatched to the right person',
+        criteria: ['Dispatcher can select a technician from available candidates', 'Technician receives a notification of the new assignment', 'Ticket status moves to "Assigned"', 'Assignment is recorded in the audit trail'] },
+      { id: 'TKT-04', title: 'Update ticket priority and severity', roles: ['disp'], wireframe: 'desktop-ticket-management',
+        asA: 'dispatcher', action: 'set or change ticket priority and severity', value: 'urgent issues are handled first',
+        criteria: ['Priority levels are clearly displayed with color coding', 'Changes to priority or severity are logged in the audit trail', 'Critical defects trigger escalation rules and notifications'] },
+      { id: 'TKT-05', title: 'Add resolution notes and close a ticket', roles: ['tech'], wireframe: 'mobile-ticket-detail',
+        asA: 'technician', action: 'add resolution notes and evidence when completing work', value: 'the ticket has a complete record',
+        criteria: ['Resolution notes support rich text', 'Evidence can be attached at closure', 'Ticket moves to "Pending Review" after technician submits', 'QA reviewer can approve closure or reopen with comments'] },
+      { id: 'TKT-06', title: 'Reopen a closed ticket', roles: ['qa'], wireframe: 'desktop-qa-review-queue',
+        asA: 'QA reviewer', action: 'reopen a closed ticket', value: 'recurring or unresolved issues are tracked',
+        criteria: ['Reopening requires a reason', 'Ticket status resets to "Reopened"', 'Reopened tickets are visible on dashboards and dispatcher board', 'Reopen event is logged in audit trail'] },
+      { id: 'TKT-07', title: 'Link evidence to a ticket', roles: ['multi'], wireframe: 'mobile-ticket-detail',
+        asA: 'user', action: 'attach evidence items to a ticket', value: 'the ticket has supporting documentation',
+        criteria: ['Evidence can be linked from the evidence library or uploaded directly', 'Links are recorded with who linked them and when', 'Multiple evidence items can be linked to one ticket'] },
+      { id: 'TKT-08', title: 'Create a work order', roles: ['disp'], wireframe: 'desktop-work-order',
+        asA: 'dispatcher', action: 'create a work order from a ticket', value: 'the repair or maintenance work is planned and tracked',
+        criteria: ['Work order links to the parent ticket, asset, and assignee', 'Work order has its own lifecycle and due date', 'Work order appears on the technician\'s task list'] }
+    ]
+  },
+  {
+    id: 'avail', num: '07', title: 'Technician Availability & Absence', color: '#ecc94b', bg: '#fffff0', icon: '👤',
+    desc: 'Real-time availability tracking, self-service absence reporting, and coverage planning',
+    stories: [
+      { id: 'AVAIL-01', title: 'Set technician status', roles: ['tech'], wireframe: 'mobile-status-picker',
+        asA: 'technician', action: 'update my status (available, sick, leave, traveling, etc.)', value: 'dispatchers know my availability',
+        criteria: ['Status options: Available, Assigned, Traveling, On-site, On break, Sick, Training, Leave, Unavailable', 'Status change is visible immediately to dispatchers and managers', 'Status change is logged with timestamp'] },
+      { id: 'AVAIL-02', title: 'View team availability', roles: ['disp'], wireframe: 'desktop-dispatcher-board',
+        asA: 'dispatcher', action: 'see all technicians\' current status at a glance', value: 'I can make informed assignment decisions',
+        criteria: ['Board shows each technician with their current status, location, skills, and active assignments', 'Filterable by skill, location, and shift window', 'Color-coded for quick scanning'] },
+      { id: 'AVAIL-03', title: 'Mark a technician absent', roles: ['disp'], wireframe: 'desktop-absence-history',
+        asA: 'dispatcher', action: 'mark a technician as absent with a reason and expected return', value: 'their assignments can be reassigned',
+        criteria: ['Absence record captures: reason, start time, expected return date, approval state, notes', 'Technician\'s status changes to the relevant unavailable state', 'All open assignments for the technician are flagged for reassignment', 'Absence event is logged in audit trail'] },
+      { id: 'AVAIL-04', title: 'Self-report absence', roles: ['tech'], wireframe: 'mobile-absence',
+        asA: 'technician', action: 'mark myself as sick or unavailable from my mobile', value: 'my dispatcher is notified immediately',
+        criteria: ['Technician can set status to Sick or Unavailable with a reason', 'Dispatcher receives a notification', 'Technician\'s open assignments are flagged for reassignment'] },
+      { id: 'AVAIL-05', title: 'View absence history', roles: ['ops'], wireframe: 'desktop-absence-history',
+        asA: 'operations manager', action: 'see absence history for the team', value: 'I can identify patterns and plan coverage',
+        criteria: ['Absence history is viewable per technician and per team', 'Shows reason, duration, and impact on assignments', 'Filterable by date range and reason'] }
+    ]
+  },
+  {
+    id: 'repl', num: '08', title: 'Replacement Suggestions', color: '#e53e3e', bg: '#fff5f5', icon: '🔄',
+    desc: 'AI-powered replacement matching with weighted scoring, escalation, and mobile acceptance',
+    stories: [
+      { id: 'REPL-01', title: 'Get replacement suggestions', roles: ['disp'], wireframe: 'desktop-dispatcher-board',
+        asA: 'dispatcher', action: 'see ranked replacement candidates when a technician becomes unavailable', value: 'I can reassign work quickly',
+        criteria: ['System suggests candidates ranked by weighted score: skill match (30%), certification match (25%), proximity (20%), workload (15%), familiarity (10%)', 'Each candidate shows their score breakdown and reason codes', 'Candidates below 60% threshold are flagged for escalation'] },
+      { id: 'REPL-02', title: 'Reassign work to a replacement', roles: ['disp'], wireframe: 'desktop-dispatcher-board',
+        asA: 'dispatcher', action: 'reassign a technician\'s open assignments to a suggested replacement with one action', value: 'service continuity is maintained',
+        criteria: ['Dispatcher selects a candidate and confirms reassignment', 'All open assignments transfer to the replacement technician', 'Both the original technician and replacement are notified', 'Replacement technician sees the new assignments on their home screen'] },
+      { id: 'REPL-03', title: 'Escalate when no qualified replacement exists', roles: ['disp'], wireframe: 'desktop-escalation-view',
+        asA: 'dispatcher', action: 'escalate to a manager when no qualified replacement is found', value: 'the gap is addressed manually',
+        criteria: ['If no candidate scores above 60%, an escalation notification is sent to the operations manager', 'Escalation includes the affected assignments and the skills/certs required', 'Escalation is logged in the audit trail'] },
+      { id: 'REPL-04', title: 'Accept or decline a substitute assignment', roles: ['tech'], wireframe: 'mobile-assignment-notification',
+        asA: 'technician', action: 'accept or decline a reassignment', value: 'I can confirm I am able to do the work',
+        criteria: ['Technician receives a notification with assignment details', 'Technician can accept or decline with a reason', 'If declined, dispatcher is notified and can choose another candidate'] }
+    ]
+  },
+  {
+    id: 'disp', num: '09', title: 'Dispatcher Board', color: '#3182ce', bg: '#ebf8ff', icon: '📊',
+    desc: 'Coverage board with SLA risk detection, drag-assign, and real-time updates',
+    stories: [
+      { id: 'DISP-01', title: 'View coverage by day, site, team, and skill', roles: ['disp'], wireframe: 'desktop-dispatcher-board',
+        asA: 'dispatcher', action: 'see a coverage board organized by day, site, team, and skill', value: 'I can identify gaps',
+        criteria: ['Board shows assignments, availability, and coverage status', 'Filterable by date range, site, team, and skill', 'Coverage gaps are highlighted visually (color coding)', 'Board updates in real time when changes occur'] },
+      { id: 'DISP-02', title: 'Identify SLA risk from absences', roles: ['disp'], wireframe: 'desktop-dispatcher-board',
+        asA: 'dispatcher', action: 'see which absences create SLA risk', value: 'I can prioritize reassignments',
+        criteria: ['Board flags assignments at SLA risk due to absences', 'Shows time remaining before SLA breach', 'Links directly to replacement suggestions for quick action'] },
+      { id: 'DISP-03', title: 'Assign inspections from the board', roles: ['disp'], wireframe: 'desktop-dispatcher-board',
+        asA: 'dispatcher', action: 'assign inspections to technicians from the dispatch board', value: 'upcoming work is distributed',
+        criteria: ['Dispatcher can drag or select to assign an inspection to a technician', 'Assignment respects technician skills and certifications', 'Technician is notified of the new assignment'] }
+    ]
+  },
+  {
+    id: 'dash', num: '10', title: 'Dashboard & Reporting', color: '#805ad5', bg: '#faf5ff', icon: '📈',
+    desc: 'Operational KPIs, ticket aging, defect trends, sync health, and exportable reports',
+    stories: [
+      { id: 'DASH-01', title: 'View operational dashboard', roles: ['ops'], wireframe: 'desktop-dashboard',
+        asA: 'operations manager', action: 'see a dashboard with key metrics', value: 'I can monitor operations at a glance',
+        criteria: ['Dashboard shows: open ticket count, ticket aging, SLA compliance, sync failure rate, defect trends, technician coverage gaps', 'Metrics update in near real time', 'Filterable by site, team, and date range'] },
+      { id: 'DASH-02', title: 'View ticket aging', roles: ['ops'], wireframe: 'desktop-dashboard',
+        asA: 'operations manager', action: 'see how long tickets have been open', value: 'I can identify stalled work',
+        criteria: ['Aging report groups tickets by how long they have been in each status', 'Tickets approaching or exceeding SLA targets are highlighted', 'Clicking a ticket opens its detail view'] },
+      { id: 'DASH-03', title: 'View defect trends', roles: ['ops'], wireframe: 'desktop-dashboard',
+        asA: 'operations manager', action: 'see defect trends by asset class over time', value: 'I can identify recurring problems',
+        criteria: ['Trend chart shows defect count by asset class over a selectable date range', 'Drill-down from the chart opens the filtered defect list', 'Data can be exported for external analysis'] },
+      { id: 'DASH-04', title: 'Export a report', roles: ['ops'], wireframe: 'desktop-export-report',
+        asA: 'operations manager', action: 'export reports', value: 'I can share them with stakeholders',
+        criteria: ['Reports can be exported in PDF format', 'Report includes the data and evidence snapshot as of the export date', 'Exported reports are reproducible from stored data'] },
+      { id: 'DASH-05', title: 'View sync health', roles: ['ops'], wireframe: 'desktop-dashboard',
+        asA: 'operations manager', action: 'monitor sync success rates across the field team', value: 'I can detect connectivity or app issues',
+        criteria: ['Dashboard shows sync success rate per technician', 'Failed syncs are listed with error details', 'Sync events are logged and traceable'] }
+    ]
+  },
+  {
+    id: 'search', num: '11', title: 'Search & Audit Trail', color: '#4a5568', bg: '#f7fafc', icon: '🔍',
+    desc: 'Cross-entity global search and immutable audit trail with export capabilities',
+    stories: [
+      { id: 'SEARCH-01', title: 'Search assets, tickets, and evidence', roles: ['multi'], wireframe: 'desktop-global-search',
+        asA: 'user', action: 'search across assets, tickets, and evidence', value: 'I can find what I need quickly',
+        criteria: ['Global search bar accessible from any screen', 'Searchable by: asset, site, turbine, component, ticket ID, inspection type, date range, severity, status, technician, customer', 'Results are grouped by type (assets, tickets, evidence)', 'Filters can be combined for narrow results'] },
+      { id: 'SEARCH-02', title: 'Filter ticket lists', roles: ['multi'], wireframe: 'desktop-ticket-management',
+        asA: 'user', action: 'filter tickets by status, priority, assignee, and date', value: 'I can focus on relevant work',
+        criteria: ['Filter bar on ticket list view', 'Multiple filters can be combined', 'Filter state is preserved when navigating away and back'] },
+      { id: 'AUDIT-01', title: 'View audit trail for a record', roles: ['multi'], wireframe: 'desktop-audit-trail',
+        asA: 'user', action: 'see the full audit trail for any record', value: 'I know what changed and who changed it',
+        criteria: ['Every edit, approval, status change, assignment, and evidence link is recorded', 'Audit trail shows: timestamp, user, action, before/after values', 'Audit trail cannot be edited or deleted', 'Accessible from any record detail view'] },
+      { id: 'AUDIT-02', title: 'Export audit trail', roles: ['admin'], wireframe: 'desktop-audit-trail',
+        asA: 'administrator', action: 'export audit trails', value: 'I can provide compliance evidence',
+        criteria: ['Export includes all audit events for a selected scope', 'Export format: CSV or PDF', 'Export is logged as an audit event itself'] }
+    ]
+  },
+  {
+    id: 'mobile', num: '12', title: 'Technician Mobile Workflow', color: '#2c5282', bg: '#ebf8ff', icon: '📱',
+    desc: 'Mobile-first PWA with home screen inspections, QR scanning, and sync visibility',
+    stories: [
+      { id: 'MOB-01', title: 'See my assigned inspections', roles: ['tech'], wireframe: 'mobile-home',
+        asA: 'technician', action: 'see a list of my assigned inspections on my mobile home screen', value: 'I know what to work on',
+        criteria: ['Home screen shows assigned inspections sorted by due date', 'Each card shows turbine, inspection type, and status', 'Offline/sync indicator is visible on the home screen'] },
+      { id: 'MOB-02', title: 'Start an inspection from my phone', roles: ['tech'], wireframe: 'mobile-inspection-form',
+        asA: 'technician', action: 'tap to start an inspection', value: 'I can begin work with minimal steps',
+        criteria: ['One tap to open the inspection form', 'Form loads from pre-loaded template data (works offline)', 'Start time is recorded automatically'] },
+      { id: 'MOB-03', title: 'Complete an inspection from my phone', roles: ['tech'], wireframe: 'mobile-inspection-form',
+        asA: 'technician', action: 'complete and submit an inspection from my phone', value: 'I can move to the next task',
+        criteria: ['Submit button validates all required fields', 'Completion time is recorded automatically', 'If offline, submission is queued for sync', 'Success confirmation is shown'] },
+      { id: 'MOB-04', title: 'Scan a QR code to identify an asset', roles: ['tech'], wireframe: 'mobile-qr-scanner',
+        asA: 'technician', action: 'scan a QR code on a turbine or component', value: 'I can quickly open the right asset and report issues',
+        criteria: ['Camera opens from any screen via QR scan button', 'Scanned code resolves to the correct asset in the hierarchy', 'Technician can start an inspection or create a ticket directly from the scanned asset'] },
+      { id: 'MOB-05', title: 'View sync status of my records', roles: ['tech'], wireframe: 'mobile-sync-status',
+        asA: 'technician', action: 'see which of my records are synced, pending, or failed', value: 'I know my data is safe',
+        criteria: ['Sync status indicator on every record (pending, synced, failed, conflict)', 'Summary view shows count of pending and failed syncs', 'Failed records have a retry action'] },
+      { id: 'MOB-06', title: 'Install the PWA to my home screen', roles: ['tech'], wireframe: null,
+        asA: 'technician', action: 'install the app to my phone\'s home screen', value: 'it feels like a native app',
+        criteria: ['Browser prompts "Add to Home Screen"', 'Installed app opens in fullscreen mode (no browser chrome)', 'App icon and splash screen match branding'] }
+    ]
+  },
+  {
+    id: 'admin', num: '13', title: 'Admin Settings', color: '#9b2c2c', bg: '#fff5f5', icon: '⚙️',
+    desc: 'User management, skills & certifications, workflow configuration, and template builder',
+    stories: [
+      { id: 'ADMIN-01', title: 'Manage users and roles', roles: ['admin'], wireframe: 'desktop-admin-users',
+        asA: 'administrator', action: 'create, edit, and deactivate user accounts', value: 'access is controlled',
+        criteria: ['Admin can create users with name, email, role, and skills', 'Admin can change a user\'s role', 'Admin can deactivate a user (prevents login but preserves history)'] },
+      { id: 'ADMIN-02', title: 'Manage skills and certifications', roles: ['admin'], wireframe: 'desktop-admin-certs',
+        asA: 'administrator', action: 'define skills and certifications and assign them to technicians', value: 'the system can match replacements accurately',
+        criteria: ['Skills have a name and category', 'Certifications have name, issuing body, and validity period', 'User-skill assignment includes proficiency level and acquired date', 'User-certification assignment includes issue date, expiry date, and certificate URL', 'Expired certifications are flagged'] },
+      { id: 'ADMIN-03', title: 'Configure workflow rules', roles: ['admin'], wireframe: 'desktop-admin-workflow',
+        asA: 'administrator', action: 'configure ticket lifecycle states and escalation rules', value: 'workflows match our processes',
+        criteria: ['Admin can define which status transitions are allowed', 'Admin can set escalation rules for critical-priority tickets', 'Admin can configure notification triggers for key events'] },
+      { id: 'ADMIN-04', title: 'Build inspection templates', roles: ['admin'], wireframe: 'desktop-admin-template-builder',
+        asA: 'administrator', action: 'use a template builder to create and edit inspection forms', value: 'I don\'t need developer help to change forms',
+        criteria: ['Drag-and-drop form builder with supported field types', 'Preview mode shows the form as the technician would see it', 'Templates can be scoped by inspection type, turbine model, customer, or site'] }
+    ]
+  },
+  {
+    id: 'nfr', num: '14', title: 'Non-Functional Requirements', color: '#4a5568', bg: '#edf2f7', icon: '⚡',
+    desc: 'Performance, data integrity, security, and scalability requirements',
+    stories: [
+      { id: 'NFR-01', title: 'Fast media upload and retrieval', roles: ['tech'], wireframe: null,
+        asA: 'technician', action: 'upload large photos and videos quickly', value: 'I am not waiting in the field',
+        criteria: ['Client-side compression before upload for images', 'S3 presigned URLs for direct upload (no server bottleneck)', 'Server generates thumbnails for fast browsing', 'Upload progress is visible'] },
+      { id: 'NFR-02', title: 'Data integrity during sync', roles: ['tech'], wireframe: null,
+        asA: 'technician', action: 'never lose my captured data even if sync fails', value: 'my field work is never wasted',
+        criteria: ['Local data in IndexedDB persists across app restarts', 'Failed syncs are queued and retried with exponential backoff', 'Sync events are logged for traceability'] },
+      { id: 'NFR-03', title: 'Secure mobile storage', roles: ['tech'], wireframe: null,
+        asA: 'technician', action: 'have my locally cached data be secure', value: 'sensitive information is not exposed if I lose my device',
+        criteria: ['Local storage is encrypted at rest', 'Data is scoped to the logged-in user', 'Logout clears session data but preserves encrypted offline cache'] },
+      { id: 'NFR-04', title: 'Scalable performance under load', roles: ['ops'], wireframe: null,
+        asA: 'operations manager', action: 'have the system remain responsive even with many users and large evidence files', value: 'operations are not slowed down',
+        criteria: ['Page load under 3 seconds for standard views', 'Search returns results within 2 seconds', 'Dashboard loads within 5 seconds with up to 10,000 records', 'Evidence thumbnails load progressively'] }
+    ]
+  },
+  {
+    id: 'qa', num: '15', title: 'QA Review Workflow', color: '#d69e2e', bg: '#fffff0', icon: '✅',
+    desc: 'Inspection review, evidence approval, and ticket closure verification',
+    stories: [
+      { id: 'QA-01', title: 'Review a submitted inspection', roles: ['qa'], wireframe: 'desktop-qa-review-queue',
+        asA: 'QA reviewer', action: 'review submitted inspections', value: 'I can validate quality before tickets are created',
+        criteria: ['Review queue shows all submitted inspections awaiting review', 'Reviewer can see all form data, evidence, and metadata', 'Reviewer can approve, reject with comments, or request changes'] },
+      { id: 'QA-02', title: 'Approve evidence', roles: ['qa'], wireframe: 'desktop-evidence-approval',
+        asA: 'QA reviewer', action: 'approve or flag evidence', value: 'only verified evidence is used in reports',
+        criteria: ['Evidence items have approval status: pending, approved, flagged', 'Approved evidence is available for report inclusion', 'Flagged evidence is returned to the technician with comments'] },
+      { id: 'QA-03', title: 'Approve ticket closure', roles: ['qa'], wireframe: 'desktop-qa-review-queue',
+        asA: 'QA reviewer', action: 'approve or reject ticket closures', value: 'work quality is verified before closing',
+        criteria: ['Tickets in "Pending Review" appear in the reviewer\'s queue', 'Reviewer can approve (ticket moves to Closed) or reopen with comments', 'Approval/rejection is logged in the audit trail'] }
+    ]
+  }
+];
+
+const roleMap = {
+  tech: { label: 'Technician', cls: 'role-tech', idCls: 'id-tech' },
+  disp: { label: 'Dispatcher', cls: 'role-disp', idCls: 'id-disp' },
+  qa: { label: 'QA Reviewer', cls: 'role-qa', idCls: 'id-qa' },
+  ops: { label: 'Ops Manager', cls: 'role-ops', idCls: 'id-ops' },
+  admin: { label: 'Administrator', cls: 'role-admin', idCls: 'id-admin' },
+  multi: { label: 'All Roles', cls: 'role-tech', idCls: 'id-multi' }
+};
+
+// Render overview
+const overviewEl = document.getElementById('overview');
+modules.forEach(m => {
+  const card = document.createElement('div');
+  card.className = 'overview-card';
+  card.innerHTML = `
+    <div class="overview-num" style="color:${m.color}">${m.num}</div>
+    <div class="overview-label">${m.title}</div>
+    <div class="overview-count">${m.stories.length} stor${m.stories.length === 1 ? 'y' : 'ies'}</div>
+  `;
+  card.onclick = () => document.getElementById('mod-' + m.id).scrollIntoView({ behavior: 'smooth' });
+  overviewEl.appendChild(card);
+});
+
+// Render slides
+const slidesEl = document.getElementById('slides');
+modules.forEach(m => {
+  // Module header
+  const header = document.createElement('div');
+  header.className = 'module-header';
+  header.id = 'mod-' + m.id;
+  header.innerHTML = `
+    <div class="module-icon" style="background:${m.bg}">${m.icon}</div>
+    <div class="module-info">
+      <h2 style="color:${m.color}">${m.num}. ${m.title}</h2>
+      <p>${m.desc}</p>
+      <div class="module-stories">
+        ${m.stories.map(s => `<span style="background:${m.bg};color:${m.color}">${s.id}</span>`).join('')}
+      </div>
+    </div>
+  `;
+  slidesEl.appendChild(header);
+
+  // Story cards
+  m.stories.forEach(s => {
+    const primaryRole = s.roles[0];
+    const r = roleMap[primaryRole];
+    const slide = document.createElement('div');
+    slide.className = 'story-slide';
+
+    const roleBadges = s.roles.map(role => {
+      const rm = roleMap[role];
+      return `<span class="role-badge ${rm.cls}">${rm.label}</span>`;
+    }).join('');
+
+    const wireframeTag = s.wireframe
+      ? `<a href="wireframes/${s.wireframe}.svg" class="story-wireframe" target="_blank">${s.wireframe.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</a>`
+      : '';
+
+    const criteriaHTML = s.criteria.map(c => `
+      <div class="criterion checked">
+        <div class="criterion-check">✓</div>
+        <div>${c}</div>
+      </div>
+    `).join('');
+
+    const thumbHTML = s.wireframe
+      ? `<div class="story-body-thumb">
+           <div class="story-thumb-label">Wireframe — ${s.wireframe.replace(/\b\w/g, c => c.toUpperCase()).replace(/-/g, ' ')}</div>
+           <a href="wireframes/${s.wireframe}.svg" target="_blank" class="story-thumb-img">
+             <img src="wireframes/${s.wireframe}.svg" alt="${s.wireframe}" loading="lazy">
+           </a>
+         </div>`
+      : '';
+
+    slide.innerHTML = `
+      <div class="story-header">
+        <span class="story-id ${r.idCls}">${s.id}</span>
+        <div class="story-content">
+          <div class="story-title">${s.title}</div>
+          <div class="story-narrative">
+            <span class="role">As a</span> ${s.asA},
+            <span class="action">I want to</span> ${s.action}
+            <span class="value">so that</span> ${s.value}.
+          </div>
+        </div>
+      </div>
+      <div class="story-body">
+        <div class="story-body-content">
+          <div class="story-meta">
+            ${roleBadges}
+            ${wireframeTag}
+          </div>
+          <div class="story-criteria">
+            ${criteriaHTML}
+          </div>
+        </div>
+        ${thumbHTML}
+      </div>
+    `;
+    slidesEl.appendChild(slide);
+  });
+});
+</script>
+</body>
+</html>

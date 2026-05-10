@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wind CMMS — MVP Documentation Hub</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0a0f1a;
+  color: #c8d6e5;
+  line-height: 1.5;
+  padding: 2em;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+h1 { color: #4fc3f7; font-size: 1.8em; margin-bottom: 0.2em; }
+.subtitle { color: #5a7a8a; font-size: 0.9em; margin-bottom: 2em; }
+h2 {
+  color: #7ec8e3;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #1b3a4a;
+  padding-bottom: 0.3em;
+  margin: 1.8em 0 0.8em;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 12px;
+}
+.card {
+  background: #0d1b2a;
+  border: 1px solid #1b3a4a;
+  border-radius: 8px;
+  padding: 14px 16px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: #4fc3f7; }
+.card a {
+  color: #4fc3f7;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95em;
+}
+.card a:hover { text-decoration: underline; }
+.card .desc { color: #7a8a9a; font-size: 0.8em; margin-top: 4px; }
+.card .meta { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.65em;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.tag-spec { background: #1565c0; color: #bbdefb; }
+.tag-guide { background: #2e7d32; color: #c8e6c9; }
+.tag-reference { background: #6a1b9a; color: #e1bee7; }
+.tag-presentation { background: #e65100; color: #ffccbc; }
+.tag-research { background: #4a148c; color: #ce93d8; }
+.tag-test { background: #00838f; color: #b2ebf2; }
+.tag-design { background: #bf360c; color: #ffccbc; }
+
+.status { font-size: 0.7em; color: #5a7a8a; margin-top: 6px; }
+.status strong { color: #66bb6a; }
+
+.footer {
+  margin-top: 3em;
+  padding-top: 1em;
+  border-top: 1px solid #1b3a4a;
+  font-size: 0.75em;
+  color: #3a5a6a;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<h1>Wind CMMS — MVP Documentation</h1>
+<p class="subtitle">Hybrid Service-Asset Platform for remote robotic wind turbine inspection and repair</p>
+
+<!-- ============================================================ -->
+<h2>Strategy & Requirements</h2>
+<!-- ============================================================ -->
+<div class="grid">
+
+<div class="card">
+  <a href="proposal.md">Proposal</a>
+  <div class="desc">Full platform definition: business goals, system archetype (CMMS + FSM + EAM), operating context, user roles, functional requirements, non-functional requirements, and phased roadmap.</div>
+  <div class="meta">
+    <span class="tag tag-spec">Spec</span>
+  </div>
+  <div class="status">Source document — all other docs derive from this</div>
+</div>
+
+<div class="card">
+  <a href="MVP_Requirements.md">MVP Requirements</a>
+  <div class="desc">Scope boundaries: what's in and out of MVP. Core user flows, functional requirements, non-functional targets, and exit criteria.</div>
+  <div class="meta">
+    <span class="tag tag-spec">Spec</span>
+  </div>
+  <div class="status">Condensed scope document — quick reference for what MVP ships</div>
+</div>
+
+<div class="card">
+  <a href="MVP_User_Stories.md">User Stories</a>
+  <div class="desc">52 user stories across 13 modules. Each with acceptance criteria. Covers Auth, Assets, Inspections, Offline, Evidence, Tickets, Availability, Replacements, Dispatch, Dashboard, Search, Admin, and Mobile.</div>
+  <div class="meta">
+    <span class="tag tag-spec">Spec</span>
+    <span class="tag tag-test">Test</span>
+  </div>
+  <div class="status"><strong>52 stories</strong> · traced to 76 test cases</div>
+</div>
+
+<div class="card">
+  <a href="MVP_Implementation_Phases.md">Implementation Phases</a>
+  <div class="desc">7-phase build plan: Discovery → Core Foundation → Field Capture → Ticketing & Workforce → Reporting & Audit → Testing & Pilot → Launch.</div>
+  <div class="meta">
+    <span class="tag tag-guide">Guide</span>
+  </div>
+  <div class="status">Phase-level plan, not sprint-level</div>
+</div>
+
+</div>
+
+<!-- ============================================================ -->
+<h2>Design & Architecture</h2>
+<!-- ============================================================ -->
+<div class="grid">
+
+<div class="card">
+  <a href="MVP_Design.md">MVP Design Document</a>
+  <div class="desc">Design principles, system archetype, main modules, key screens, data model overview, and UX notes. The design authority document.</div>
+  <div class="meta">
+    <span class="tag tag-design">Design</span>
+  </div>
+  <div class="status">Mobile-first PWA · offline-first · single React codebase</div>
+</div>
+
+<div class="card">
+  <a href="developer-briefing.md">Developer Briefing</a>
+  <div class="desc">Technical deep-dive for the engineering team. Architecture diagram, core data model, the 6 hard problems (offline sync, conflict resolution, templates, absence pipeline, evidence lifecycle, audit trail), ticket lifecycle, API principles, and tech stack.</div>
+  <div class="meta">
+    <span class="tag tag-design">Design</span>
+    <span class="tag tag-guide">Guide</span>
+  </div>
+  <div class="status">Tech stack: TypeScript · Fastify · Prisma · PostgreSQL · React · Keycloak</div>
+</div>
+
+<div class="card">
+  <a href="MVP_Database_Schema.md">Database Schema</a>
+  <div class="desc">Full Prisma schema with naming conventions, enums, all tables (organizations through audit_events), soft delete pattern, audit trail approach, and indexing strategy.</div>
+  <div class="meta">
+    <span class="tag tag-spec">Spec</span>
+    <span class="tag tag-design">Design</span>
+  </div>
+  <div class="status">PostgreSQL 15+ · Prisma ORM · JSONB for flexible form data</div>
+</div>
+
+<div class="card">
+  <a href="MVP_API_Specification.md">API Specification</a>
+  <div class="desc">REST API with endpoints for auth, assets, inspections, evidence, tickets, workforce, sync, search, and admin. Includes request/response schemas, error codes, pagination, rate limits, and WebSocket events.</div>
+  <div class="meta">
+    <span class="tag tag-spec">Spec</span>
+  </div>
+  <div class="status">JWT auth · idempotency keys · presigned S3 uploads · delta sync</div>
+</div>
+
+<div class="card">
+  <a href="MVP_Deployment_Guide.md">Deployment Guide</a>
+  <div class="desc">Docker Compose setup for single-server MVP. Architecture diagram, service ports, prerequisites, environment variables, backup/restore, and scaling notes for Phase 4+.</div>
+  <div class="meta">
+    <span class="tag tag-guide">Guide</span>
+  </div>
+  <div class="status">Docker Compose · 8 CPU / 32 GB · ~100 users</div>
+</div>
+
+<div class="card">
+  <a href="wireframes/index.html">Wireframes</a>
+  <div class="desc">33 SVG wireframes covering desktop (19 screens) and mobile (14 screens). Includes asset hierarchy, inspection forms, dispatcher board, QA review, admin settings, and mobile field workflows.</div>
+  <div class="meta">
+    <span class="tag tag-design">Design</span>
+  </div>
+  <div class="status"><strong>33 screens</strong> · desktop + mobile</div>
+</div>
+
+</div>
+
+<!-- ============================================================ -->
+<h2>Quality Assurance</h2>
+<!-- ============================================================ -->
+<div class="grid">
+
+<div class="card">
+  <a href="MVP_Testing_Strategy.md">Testing Strategy</a>
+  <div class="desc">Testing levels (unit, integration, E2E, UAT), 8 high-risk areas, test data requirements, and exit criteria for MVP readiness.</div>
+  <div class="meta">
+    <span class="tag tag-test">Test</span>
+  </div>
+  <div class="status">Exit: all P0 pass + no data-loss bugs + UAT sign-off</div>
+</div>
+
+<div class="card">
+  <a href="MVP_Test_Specification.md">Test Specification</a>
+  <div class="desc">76 traceable test cases with steps, expected results, and priorities. Covers all 52 user stories. Includes 3 E2E scenarios, 4 UAT scenarios, NFR tests, and full traceability matrix.</div>
+  <div class="meta">
+    <span class="tag tag-test">Test</span>
+    <span class="tag tag-spec">Spec</span>
+  </div>
+  <div class="status"><strong>76 cases</strong> · 54 P0 · 14 P1 · 8 P2 · 100% coverage</div>
+</div>
+
+<div class="card">
+  <a href="testing-presentation.html">Testing Presentation</a>
+  <div class="desc">Visual slide deck (reveal.js): testing pyramid, module coverage, high-risk heat map, conflict resolution strategies, E2E flow, UAT scenarios, and exit criteria gates.</div>
+  <div class="meta">
+    <span class="tag tag-presentation">Presentation</span>
+    <span class="tag tag-test">Test</span>
+  </div>
+  <div class="status">7 slides · SVG diagrams · open in browser</div>
+</div>
+
+</div>
+
+<!-- ============================================================ -->
+<h2>Research & Background</h2>
+<!-- ============================================================ -->
+<div class="grid">
+
+<div class="card">
+  <a href="deepr.md">Deep Research</a>
+  <div class="desc">Market analysis comparing CMMS vs FSM vs EAM archetypes. Benchmarks against OxMaint, IFS Cloud, InnoMaint, Dynamics 365, and Aerones. ROI data: 19x cost saving on planned gearbox repairs. Implementation blueprint.</div>
+  <div class="meta">
+    <span class="tag tag-research">Research</span>
+  </div>
+  <div class="status">Market context · competitive benchmarks · ROI justification</div>
+</div>
+
+<div class="card">
+  <a href="opensource-cmms-review.md">Open Source CMMS Review</a>
+  <div class="desc">Evaluation of 6 platforms: Atlas CMMS, SuperCMMS, Trier OS, Liberu Maintenance, Snipe-IT, CalemEAM. Gap analysis showing why none fit the wind-energy requirements. Build-vs-borrow decision.</div>
+  <div class="meta">
+    <span class="tag tag-research">Research</span>
+  </div>
+  <div class="status">Conclusion: custom build — no OSS platform covers offline + absence pipeline + evidence</div>
+</div>
+
+<div class="card">
+  <a href="borrowed-patterns.md">Borrowed Patterns</a>
+  <div class="desc">Specific patterns extracted from evaluated platforms: IndexedDB operation queue (Trier OS), idempotent operations, auto-recovery, asset hierarchies (Snipe-IT), form builders (Liberu), and file storage (Atlas).</div>
+  <div class="meta">
+    <span class="tag tag-reference">Reference</span>
+    <span class="tag tag-design">Design</span>
+  </div>
+  <div class="status">Proven patterns to adopt, not reinvent</div>
+</div>
+
+</div>
+
+<!-- ============================================================ -->
+<h2>Presentations</h2>
+<!-- ============================================================ -->
+<div class="grid">
+
+<div class="card">
+  <a href="presentation.html">Main Presentation</a>
+  <div class="desc">Full pitch deck (reveal.js): problem statement, platform overview, architecture, data model, 6 core capabilities, offline sync, conflict resolution, API flow, deployment topology, security, success metrics, risk mitigation, and timeline.</div>
+  <div class="meta">
+    <span class="tag tag-presentation">Presentation</span>
+  </div>
+  <div class="status">20+ slides · SVG architecture diagrams · open in browser</div>
+</div>
+
+<div class="card">
+  <a href="user-stories-slides.html">User Stories Slides</a>
+  <div class="desc">Visual walkthrough of all 52 user stories organized by module. For stakeholder review and sprint planning.</div>
+  <div class="meta">
+    <span class="tag tag-presentation">Presentation</span>
+    <span class="tag tag-spec">Spec</span>
+  </div>
+  <div class="status">Open in browser</div>
+</div>
+
+<div class="card">
+  <a href="testing-presentation.html">Testing Overview Slides</a>
+  <div class="desc">Testing strategy visualization: pyramid, high-risk areas, conflict resolution, E2E flow, UAT scenarios, exit criteria.</div>
+  <div class="meta">
+    <span class="tag tag-presentation">Presentation</span>
+    <span class="tag tag-test">Test</span>
+  </div>
+  <div class="status">7 slides · open in browser</div>
+</div>
+
+</div>
+
+<!-- ============================================================ -->
+<h2>Document Map</h2>
+<!-- ============================================================ -->
+<svg viewBox="0 0 1060 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:360px; margin-top:0.5em;">
+  <defs>
+    <marker id="dmA" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <path d="M0,0 L7,2.5 L0,5 Z" fill="#4fc3f7" opacity="0.6"/>
+    </marker>
+  </defs>
+
+  <!-- Row 1: Strategy -->
+  <rect x="10" y="10" width="180" height="50" rx="6" fill="#1565c0" opacity="0.4" stroke="#4fc3f7" stroke-width="1"/>
+  <text x="100" y="32" text-anchor="middle" fill="#4fc3f7" font-size="11" font-weight="bold">Proposal</text>
+  <text x="100" y="48" text-anchor="middle" fill="#7a8a9a" font-size="8">source of truth</text>
+
+  <line x1="190" y1="35" x2="210" y2="35" stroke="#4fc3f7" stroke-width="1" opacity="0.4" marker-end="url(#dmA)"/>
+
+  <rect x="215" y="10" width="180" height="50" rx="6" fill="#1565c0" opacity="0.3" stroke="#4fc3f7" stroke-width="1"/>
+  <text x="305" y="32" text-anchor="middle" fill="#4fc3f7" font-size="11" font-weight="bold">Requirements</text>
+  <text x="305" y="48" text-anchor="middle" fill="#7a8a9a" font-size="8">scope + flows</text>
+
+  <line x1="395" y1="35" x2="415" y2="35" stroke="#4fc3f7" stroke-width="1" opacity="0.4" marker-end="url(#dmA)"/>
+
+  <rect x="420" y="10" width="180" height="50" rx="6" fill="#1565c0" opacity="0.3" stroke="#4fc3f7" stroke-width="1"/>
+  <text x="510" y="32" text-anchor="middle" fill="#4fc3f7" font-size="11" font-weight="bold">User Stories</text>
+  <text x="510" y="48" text-anchor="middle" fill="#7a8a9a" font-size="8">52 stories + criteria</text>
+
+  <line x1="600" y1="35" x2="620" y2="35" stroke="#4fc3f7" stroke-width="1" opacity="0.4" marker-end="url(#dmA)"/>
+
+  <rect x="625" y="10" width="180" height="50" rx="6" fill="#2e7d32" opacity="0.3" stroke="#66bb6a" stroke-width="1"/>
+  <text x="715" y="32" text-anchor="middle" fill="#66bb6a" font-size="11" font-weight="bold">Impl. Phases</text>
+  <text x="715" y="48" text-anchor="middle" fill="#7a8a9a" font-size="8">7-phase build plan</text>
+
+  <!-- Row 2: Design -->
+  <rect x="10" y="80" width="180" height="50" rx="6" fill="#e65100" opacity="0.3" stroke="#ffccbc" stroke-width="1"/>
+  <text x="100" y="102" text-anchor="middle" fill="#ffccbc" font-size="11" font-weight="bold">Design Doc</text>
+  <text x="100" y="118" text-anchor="middle" fill="#7a8a9a" font-size="8">modules + screens + UX</text>
+
+  <rect x="215" y="80" width="180" height="50" rx="6" fill="#e65100" opacity="0.3" stroke="#ffccbc" stroke-width="1"/>
+  <text x="305" y="102" text-anchor="middle" fill="#ffccbc" font-size="11" font-weight="bold">Developer Briefing</text>
+  <text x="305" y="118" text-anchor="middle" fill="#7a8a9a" font-size="8">architecture + hard problems</text>
+
+  <rect x="420" y="80" width="180" height="50" rx="6" fill="#e65100" opacity="0.3" stroke="#ffccbc" stroke-width="1"/>
+  <text x="510" y="102" text-anchor="middle" fill="#ffccbc" font-size="11" font-weight="bold">DB Schema</text>
+  <text x="510" y="118" text-anchor="middle" fill="#7a8a9a" font-size="8">Prisma models + enums</text>
+
+  <rect x="625" y="80" width="180" height="50" rx="6" fill="#e65100" opacity="0.3" stroke="#ffccbc" stroke-width="1"/>
+  <text x="715" y="102" text-anchor="middle" fill="#ffccbc" font-size="11" font-weight="bold">API Spec</text>
+  <text x="715" y="118" text-anchor="middle" fill="#7a8a9a" font-size="8">REST endpoints + schemas</text>
+
+  <rect x="830" y="80" width="180" height="50" rx="6" fill="#e65100" opacity="0.3" stroke="#ffccbc" stroke-width="1"/>
+  <text x="920" y="102" text-anchor="middle" fill="#ffccbc" font-size="11" font-weight="bold">Deployment Guide</text>
+  <text x="920" y="118" text-anchor="middle" fill="#7a8a9a" font-size="8">Docker Compose + ops</text>
+
+  <!-- Row 3: QA -->
+  <rect x="10" y="150" width="280" height="50" rx="6" fill="#00838f" opacity="0.3" stroke="#80deea" stroke-width="1"/>
+  <text x="150" y="172" text-anchor="middle" fill="#80deea" font-size="11" font-weight="bold">Testing Strategy</text>
+  <text x="150" y="188" text-anchor="middle" fill="#7a8a9a" font-size="8">levels + high-risk areas + exit criteria</text>
+
+  <rect x="310" y="150" width="280" height="50" rx="6" fill="#00838f" opacity="0.3" stroke="#80deea" stroke-width="1"/>
+  <text x="450" y="172" text-anchor="middle" fill="#80deea" font-size="11" font-weight="bold">Test Specification</text>
+  <text x="450" y="188" text-anchor="middle" fill="#7a8a9a" font-size="8">76 cases · 3 E2E · 4 UAT · traceability matrix</text>
+
+  <rect x="610" y="150" width="200" height="50" rx="6" fill="#00838f" opacity="0.3" stroke="#80deea" stroke-width="1"/>
+  <text x="710" y="172" text-anchor="middle" fill="#80deea" font-size="11" font-weight="bold">Wireframes</text>
+  <text x="710" y="188" text-anchor="middle" fill="#7a8a9a" font-size="8">33 screens · desktop + mobile</text>
+
+  <!-- Row 4: Research -->
+  <rect x="10" y="220" width="250" height="50" rx="6" fill="#4a148c" opacity="0.3" stroke="#ce93d8" stroke-width="1"/>
+  <text x="135" y="242" text-anchor="middle" fill="#ce93d8" font-size="11" font-weight="bold">Deep Research</text>
+  <text x="135" y="258" text-anchor="middle" fill="#7a8a9a" font-size="8">market analysis + ROI data</text>
+
+  <rect x="280" y="220" width="250" height="50" rx="6" fill="#4a148c" opacity="0.3" stroke="#ce93d8" stroke-width="1"/>
+  <text x="405" y="242" text-anchor="middle" fill="#ce93d8" font-size="11" font-weight="bold">OSS CMMS Review</text>
+  <text x="405" y="258" text-anchor="middle" fill="#7a8a9a" font-size="8">6 platforms evaluated + gaps</text>
+
+  <rect x="550" y="220" width="250" height="50" rx="6" fill="#4a148c" opacity="0.3" stroke="#ce93d8" stroke-width="1"/>
+  <text x="675" y="242" text-anchor="middle" fill="#ce93d8" font-size="11" font-weight="bold">Borrowed Patterns</text>
+  <text x="675" y="258" text-anchor="middle" fill="#7a8a9a" font-size="8">proven patterns from OSS</text>
+
+  <!-- Row 5: Presentations -->
+  <rect x="10" y="290" width="250" height="40" rx="6" fill="#e65100" opacity="0.2" stroke="#ffa726" stroke-width="1"/>
+  <text x="135" y="315" text-anchor="middle" fill="#ffa726" font-size="11" font-weight="bold">Main Presentation</text>
+
+  <rect x="280" y="290" width="250" height="40" rx="6" fill="#e65100" opacity="0.2" stroke="#ffa726" stroke-width="1"/>
+  <text x="405" y="315" text-anchor="middle" fill="#ffa726" font-size="11" font-weight="bold">User Stories Slides</text>
+
+  <rect x="550" y="290" width="250" height="40" rx="6" fill="#e65100" opacity="0.2" stroke="#ffa726" stroke-width="1"/>
+  <text x="675" y="315" text-anchor="middle" fill="#ffa726" font-size="11" font-weight="bold">Testing Presentation</text>
+</svg>
+
+<div class="footer">
+  Wind CMMS MVP Documentation · 16 documents + 33 wireframes · Last updated 2026-05-09
+</div>
+
+</body>
+</html>

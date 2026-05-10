@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Top Nav -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">QA — Evidence Review</text>
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">LB</text>
+
+  <!-- Left: Evidence list -->
+  <rect x="24" y="72" width="480" height="808" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="40" y="100" fill="#1a202c" font-size="15" font-weight="700">Evidence Queue (7)</text>
+  <rect x="400" y="84" width="90" height="24" fill="#edf2f7" rx="4"/>
+  <text x="445" y="101" text-anchor="middle" fill="#4a5568" font-size="11">Filter ▾</text>
+
+  <!-- Evidence item 1 - selected -->
+  <rect x="32" y="116" width="464" height="72" fill="#ebf8ff" rx="6" stroke="#2c5282" stroke-width="1"/>
+  <rect x="40" y="124" width="56" height="56" fill="#edf2f7" rx="4"/>
+  <text x="68" y="156" text-anchor="middle" fill="#a0aec0" font-size="20">📷</text>
+  <text x="108" y="142" fill="#1a202c" font-size="13" font-weight="500">crack_trailing_edge_01.jpg</text>
+  <rect x="340" y="128" width="60" height="18" fill="#fefcbf" rx="4"/>
+  <text x="370" y="141" text-anchor="middle" fill="#744210" font-size="9" font-weight="600">PENDING</text>
+  <text x="108" y="162" fill="#718096" font-size="11">WTG-HR-01 · INS-0087 · Alex Petrov</text>
+  <text x="108" y="178" fill="#718096" font-size="11">May 8, 14:32 · 2.4 MB</text>
+
+  <!-- Evidence item 2 -->
+  <rect x="32" y="196" width="464" height="72" fill="white" rx="6"/>
+  <rect x="40" y="204" width="56" height="56" fill="#edf2f7" rx="4"/>
+  <text x="68" y="236" text-anchor="middle" fill="#a0aec0" font-size="20">📷</text>
+  <text x="108" y="222" fill="#1a202c" font-size="13" font-weight="500">crack_trailing_edge_02.jpg</text>
+  <rect x="340" y="208" width="60" height="18" fill="#fefcbf" rx="4"/>
+  <text x="370" y="221" text-anchor="middle" fill="#744210" font-size="9" font-weight="600">PENDING</text>
+  <text x="108" y="242" fill="#718096" font-size="11">WTG-HR-01 · INS-0087 · Alex Petrov</text>
+  <text x="108" y="258" fill="#718096" font-size="11">May 8, 14:35 · 1.8 MB</text>
+
+  <!-- Evidence item 3 -->
+  <rect x="32" y="276" width="464" height="72" fill="white" rx="6"/>
+  <rect x="40" y="284" width="56" height="56" fill="#edf2f7" rx="4"/>
+  <text x="68" y="316" text-anchor="middle" fill="#a0aec0" font-size="20">🎬</text>
+  <text x="108" y="302" fill="#1a202c" font-size="13" font-weight="500">drone_overview.mp4</text>
+  <rect x="340" y="288" width="60" height="18" fill="#fefcbf" rx="4"/>
+  <text x="370" y="301" text-anchor="middle" fill="#744210" font-size="9" font-weight="600">PENDING</text>
+  <text x="108" y="322" fill="#718096" font-size="11">WTG-HR-01 · INS-0087 · Alex Petrov</text>
+  <text x="108" y="338" fill="#718096" font-size="11">May 8, 14:40 · 128 MB</text>
+
+  <!-- Evidence item 4 - flagged -->
+  <rect x="32" y="356" width="464" height="72" fill="#fff5f5" rx="6"/>
+  <rect x="40" y="364" width="56" height="56" fill="#edf2f7" rx="4"/>
+  <text x="68" y="396" text-anchor="middle" fill="#a0aec0" font-size="20">📷</text>
+  <text x="108" y="382" fill="#1a202c" font-size="13" font-weight="500">gearbox_oil_01.jpg</text>
+  <rect x="340" y="368" width="60" height="18" fill="#fed7d7" rx="4"/>
+  <text x="370" y="381" text-anchor="middle" fill="#9b2c2c" font-size="9" font-weight="600">FLAGGED</text>
+  <text x="108" y="402" fill="#718096" font-size="11">WTG-HR-22 · INS-0086 · Maria Kowalski</text>
+  <text x="108" y="418" fill="#e53e3e" font-size="11">Blurry image — resubmit requested</text>
+
+  <!-- Evidence item 5 -->
+  <rect x="32" y="436" width="464" height="72" fill="white" rx="6"/>
+  <rect x="40" y="444" width="56" height="56" fill="#edf2f7" rx="4"/>
+  <text x="68" y="476" text-anchor="middle" fill="#a0aec0" font-size="20">📷</text>
+  <text x="108" y="462" fill="#1a202c" font-size="13" font-weight="500">yaw_bearing_01.jpg</text>
+  <rect x="340" y="448" width="60" height="18" fill="#c6f6d5" rx="4"/>
+  <text x="370" y="461" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">APPROVED</text>
+  <text x="108" y="482" fill="#718096" font-size="11">WTG-HR-15 · INS-0084 · Lena Berg</text>
+  <text x="108" y="498" fill="#38a169" font-size="11">Approved by LB · May 8, 10:30</text>
+
+  <!-- Right: Evidence Detail -->
+  <rect x="520" y="72" width="896" height="808" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="536" y="100" fill="#1a202c" font-size="15" font-weight="700">crack_trailing_edge_01.jpg</text>
+  <rect x="800" y="84" width="60" height="20" fill="#fefcbf" rx="4"/>
+  <text x="830" y="98" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">PENDING</text>
+
+  <!-- Image viewer -->
+  <rect x="536" y="116" width="580" height="400" fill="#2d2d2d" rx="8"/>
+  <rect x="576" y="156" width="500" height="320" fill="#3d3d3d" rx="4"/>
+  <text x="826" y="306" text-anchor="middle" fill="#666" font-size="36">📷</text>
+  <text x="826" y="340" text-anchor="middle" fill="#888" font-size="13">crack_trailing_edge_01.jpg</text>
+  <!-- Annotations overlay markers -->
+  <circle cx="700" cy="260" r="12" fill="none" stroke="#e53e3e" stroke-width="2"/>
+  <text x="700" y="264" text-anchor="middle" fill="#e53e3e" font-size="8" font-weight="700">1</text>
+  <circle cx="860" cy="320" r="12" fill="none" stroke="#ecc94b" stroke-width="2"/>
+  <text x="860" y="324" text-anchor="middle" fill="#ecc94b" font-size="8" font-weight="700">2</text>
+
+  <!-- Metadata panel -->
+  <rect x="1132" y="116" width="268" height="400" fill="#f7fafc" rx="6"/>
+  <text x="1148" y="144" fill="#1a202c" font-size="13" font-weight="700">Metadata</text>
+  <text x="1148" y="170" fill="#718096" font-size="11">Type</text>
+  <text x="1260" y="170" fill="#1a202c" font-size="11">Photo · JPEG · 4032×3024</text>
+  <text x="1148" y="192" fill="#718096" font-size="11">Size</text>
+  <text x="1260" y="192" fill="#1a202c" font-size="11">2.4 MB</text>
+  <text x="1148" y="214" fill="#718096" font-size="11">Captured</text>
+  <text x="1260" y="214" fill="#1a202c" font-size="11">May 8, 14:32</text>
+  <text x="1148" y="236" fill="#718096" font-size="11">GPS</text>
+  <text x="1260" y="236" fill="#2c5282" font-size="11">53.787°N, 1.752°E</text>
+  <text x="1148" y="258" fill="#718096" font-size="11">Source</text>
+  <text x="1260" y="258" fill="#1a202c" font-size="11">Camera (Device)</text>
+  <text x="1148" y="280" fill="#718096" font-size="11">Inspection</text>
+  <text x="1260" y="280" fill="#2c5282" font-size="11">INS-2025-0087 →</text>
+  <text x="1148" y="302" fill="#718096" font-size="11">Ticket</text>
+  <text x="1260" y="302" fill="#2c5282" font-size="11">TKT-2025-0042 →</text>
+
+  <line x1="1148" y1="316" x2="1384" y2="316" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="1148" y="340" fill="#1a202c" font-size="13" font-weight="700">Annotations (2)</text>
+  <circle cx="1156" cy="364" r="8" fill="#e53e3e"/>
+  <text x="1156" y="368" text-anchor="middle" fill="white" font-size="8" font-weight="700">1</text>
+  <text x="1172" y="368" fill="#1a202c" font-size="11">Crack origin — 145mm</text>
+  <circle cx="1156" cy="392" r="8" fill="#ecc94b"/>
+  <text x="1156" y="396" text-anchor="middle" fill="white" font-size="8" font-weight="700">2</text>
+  <text x="1172" y="396" fill="#1a202c" font-size="11">Delamination zone — ~80mm</text>
+
+  <line x1="1148" y1="416" x2="1384" y2="416" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="1148" y="440" fill="#1a202c" font-size="13" font-weight="700">Version History</text>
+  <text x="1148" y="462" fill="#718096" font-size="11">v1 · Uploaded May 8, 14:32 · Alex Petrov</text>
+  <text x="1148" y="482" fill="#718096" font-size="11">v2 · Annotated May 8, 14:45 · Alex Petrov</text>
+  <text x="1148" y="502" fill="#718096" font-size="11">Pending: QA review</text>
+
+  <!-- Review actions -->
+  <line x1="536" y1="532" x2="1396" y2="532" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="536" y="560" fill="#1a202c" font-size="14" font-weight="700">Review Decision</text>
+  <rect x="536" y="574" width="860" height="80" fill="#f7fafc" rx="6"/>
+  <text x="552" y="598" fill="#a0aec0" font-size="12">Add review comments (visible to technician on flag)...</text>
+
+  <rect x="536" y="666" width="130" height="36" fill="#38a169" rx="6"/>
+  <text x="601" y="689" text-anchor="middle" fill="white" font-size="13" font-weight="600">✓ Approve</text>
+  <rect x="680" y="666" width="130" height="36" fill="#e53e3e" rx="6"/>
+  <text x="745" y="689" text-anchor="middle" fill="white" font-size="13" font-weight="600">⚑ Flag</text>
+  <rect x="824" y="666" width="160" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="904" y="689" text-anchor="middle" fill="#4a5568" font-size="13" font-weight="600">Request New Photo</text>
+
+  <!-- Batch actions -->
+  <rect x="1040" y="666" width="180" height="36" fill="white" rx="6" stroke="#2c5282" stroke-width="1"/>
+  <text x="1130" y="689" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">Approve All (7)</text>
+</svg>

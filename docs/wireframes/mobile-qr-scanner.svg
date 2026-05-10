@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 812" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Camera background -->
+  <rect width="375" height="812" fill="#1a202c"/>
+  <rect x="0" y="0" width="375" height="812" fill="#2d2d2d" opacity="0.9"/>
+
+  <!-- Header -->
+  <rect width="375" height="56" fill="rgba(0,0,0,0.7)"/>
+  <text x="20" y="36" fill="white" font-size="20">←</text>
+  <text x="187" y="36" fill="white" font-size="17" font-weight="600" text-anchor="middle">Scan QR Code</text>
+  <text x="355" y="36" fill="white" font-size="14">⚡</text>
+
+  <!-- Camera viewfinder area -->
+  <rect x="40" y="100" width="295" height="295" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+
+  <!-- Corner brackets -->
+  <path d="M40 130 L40 100 L70 100" fill="none" stroke="#38a169" stroke-width="4" stroke-linecap="round"/>
+  <path d="M305 100 L335 100 L335 130" fill="none" stroke="#38a169" stroke-width="4" stroke-linecap="round"/>
+  <path d="M335 365 L335 395 L305 395" fill="none" stroke="#38a169" stroke-width="4" stroke-linecap="round"/>
+  <path d="M70 395 L40 395 L40 365" fill="none" stroke="#38a169" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Scanning line animation hint -->
+  <line x1="50" y1="248" x2="325" y2="248" stroke="#38a169" stroke-width="2" opacity="0.8"/>
+  <rect x="50" y="244" width="275" height="8" fill="#38a169" opacity="0.1" rx="4"/>
+
+  <!-- QR code placeholder in center -->
+  <rect x="140" y="200" width="95" height="95" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1" rx="4"/>
+  <rect x="150" y="210" width="30" height="30" fill="rgba(255,255,255,0.15)" rx="2"/>
+  <rect x="195" y="210" width="30" height="30" fill="rgba(255,255,255,0.15)" rx="2"/>
+  <rect x="150" y="255" width="30" height="30" fill="rgba(255,255,255,0.15)" rx="2"/>
+  <rect x="200" y="260" width="20" height="20" fill="rgba(255,255,255,0.15)" rx="2"/>
+
+  <!-- Instructions -->
+  <text x="187" y="440" fill="white" font-size="15" font-weight="600" text-anchor="middle">Point camera at QR code</text>
+  <text x="187" y="462" fill="rgba(255,255,255,0.6)" font-size="13" text-anchor="middle">Scan asset tag, component label, or location code</text>
+
+  <!-- Recent scans -->
+  <rect x="0" y="500" width="375" height="312" fill="rgba(0,0,0,0.5)" rx="16"/>
+  <text x="24" y="530" fill="rgba(255,255,255,0.8)" font-size="13" font-weight="600">Recent Scans</text>
+
+  <rect x="16" y="544" width="343" height="52" fill="rgba(255,255,255,0.08)" rx="8"/>
+  <circle cx="44" cy="570" r="14" fill="#2c5282"/>
+  <text x="44" y="574" text-anchor="middle" fill="white" font-size="11" font-weight="600">WT</text>
+  <text x="68" y="564" fill="white" font-size="13" font-weight="500">WTG-HR-01</text>
+  <text x="68" y="582" fill="rgba(255,255,255,0.5)" font-size="11">Hornsea Reef · Turbine 01 · 2 min ago</text>
+
+  <rect x="16" y="604" width="343" height="52" fill="rgba(255,255,255,0.08)" rx="8"/>
+  <circle cx="44" cy="630" r="14" fill="#38a169"/>
+  <text x="44" y="634" text-anchor="middle" fill="white" font-size="11" font-weight="600">BL</text>
+  <text x="68" y="624" fill="white" font-size="13" font-weight="500">WTG-HR-01 · Blade A</text>
+  <text x="68" y="642" fill="rgba(255,255,255,0.5)" font-size="11">Blade Assembly · 15 min ago</text>
+
+  <rect x="16" y="664" width="343" height="52" fill="rgba(255,255,255,0.08)" rx="8"/>
+  <circle cx="44" cy="690" r="14" fill="#ecc94b"/>
+  <text x="44" y="694" text-anchor="middle" fill="white" font-size="11" font-weight="600">DT</text>
+  <text x="68" y="684" fill="white" font-size="13" font-weight="500">WTG-HR-22 · Drivetrain</text>
+  <text x="68" y="702" fill="rgba(255,255,255,0.5)" font-size="11">Gearbox &amp; Generator · Yesterday</text>
+
+  <!-- Bottom actions -->
+  <rect x="16" y="738" width="165" height="44" fill="rgba(255,255,255,0.1)" rx="8" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="98" y="764" text-anchor="middle" fill="white" font-size="13" font-weight="500">Manual Entry</text>
+  <rect x="194" y="738" width="165" height="44" fill="rgba(255,255,255,0.1)" rx="8" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+  <text x="276" y="764" text-anchor="middle" fill="white" font-size="13" font-weight="500">Flashlight</text>
+
+  <!-- Home indicator -->
+  <rect x="120" y="794" width="135" height="5" fill="rgba(255,255,255,0.3)" rx="3"/>
+</svg>

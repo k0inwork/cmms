@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 812" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="375" height="812" fill="#f7fafc"/>
+
+  <!-- Header -->
+  <rect width="375" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="375" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="56" y="35" fill="#1a202c" font-size="17" font-weight="600">Profile</text>
+  <text x="20" y="36" fill="#2c5282" font-size="20">←</text>
+
+  <!-- Profile card -->
+  <rect x="16" y="68" width="343" height="100" fill="white" rx="10" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <circle cx="56" cy="118" r="28" fill="#ebf8ff"/>
+  <text x="56" y="124" text-anchor="middle" fill="#2c5282" font-size="18" font-weight="700">AP</text>
+  <text x="96" y="108" fill="#1a202c" font-size="17" font-weight="600">Alex Petrov</text>
+  <text x="96" y="128" fill="#718096" font-size="13">Senior Technician · Electrical</text>
+  <text x="96" y="148" fill="#38a169" font-size="12" font-weight="500">● Online</text>
+
+  <!-- Menu items -->
+  <rect x="16" y="184" width="343" height="44" fill="white" rx="8"/>
+  <text x="36" y="211" fill="#1a202c" font-size="15">👤  Edit Profile</text>
+  <text x="340" y="211" fill="#a0aec0" font-size="14">→</text>
+
+  <rect x="16" y="236" width="343" height="44" fill="white" rx="8"/>
+  <text x="36" y="263" fill="#1a202c" font-size="15">🔔  Notification Settings</text>
+  <text x="340" y="263" fill="#a0aec0" font-size="14">→</text>
+
+  <rect x="16" y="288" width="343" height="44" fill="white" rx="8"/>
+  <text x="36" y="315" fill="#1a202c" font-size="15">🔒  Change Password</text>
+  <text x="340" y="315" fill="#a0aec0" font-size="14">→</text>
+
+  <rect x="16" y="340" width="343" height="44" fill="white" rx="8"/>
+  <text x="36" y="367" fill="#1a202c" font-size="15">📱  App Settings</text>
+  <text x="340" y="367" fill="#a0aec0" font-size="14">→</text>
+
+  <rect x="16" y="392" width="343" height="44" fill="white" rx="8"/>
+  <text x="36" y="419" fill="#1a202c" font-size="15">📋  My Certifications</text>
+  <text x="340" y="419" fill="#a0aec0" font-size="14">→</text>
+
+  <!-- Sync status -->
+  <rect x="16" y="452" width="343" height="48" fill="#fffff0" rx="8"/>
+  <text x="36" y="472" fill="#744210" font-size="12" font-weight="500">⚠ 3 items pending sync</text>
+  <text x="36" y="490" fill="#744210" font-size="11">Sync before logging out to avoid data loss</text>
+
+  <!-- Logout button -->
+  <rect x="16" y="524" width="343" height="48" fill="#fff5f5" rx="10" stroke="#fed7d7" stroke-width="1"/>
+  <text x="187" y="553" text-anchor="middle" fill="#e53e3e" font-size="16" font-weight="600">Sign Out</text>
+
+  <!-- Logout confirmation modal -->
+  <rect width="375" height="812" fill="rgba(0,0,0,0.4)"/>
+  <rect x="32" y="280" width="311" height="220" fill="white" rx="14" filter="drop-shadow(0 8px 24px rgba(0,0,0,0.15))"/>
+
+  <text x="187" y="324" text-anchor="middle" fill="#1a202c" font-size="17" font-weight="700">Sign Out?</text>
+  <text x="187" y="352" text-anchor="middle" fill="#718096" font-size="13">You have 3 unsynced items.</text>
+  <text x="187" y="372" text-anchor="middle" fill="#718096" font-size="13">Changes may be lost if you sign out now.</text>
+
+  <rect x="48" y="394" width="279" height="36" fill="#edf2f7" rx="8"/>
+  <text x="187" y="417" text-anchor="middle" fill="#2c5282" font-size="14" font-weight="600">Sync &amp; Sign Out</text>
+
+  <rect x="48" y="440" width="279" height="36" fill="#e53e3e" rx="8"/>
+  <text x="187" y="463" text-anchor="middle" fill="white" font-size="14" font-weight="600">Sign Out Anyway</text>
+
+  <text x="187" y="488" text-anchor="middle" fill="#2c5282" font-size="14" font-weight="500">Cancel</text>
+
+  <!-- Home indicator -->
+  <rect x="120" y="794" width="135" height="5" fill="#cbd5e0" rx="3"/>
+</svg>

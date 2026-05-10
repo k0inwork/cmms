@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 812" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="375" height="812" fill="#f7fafc"/>
+
+  <!-- Header -->
+  <rect width="375" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="375" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="187" y="35" fill="#1a202c" font-size="17" font-weight="600" text-anchor="middle">New Assignment</text>
+  <text x="20" y="36" fill="#2c5282" font-size="20">←</text>
+
+  <!-- Urgency banner -->
+  <rect x="16" y="68" width="343" height="36" fill="#fed7d7" rx="8"/>
+  <text x="32" y="91" fill="#9b2c2c" font-size="12" font-weight="600">⚠ Replacement needed — James Brown is absent (Sick)</text>
+
+  <!-- Assignment card -->
+  <rect x="16" y="116" width="343" height="260" fill="white" rx="10" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+
+  <!-- Ticket info -->
+  <text x="32" y="144" fill="#2c5282" font-size="13" font-weight="600">TKT-2025-0042</text>
+  <rect x="180" y="130" width="60" height="20" fill="#fed7d7" rx="4"/>
+  <text x="210" y="144" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">URGENT</text>
+  <text x="32" y="168" fill="#1a202c" font-size="16" font-weight="700">Blade Crack Repair — Trailing Edge</text>
+
+  <line x1="32" y1="180" x2="343" y2="180" stroke="#edf2f7" stroke-width="1"/>
+
+  <!-- Details -->
+  <text x="32" y="204" fill="#718096" font-size="11">Asset</text>
+  <text x="120" y="204" fill="#1a202c" font-size="12">WTG-HR-01 · Blade Assembly A</text>
+
+  <text x="32" y="228" fill="#718096" font-size="11">Due</text>
+  <text x="120" y="228" fill="#e53e3e" font-size="12" font-weight="600">May 9, 2025 14:00</text>
+
+  <text x="32" y="252" fill="#718096" font-size="11">Est. Hours</text>
+  <text x="120" y="252" fill="#1a202c" font-size="12">16 hours</text>
+
+  <text x="32" y="276" fill="#718096" font-size="11">Required Skills</text>
+  <rect x="120" y="264" width="65" height="18" fill="#edf2f7" rx="3"/>
+  <text x="152" y="277" text-anchor="middle" fill="#4a5568" font-size="9" font-weight="500">Rope Access</text>
+  <rect x="192" y="264" width="95" height="18" fill="#edf2f7" rx="3"/>
+  <text x="239" y="277" text-anchor="middle" fill="#4a5568" font-size="9" font-weight="500">Composite Repair</text>
+
+  <text x="32" y="300" fill="#718096" font-size="11">Safety</text>
+  <text x="120" y="300" fill="#e53e3e" font-size="11">LOTO · Fall protection · PPE required</text>
+
+  <!-- Replacement score -->
+  <rect x="32" y="318" width="311" height="40" fill="#ebf8ff" rx="6"/>
+  <text x="48" y="340" fill="#2a4365" font-size="11" font-weight="600">Match Score: 92%</text>
+  <text x="180" y="340" fill="#2a4365" font-size="11">Skills ✓ Certs ✓ Proximity ✓ Workload ✓</text>
+
+  <!-- Work order tasks preview -->
+  <rect x="16" y="390" width="343" height="160" fill="white" rx="10" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="32" y="416" fill="#1a202c" font-size="14" font-weight="600">Tasks (4)</text>
+  <text x="32" y="444" fill="#718096" font-size="12">1. Access turbine via rope</text>
+  <text x="32" y="464" fill="#718096" font-size="12">2. Clean crack area and measure</text>
+  <text x="32" y="484" fill="#718096" font-size="12">3. Apply composite repair patch</text>
+  <text x="32" y="504" fill="#718096" font-size="12">4. Post-repair inspection</text>
+  <text x="32" y="536" fill="#2c5282" font-size="12" font-weight="500">View full work order →</text>
+
+  <!-- Conflict warning -->
+  <rect x="16" y="564" width="343" height="40" fill="#fffff0" rx="8"/>
+  <text x="32" y="580" fill="#744210" font-size="11" font-weight="500">⚠ This overlaps with your scheduled training on May 9 AM.</text>
+  <text x="32" y="596" fill="#744210" font-size="11">Accepting will auto-cancel that training slot.</text>
+
+  <!-- Action buttons -->
+  <rect x="16" y="620" width="165" height="50" fill="#38a169" rx="10"/>
+  <text x="98" y="650" text-anchor="middle" fill="white" font-size="15" font-weight="700">✓ Accept</text>
+
+  <rect x="194" y="620" width="165" height="50" fill="white" rx="10" stroke="#e53e3e" stroke-width="2"/>
+  <text x="276" y="650" text-anchor="middle" fill="#e53e3e" font-size="15" font-weight="700">✕ Decline</text>
+
+  <rect x="16" y="682" width="343" height="44" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="187" y="708" text-anchor="middle" fill="#718096" font-size="13">Propose Alternative Time</text>
+
+  <!-- Home indicator -->
+  <rect x="120" y="794" width="135" height="5" fill="#cbd5e0" rx="3"/>
+</svg>

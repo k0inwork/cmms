@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wind CMMS — Testing Overview</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+<style>
+.reveal { font-size: 16px; }
+.reveal h1 { font-size: 2em; }
+.reveal h2 { font-size: 1.5em; color: #4fc3f7; }
+.reveal h3 { font-size: 1.1em; color: #7ec8e3; }
+.reveal table { font-size: 0.75em; margin: 0.4em auto; width: 95%; }
+.reveal table th { background: #1a3a5c; color: #4fc3f7; padding: 6px 10px; }
+.reveal table td { padding: 5px 10px; border-bottom: 1px solid #1b3a4a; }
+.reveal table tr:hover td { background: #0d1b2a; }
+.reveal td.pass { color: #66bb6a; font-weight: bold; }
+.reveal td.fail { color: #ef5350; font-weight: bold; }
+.reveal td.skip { color: #ffa726; font-style: italic; }
+.reveal .pill { display: inline-block; padding: 2px 10px; border-radius: 10px; font-size: 0.7em; font-weight: bold; margin: 0 2px; }
+.reveal .pill-p0 { background: #c62828; color: #fff; }
+.reveal .pill-p1 { background: #e65100; color: #fff; }
+.reveal .pill-p2 { background: #1565c0; color: #fff; }
+.reveal .pill-pass { background: #2e7d32; color: #fff; }
+.reveal .pill-fail { background: #b71c1c; color: #fff; }
+.reveal .pill-skip { background: #6a1b9a; color: #fff; }
+.reveal .metric { text-align: center; }
+.reveal .metric .number { font-size: 2.8em; font-weight: bold; line-height: 1.1; }
+.reveal .metric .label { font-size: 0.8em; color: #7ec8e3; }
+.reveal .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 1em 0; }
+.reveal .box { background: #0d1b2a; border: 1px solid #1b3a4a; border-radius: 8px; padding: 12px; margin: 0.3em 0; }
+.reveal .box h3 { margin: 0 0 0.3em; }
+.reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.reveal .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.reveal code { font-size: 0.8em; background: #1a3a5c; padding: 2px 6px; border-radius: 3px; }
+.reveal section { text-align: left; }
+.reveal ul { margin: 0.3em 0; }
+.reveal li { margin: 0.15em 0; font-size: 0.85em; }
+.reveal .tiny { font-size: 0.65em; color: #5a7a8a; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============================================================ -->
+<!-- TITLE -->
+<!-- ============================================================ -->
+<section style="text-align:center;">
+<h1 style="color:#4fc3f7;">MVP Testing Overview</h1>
+<p style="color:#7ec8e3; font-size:0.9em;">Wind CMMS — Quality Assurance Plan</p>
+<p style="font-size:0.7em; color:#5a7a8a;">76 Test Cases · 3 E2E · 4 UAT · 100% User Story Coverage</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- TESTING PYRAMID -->
+<!-- ============================================================ -->
+<section>
+<h2>Testing Strategy</h2>
+<svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:370px;">
+  <!-- Pyramid layers -->
+  <polygon points="400,30 500,110 300,110" fill="#1565c0" opacity="0.8"/>
+  <text x="400" y="82" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">E2E</text>
+  <text x="400" y="100" text-anchor="middle" fill="#bbdefb" font-size="10">3 scenarios</text>
+
+  <polygon points="300,115 500,115 560,195 240,195" fill="#2e7d32" opacity="0.8"/>
+  <text x="400" y="158" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Integration</text>
+  <text x="400" y="178" text-anchor="middle" fill="#c8e6c9" font-size="10">18 test cases · sync, API, DB</text>
+
+  <polygon points="240,200 560,200 640,280 160,280" fill="#e65100" opacity="0.8"/>
+  <text x="400" y="240" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Functional</text>
+  <text x="400" y="260" text-anchor="middle" fill="#ffccbc" font-size="10">46 test cases · features, UI, workflows</text>
+
+  <polygon points="160,285 640,285 730,360 70,360" fill="#6a1b9a" opacity="0.7"/>
+  <text x="400" y="322" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Non-Functional + UAT</text>
+  <text x="400" y="342" text-anchor="middle" fill="#e1bee7" font-size="10">6 NFR + 4 UAT · perf, security, real-user validation</text>
+
+  <!-- Labels -->
+  <text x="55" y="72" text-anchor="middle" fill="#ef5350" font-size="11" font-weight="bold">$$$</text>
+  <text x="55" y="87" text-anchor="middle" fill="#ef5350" font-size="9">Slow</text>
+  <text x="745" y="72" text-anchor="middle" fill="#4fc3f7" font-size="11" font-weight="bold">Confidence</text>
+  <text x="745" y="87" text-anchor="middle" fill="#4fc3f7" font-size="9">High</text>
+</svg>
+</section>
+
+<!-- ============================================================ -->
+<!-- SCOPE & PRIORITIES -->
+<!-- ============================================================ -->
+<section>
+<h2>What We Test — By Module</h2>
+<div class="three-col">
+<div class="box">
+<h3>Auth & Roles</h3>
+<span class="pill pill-p0">P0</span> 8 cases
+<ul>
+<li>Login / logout</li>
+<li>5-role RBAC</li>
+<li>Session timeout</li>
+<li>Role change on re-login</li>
+</ul>
+</div>
+<div class="box">
+<h3>Asset Registry</h3>
+<span class="pill pill-p0">P0</span> 9 cases
+<ul>
+<li>Full hierarchy CRUD</li>
+<li>IEC 61400-25 naming</li>
+<li>Duplicate rejection</li>
+<li>Breadcrumb navigation</li>
+</ul>
+</div>
+<div class="box">
+<h3>Inspections</h3>
+<span class="pill pill-p0">P0</span> 8 cases
+<ul>
+<li>Dynamic form rendering</li>
+<li>Template versioning</li>
+<li>Online + offline submit</li>
+<li>Idempotent writes</li>
+</ul>
+</div>
+</div>
+<div class="three-col" style="margin-top:8px;">
+<div class="box">
+<h3>Offline & Sync</h3>
+<span class="pill pill-p0">P0</span> 6 cases
+<ul>
+<li>Connectivity detection</li>
+<li>Pre-load briefcase</li>
+<li>Auto-sync on reconnect</li>
+<li>Conflict resolution</li>
+</ul>
+</div>
+<div class="box">
+<h3>Evidence</h3>
+<span class="pill pill-p0">P0</span> 8 cases
+<ul>
+<li>Photo + video capture</li>
+<li>File upload + validation</li>
+<li>Annotations (non-destructive)</li>
+<li>Search + version history</li>
+</ul>
+</div>
+<div class="box">
+<h3>Tickets & Work Orders</h3>
+<span class="pill pill-p0">P0</span> 10 cases
+<ul>
+<li>State machine enforcement</li>
+<li>Create from defect</li>
+<li>Assign → review → close</li>
+<li>Reopen with audit trail</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- HIGH-RISK AREAS -->
+<!-- ============================================================ -->
+<section>
+<h2>High-Risk Areas — Where Bugs Hide</h2>
+<svg viewBox="0 0 800 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:340px;">
+  <!-- Risk heat map -->
+  <!-- Row 1 -->
+  <rect x="20" y="30" width="240" height="70" rx="8" fill="#b71c1c" opacity="0.8"/>
+  <text x="140" y="60" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Offline Sync</text>
+  <text x="140" y="82" text-anchor="middle" fill="#ffcdd2" font-size="10">Data loss during network drop · Conflict merge</text>
+
+  <rect x="280" y="30" width="240" height="70" rx="8" fill="#c62828" opacity="0.75"/>
+  <text x="400" y="60" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Evidence Upload</text>
+  <text x="400" y="82" text-anchor="middle" fill="#ffcdd2" font-size="10">Large files · Retry failures · S3 presigned URLs</text>
+
+  <rect x="540" y="30" width="240" height="70" rx="8" fill="#c62828" opacity="0.7"/>
+  <text x="660" y="60" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Duplicate Prevention</text>
+  <text x="660" y="82" text-anchor="middle" fill="#ffcdd2" font-size="10">Idempotency keys · Network retries</text>
+
+  <!-- Row 2 -->
+  <rect x="20" y="120" width="240" height="70" rx="8" fill="#e65100" opacity="0.7"/>
+  <text x="140" y="150" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Replacement Engine</text>
+  <text x="140" y="172" text-anchor="middle" fill="#ffe0b2" font-size="10">Weighted scoring · Escalation · SLA risk</text>
+
+  <rect x="280" y="120" width="240" height="70" rx="8" fill="#e65100" opacity="0.65"/>
+  <text x="400" y="150" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Ticket State Machine</text>
+  <text x="400" y="172" text-anchor="middle" fill="#ffe0b2" font-size="10">Invalid transitions · Safety-critical versioning</text>
+
+  <rect x="540" y="120" width="240" height="70" rx="8" fill="#e65100" opacity="0.6"/>
+  <text x="660" y="150" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Audit Trail</text>
+  <text x="660" y="172" text-anchor="middle" fill="#ffe0b2" font-size="10">Append-only · Completeness · Compliance</text>
+
+  <!-- Row 3 -->
+  <rect x="20" y="210" width="370" height="70" rx="8" fill="#f57f17" opacity="0.6"/>
+  <text x="205" y="240" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Permissions & Multi-Tenant Isolation</text>
+  <text x="205" y="262" text-anchor="middle" fill="#fff9c4" font-size="10">Role access · Row-level security · Cross-tenant leak prevention</text>
+
+  <rect x="410" y="210" width="370" height="70" rx="8" fill="#f57f17" opacity="0.55"/>
+  <text x="595" y="240" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Safety-Critical Data (LOTO, Permits)</text>
+  <text x="595" y="262" text-anchor="middle" fill="#fff9c4" font-size="10">Sequence number versioning · Sync rejection on mismatch</text>
+
+  <!-- Legend -->
+  <text x="20" y="315" fill="#ef5350" font-size="11">■ Critical</text>
+  <text x="100" y="315" fill="#e65100" font-size="11">■ High</text>
+  <text x="160" y="315" fill="#f57f17" font-size="11">■ Medium</text>
+  <text x="240" y="315" fill="#7ec8e3" font-size="10">All 8 areas have P0 test cases covering them</text>
+</svg>
+</section>
+
+<!-- ============================================================ -->
+<!-- CONFLICT RESOLUTION STRATEGY -->
+<!-- ============================================================ -->
+<section>
+<h2>Sync Conflict Resolution — 4 Strategies</h2>
+<svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:300px;">
+  <!-- Strategy 1 -->
+  <rect x="10" y="10" width="190" height="130" rx="8" fill="#0d1b2a" stroke="#4caf50" stroke-width="1.5"/>
+  <text x="105" y="35" text-anchor="middle" fill="#4caf50" font-size="13" font-weight="bold">Last Write Wins</text>
+  <text x="105" y="55" text-anchor="middle" fill="#7ec8e3" font-size="10">Notes, descriptions</text>
+  <line x1="30" y1="68" x2="180" y2="68" stroke="#1b3a4a" stroke-width="1"/>
+  <text x="105" y="85" text-anchor="middle" fill="#c8e6c9" font-size="9">Server timestamp wins.</text>
+  <text x="105" y="100" text-anchor="middle" fill="#c8e6c9" font-size="9">Low risk, simple.</text>
+  <rect x="35" y="110" width="140" height="20" rx="10" fill="#2e7d32" opacity="0.5"/>
+  <text x="105" y="124" text-anchor="middle" fill="#a5d6a7" font-size="9">Risk: LOW</text>
+
+  <!-- Strategy 2 -->
+  <rect x="210" y="10" width="190" height="130" rx="8" fill="#0d1b2a" stroke="#2196f3" stroke-width="1.5"/>
+  <text x="305" y="35" text-anchor="middle" fill="#2196f3" font-size="13" font-weight="bold">Field-Level Merge</text>
+  <text x="305" y="55" text-anchor="middle" fill="#7ec8e3" font-size="10">Inspection evidence</text>
+  <line x1="230" y1="68" x2="380" y2="68" stroke="#1b3a4a" stroke-width="1"/>
+  <text x="305" y="85" text-anchor="middle" fill="#bbdefb" font-size="9">Non-conflicting fields auto-merge.</text>
+  <text x="305" y="100" text-anchor="middle" fill="#bbdefb" font-size="9">Conflicts flagged for QA review.</text>
+  <rect x="235" y="110" width="140" height="20" rx="10" fill="#1565c0" opacity="0.5"/>
+  <text x="305" y="124" text-anchor="middle" fill="#90caf9" font-size="9">Risk: MEDIUM</text>
+
+  <!-- Strategy 3 -->
+  <rect x="410" y="10" width="190" height="130" rx="8" fill="#0d1b2a" stroke="#ff9800" stroke-width="1.5"/>
+  <text x="505" y="35" text-anchor="middle" fill="#ff9800" font-size="13" font-weight="bold">State Machine</text>
+  <text x="505" y="55" text-anchor="middle" fill="#7ec8e3" font-size="10">Ticket status</text>
+  <line x1="430" y1="68" x2="580" y2="68" stroke="#1b3a4a" stroke-width="1"/>
+  <text x="505" y="85" text-anchor="middle" fill="#ffe0b2" font-size="9">Invalid transitions rejected</text>
+  <text x="505" y="100" text-anchor="middle" fill="#ffe0b2" font-size="9">regardless of timestamp.</text>
+  <rect x="435" y="110" width="140" height="20" rx="10" fill="#e65100" opacity="0.5"/>
+  <text x="505" y="124" text-anchor="middle" fill="#ffcc80" font-size="9">Risk: MEDIUM</text>
+
+  <!-- Strategy 4 -->
+  <rect x="610" y="10" width="180" height="130" rx="8" fill="#0d1b2a" stroke="#ef5350" stroke-width="2"/>
+  <text x="700" y="35" text-anchor="middle" fill="#ef5350" font-size="13" font-weight="bold">Seq. Number</text>
+  <text x="700" y="55" text-anchor="middle" fill="#7ec8e3" font-size="10">LOTO, permits, safety</text>
+  <line x1="625" y1="68" x2="775" y2="68" stroke="#1b3a4a" stroke-width="1"/>
+  <text x="700" y="85" text-anchor="middle" fill="#ffcdd2" font-size="9">Version mismatch → sync rejected.</text>
+  <text x="700" y="100" text-anchor="middle" fill="#ffcdd2" font-size="9">Manual resolution required.</text>
+  <rect x="630" y="110" width="140" height="20" rx="10" fill="#b71c1c" opacity="0.5"/>
+  <text x="700" y="124" text-anchor="middle" fill="#ef9a9a" font-size="9">Risk: HIGH — by design</text>
+
+  <!-- Test coverage note -->
+  <rect x="10" y="155" width="780" height="45" rx="8" fill="#0d1b2a" stroke="#1b3a4a" stroke-width="1"/>
+  <text x="400" y="175" text-anchor="middle" fill="#7ec8e3" font-size="11" font-weight="bold">All 4 strategies have dedicated P0 test cases: TC-OFF-04 (merge) · TC-OFF-05 (safety) · TC-OFF-06 (idempotency) · TC-TKT-03 (state machine)</text>
+  <text x="400" y="192" text-anchor="middle" fill="#5a7a8a" font-size="9">Test data includes edge cases: concurrent edits, offline-then-online, safety version mismatch</text>
+</svg>
+</section>
+
+<!-- ============================================================ -->
+<!-- E2E SCENARIO -->
+<!-- ============================================================ -->
+<section>
+<h2>E2E Scenario — Inspection to Ticket</h2>
+<svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:280px;">
+  <defs>
+    <marker id="e2eA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#4fc3f7"/>
+    </marker>
+  </defs>
+
+  <!-- Step flow -->
+  <rect x="15" y="40" width="105" height="60" rx="6" fill="#1565c0" opacity="0.6"/>
+  <text x="67" y="62" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Pre-load</text>
+  <text x="67" y="78" text-anchor="middle" fill="#bbdefb" font-size="8">Cache data</text>
+  <text x="67" y="90" text-anchor="middle" fill="#bbdefb" font-size="8">while online</text>
+
+  <line x1="120" y1="70" x2="140" y2="70" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#e2eA)"/>
+
+  <rect x="145" y="40" width="105" height="60" rx="6" fill="#e65100" opacity="0.6"/>
+  <text x="197" y="62" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Go Offline</text>
+  <text x="197" y="78" text-anchor="middle" fill="#ffccbc" font-size="8">Fill form</text>
+  <text x="197" y="90" text-anchor="middle" fill="#ffccbc" font-size="8">Take photos</text>
+
+  <line x1="250" y1="70" x2="270" y2="70" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#e2eA)"/>
+
+  <rect x="275" y="40" width="105" height="60" rx="6" fill="#6a1b9a" opacity="0.6"/>
+  <text x="327" y="62" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Save Local</text>
+  <text x="327" y="78" text-anchor="middle" fill="#e1bee7" font-size="8">IndexedDB</text>
+  <text x="327" y="90" text-anchor="middle" fill="#e1bee7" font-size="8">status: pending</text>
+
+  <line x1="380" y1="70" x2="400" y2="70" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#e2eA)"/>
+
+  <rect x="405" y="40" width="105" height="60" rx="6" fill="#2e7d32" opacity="0.6"/>
+  <text x="457" y="62" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Reconnect</text>
+  <text x="457" y="78" text-anchor="middle" fill="#c8e6c9" font-size="8">Auto-sync</text>
+  <text x="457" y="90" text-anchor="middle" fill="#c8e6c9" font-size="8">Upload to S3</text>
+
+  <line x1="510" y1="70" x2="530" y2="70" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#e2eA)"/>
+
+  <rect x="535" y="40" width="115" height="60" rx="6" fill="#00838f" opacity="0.6"/>
+  <text x="592" y="62" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">QA Review</text>
+  <text x="592" y="78" text-anchor="middle" fill="#b2ebf2" font-size="8">Approve / reject</text>
+  <text x="592" y="90" text-anchor="middle" fill="#b2ebf2" font-size="8">Create ticket</text>
+
+  <line x1="650" y1="70" x2="670" y2="70" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#e2eA)"/>
+
+  <rect x="675" y="40" width="110" height="60" rx="6" fill="#c62828" opacity="0.6"/>
+  <text x="730" y="62" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">Close Ticket</text>
+  <text x="730" y="78" text-anchor="middle" fill="#ffcdd2" font-size="8">Assign → Fix</text>
+  <text x="730" y="90" text-anchor="middle" fill="#ffcdd2" font-size="8">→ Review → Close</text>
+
+  <!-- Assertions -->
+  <rect x="15" y="120" width="770" height="80" rx="8" fill="#0d1b2a" stroke="#1b3a4a" stroke-width="1"/>
+  <text x="30" y="142" fill="#4fc3f7" font-size="12" font-weight="bold">Verified at each step:</text>
+  <text x="30" y="162" fill="#c8e6c9" font-size="10">1. Form renders offline from cached template</text>
+  <text x="350" y="162" fill="#c8e6c9" font-size="10">2. Photos auto-tagged with asset + inspection ID</text>
+  <text x="30" y="180" fill="#c8e6c9" font-size="10">3. Exactly one record after retry (idempotent)</text>
+  <text x="350" y="180" fill="#c8e6c9" font-size="10">4. Every transition in audit trail with timestamp + user</text>
+  <text x="30" y="195" fill="#c8e6c9" font-size="10">5. Evidence linked to both inspection and ticket</text>
+  <text x="350" y="195" fill="#c8e6c9" font-size="10">6. Invalid status transitions blocked (state machine)</text>
+
+  <!-- Coverage badge -->
+  <rect x="15" y="215" width="770" height="30" rx="6" fill="#1a3a5c" opacity="0.5"/>
+  <text x="400" y="235" text-anchor="middle" fill="#7ec8e3" font-size="10">Stories covered: US-INS-03, US-INS-04, US-OFF-01, US-EVID-01, US-TKT-01, US-QA-01, US-TKT-06, US-QA-03</text>
+
+  <!-- Other E2Es -->
+  <text x="15" y="270" fill="#5a7a8a" font-size="9">E2E-02: Absence → Replacement → Reassignment (7 steps)</text>
+  <text x="420" y="270" fill="#5a7a8a" font-size="9">E2E-03: Offline Evidence Capture → Sync → Version History (7 steps)</text>
+</svg>
+</section>
+
+<!-- ============================================================ -->
+<!-- UAT SCENARIOS -->
+<!-- ============================================================ -->
+<section>
+<h2>UAT — Real Users, Real Judgment</h2>
+<div class="two-col">
+<div class="box">
+<h3>TC-UAT-01: Technician</h3>
+<span class="pill pill-p2">P2</span>
+<ul>
+<li>Full inspection day on own device</li>
+<li>Offline → online → sync</li>
+<li>Pass/fail: "I could do this on a real turbine without help"</li>
+</ul>
+</div>
+<div class="box">
+<h3>TC-UAT-02: Dispatcher</h3>
+<span class="pill pill-p2">P2</span>
+<ul>
+<li>Handle sick call at 6 AM</li>
+<li>Review replacement suggestions, reassign</li>
+<li>Pass/fail: "I could handle this without confusion"</li>
+</ul>
+</div>
+</div>
+<div class="two-col" style="margin-top:8px;">
+<div class="box">
+<h3>TC-UAT-03: QA Reviewer</h3>
+<span class="pill pill-p2">P2</span>
+<ul>
+<li>Review inspection, approve/reject evidence</li>
+<li>Create ticket from defect</li>
+<li>Pass/fail: "Faster than our spreadsheet process"</li>
+</ul>
+</div>
+<div class="box">
+<h3>TC-UAT-04: Ops Manager</h3>
+<span class="pill pill-p2">P2</span>
+<ul>
+<li>Dashboard KPIs, SLA risk, sync health</li>
+<li>Filter by site and date</li>
+<li>Pass/fail: "Gives me visibility I don't have today"</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- EXIT CRITERIA -->
+<!-- ============================================================ -->
+<section>
+<h2>Exit Criteria — When Is MVP Ready?</h2>
+<svg viewBox="0 0 800 320" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:320px;">
+  <defs>
+    <marker id="exA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#66bb6a"/>
+    </marker>
+  </defs>
+
+  <!-- Gate 1 -->
+  <rect x="20" y="20" width="230" height="80" rx="8" fill="#0d1b2a" stroke="#66bb6a" stroke-width="2"/>
+  <circle cx="50" cy="50" r="16" fill="#2e7d32"/>
+  <text x="50" y="55" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">1</text>
+  <text x="80" y="48" fill="#fff" font-size="12" font-weight="bold">All Must-Have Flows Pass</text>
+  <text x="80" y="65" fill="#a5d6a7" font-size="10">54 P0 test cases → 0 failures</text>
+  <text x="80" y="82" fill="#7ec8e3" font-size="9">Auth · Assets · Inspections · Sync · Tickets</text>
+
+  <!-- Gate 2 -->
+  <rect x="20" y="115" width="230" height="80" rx="8" fill="#0d1b2a" stroke="#66bb6a" stroke-width="2"/>
+  <circle cx="50" cy="145" r="16" fill="#2e7d32"/>
+  <text x="50" y="150" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">2</text>
+  <text x="80" y="143" fill="#fff" font-size="12" font-weight="bold">No Data-Loss Bugs</text>
+  <text x="80" y="160" fill="#a5d6a7" font-size="10">Offline sync stable, evidence linked</text>
+  <text x="80" y="177" fill="#7ec8e3" font-size="9">3 E2E scenarios pass clean</text>
+
+  <!-- Gate 3 -->
+  <rect x="20" y="210" width="230" height="80" rx="8" fill="#0d1b2a" stroke="#66bb6a" stroke-width="2"/>
+  <circle cx="50" cy="240" r="16" fill="#2e7d32"/>
+  <text x="50" y="245" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">3</text>
+  <text x="80" y="238" fill="#fff" font-size="12" font-weight="bold">Workforce Flows Work</text>
+  <text x="80" y="255" fill="#a5d6a7" font-size="10">Absence → replacement → reassignment</text>
+  <text x="80" y="272" fill="#7ec8e3" font-size="9">E2E-02 passes, SLA risk resolved</text>
+
+  <!-- Gate 4 (right side) -->
+  <rect x="280" y="20" width="230" height="80" rx="8" fill="#0d1b2a" stroke="#66bb6a" stroke-width="2"/>
+  <circle cx="310" cy="50" r="16" fill="#2e7d32"/>
+  <text x="310" y="55" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">4</text>
+  <text x="340" y="48" fill="#fff" font-size="12" font-weight="bold">Evidence Correctness</text>
+  <text x="340" y="65" fill="#a5d6a7" font-size="10">All photos/videos linked to assets</text>
+  <text x="340" y="82" fill="#7ec8e3" font-size="9">Annotations non-destructive, originals intact</text>
+
+  <!-- Gate 5 -->
+  <rect x="280" y="115" width="230" height="80" rx="8" fill="#0d1b2a" stroke="#66bb6a" stroke-width="2"/>
+  <circle cx="310" cy="145" r="16" fill="#2e7d32"/>
+  <text x="310" y="150" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">5</text>
+  <text x="340" y="143" fill="#fff" font-size="12" font-weight="bold">Performance Met</text>
+  <text x="340" y="160" fill="#a5d6a7" font-size="10">Login &lt;3s · Dashboard &lt;5s · Search &lt;2s</text>
+  <text x="340" y="177" fill="#7ec8e3" font-size="9">TC-NFR-06 benchmarks pass</text>
+
+  <!-- Gate 6 -->
+  <rect x="280" y="210" width="230" height="80" rx="8" fill="#0d1b2a" stroke="#ffa726" stroke-width="2"/>
+  <circle cx="310" cy="240" r="16" fill="#e65100"/>
+  <text x="310" y="245" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">6</text>
+  <text x="340" y="238" fill="#fff" font-size="12" font-weight="bold">UAT Sign-Off</text>
+  <text x="340" y="255" fill="#ffe0b2" font-size="10">All 4 UAT scenarios pass</text>
+  <text x="340" y="272" fill="#7ec8e3" font-size="9">Real users confirm usability</text>
+
+  <!-- Arrow to launch -->
+  <rect x="550" y="100" width="230" height="100" rx="12" fill="#1b5e20" stroke="#66bb6a" stroke-width="2"/>
+  <text x="665" y="135" text-anchor="middle" fill="#a5d6a7" font-size="14" font-weight="bold">All 6 Gates Pass</text>
+  <text x="665" y="155" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold">→ LAUNCH MVP</text>
+  <text x="665" y="180" text-anchor="middle" fill="#c8e6c9" font-size="10">76/76 test cases · 4/4 UAT · 3/3 E2E</text>
+
+  <!-- Arrows -->
+  <line x1="515" y1="140" x2="545" y2="145" stroke="#66bb6a" stroke-width="2" marker-end="url(#exA)"/>
+  <line x1="515" y1="160" x2="545" y2="155" stroke="#66bb6a" stroke-width="2" marker-end="url(#exA)"/>
+</svg>
+</section>
+
+<!-- ============================================================ -->
+<!-- SUMMARY METRICS -->
+<!-- ============================================================ -->
+<section style="text-align:center;">
+<h2>By the Numbers</h2>
+<div class="metric-grid">
+  <div class="box metric">
+    <div class="number" style="color:#4fc3f7;">76</div>
+    <div class="label">Test Cases</div>
+  </div>
+  <div class="box metric">
+    <div class="number" style="color:#66bb6a;">52</div>
+    <div class="label">User Stories Covered</div>
+  </div>
+  <div class="box metric">
+    <div class="number" style="color:#ffa726;">54</div>
+    <div class="label">P0 Critical</div>
+  </div>
+  <div class="box metric">
+    <div class="number" style="color:#ce93d8;">3+4</div>
+    <div class="label">E2E + UAT</div>
+  </div>
+</div>
+<div class="two-col" style="margin-top:12px;">
+<div class="box">
+  <h3>Module Coverage</h3>
+<table>
+<tr><th>Module</th><th>Cases</th><th>P0</th></tr>
+<tr><td>Auth & Roles</td><td>8</td><td>5</td></tr>
+<tr><td>Asset Registry</td><td>9</td><td>8</td></tr>
+<tr><td>Inspections</td><td>8</td><td>6</td></tr>
+<tr><td>Offline & Sync</td><td>6</td><td>6</td></tr>
+<tr><td>Evidence</td><td>8</td><td>4</td></tr>
+<tr><td>Tickets & WO</td><td>10</td><td>8</td></tr>
+<tr><td>Availability</td><td>5</td><td>4</td></tr>
+<tr><td>Replacements</td><td>5</td><td>3</td></tr>
+</table>
+</div>
+<div class="box">
+  <h3>Module Coverage (cont.)</h3>
+<table>
+<tr><th>Module</th><th>Cases</th><th>P0</th></tr>
+<tr><td>Dispatcher Board</td><td>3</td><td>2</td></tr>
+<tr><td>Dashboard & Reporting</td><td>5</td><td>3</td></tr>
+<tr><td>Search & Audit</td><td>4</td><td>3</td></tr>
+<tr><td>Mobile Workflow</td><td>6</td><td>4</td></tr>
+<tr><td>Admin Settings</td><td>5</td><td>3</td></tr>
+<tr><td>Non-Functional</td><td>6</td><td>3</td></tr>
+<tr><td>QA Review</td><td>3</td><td>3</td></tr>
+<tr><td>UAT</td><td>4</td><td>—</td></tr>
+</table>
+</div>
+</div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+  width: 1200,
+  height: 750,
+  margin: 0.06,
+  hash: true,
+  transition: 'slide',
+  controls: true,
+  progress: true,
+  center: false
+});
+</script>
+</body>
+</html>

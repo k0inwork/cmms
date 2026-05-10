@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 812" font-family="system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="headerGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a365d"/>
+      <stop offset="100%" stop-color="#2c5282"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="375" height="812" fill="#f7fafc"/>
+
+  <!-- Header -->
+  <rect width="375" height="280" fill="url(#headerGrad)" rx="0"/>
+  <text x="187" y="120" text-anchor="middle" fill="white" font-size="28" font-weight="700">CMMS</text>
+  <text x="187" y="150" text-anchor="middle" fill="#bee3f8" font-size="14">Wind Turbine Inspection Platform</text>
+
+  <!-- Wind turbine icon -->
+  <g transform="translate(187, 200)" fill="none" stroke="#bee3f8" stroke-width="2">
+    <line x1="0" y1="-40" x2="0" y2="10"/>
+    <line x1="0" y1="-40" x2="-20" y2="-15"/>
+    <line x1="0" y1="-40" x2="20" y2="-15"/>
+    <circle cx="0" cy="-40" r="4" fill="#bee3f8"/>
+    <rect x="-8" y="10" width="16" height="30" rx="3" fill="#bee3f8" opacity="0.3"/>
+  </g>
+
+  <!-- Login Card -->
+  <rect x="24" y="310" width="327" height="340" fill="white" rx="12" filter="drop-shadow(0 4px 12px rgba(0,0,0,0.1))"/>
+
+  <!-- Email Field -->
+  <text x="44" y="348" fill="#718096" font-size="12" font-weight="600">EMAIL</text>
+  <rect x="44" y="356" width="287" height="48" fill="#f7fafc" rx="8" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="60" y="386" fill="#a0aec0" font-size="16">your@email.com</text>
+
+  <!-- Password Field -->
+  <text x="44" y="426" fill="#718096" font-size="12" font-weight="600">PASSWORD</text>
+  <rect x="44" y="434" width="287" height="48" fill="#f7fafc" rx="8" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="60" y="464" fill="#a0aec0" font-size="16">••••••••</text>
+  <!-- Eye icon -->
+  <g transform="translate(305, 450)" fill="none" stroke="#a0aec0" stroke-width="1.5">
+    <path d="M-10,0 Q0,-8 10,0 Q0,8 -10,0Z"/>
+    <circle cx="0" cy="0" r="3"/>
+  </g>
+
+  <!-- Login Button -->
+  <rect x="44" y="508" width="287" height="52" fill="#2c5282" rx="8"/>
+  <text x="187" y="540" text-anchor="middle" fill="white" font-size="16" font-weight="600">Log In</text>
+
+  <!-- Forgot Password -->
+  <text x="187" y="590" text-anchor="middle" fill="#2c5282" font-size="14">Forgot Password?</text>
+
+  <!-- Offline notice -->
+  <rect x="24" y="670" width="327" height="40" fill="#fefcbf" rx="8" stroke="#ecc94b" stroke-width="1"/>
+  <text x="44" y="695" fill="#744210" font-size="13" font-weight="500">Works offline after first login</text>
+
+  <!-- Home indicator -->
+  <rect x="120" y="786" width="135" height="5" fill="#cbd5e0" rx="3"/>
+</svg>

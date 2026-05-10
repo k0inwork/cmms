@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 812" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="375" height="812" fill="#f7fafc"/>
+
+  <!-- Header -->
+  <rect width="375" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="375" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="56" y="35" fill="#1a202c" font-size="17" font-weight="600">TKT-2025-0042</text>
+  <text x="20" y="36" fill="#2c5282" font-size="20">←</text>
+  <!-- Priority badge -->
+  <rect x="280" y="16" width="75" height="26" fill="#fed7d7" rx="13"/>
+  <text x="317" y="34" text-anchor="middle" fill="#9b2c2c" font-size="11" font-weight="600">CRITICAL</text>
+
+  <!-- Status Stepper -->
+  <rect x="16" y="68" width="343" height="64" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <!-- Status dots and labels -->
+  <circle cx="44" cy="92" r="6" fill="#c6f6d5" stroke="#38a169" stroke-width="2"/>
+  <circle cx="100" cy="92" r="6" fill="#c6f6d5" stroke="#38a169" stroke-width="2"/>
+  <circle cx="156" cy="92" r="6" fill="#38a169" stroke="#38a169" stroke-width="2"/>
+  <circle cx="212" cy="92" r="6" fill="#e2e8f0"/>
+  <circle cx="268" cy="92" r="6" fill="#e2e8f0"/>
+  <circle cx="324" cy="92" r="6" fill="#e2e8f0"/>
+  <line x1="50" y1="92" x2="94" y2="92" stroke="#38a169" stroke-width="2"/>
+  <line x1="106" y1="92" x2="150" y2="92" stroke="#38a169" stroke-width="2"/>
+  <line x1="162" y1="92" x2="206" y2="92" stroke="#e2e8f0" stroke-width="2"/>
+
+  <text x="44" y="120" text-anchor="middle" fill="#718096" font-size="9">New</text>
+  <text x="100" y="120" text-anchor="middle" fill="#718096" font-size="9">Triaged</text>
+  <text x="156" y="120" text-anchor="middle" fill="#2c5282" font-size="9" font-weight="600">Assigned</text>
+  <text x="212" y="120" text-anchor="middle" fill="#a0aec0" font-size="9">Progress</text>
+  <text x="268" y="120" text-anchor="middle" fill="#a0aec0" font-size="9">Review</text>
+  <text x="324" y="120" text-anchor="middle" fill="#a0aec0" font-size="9">Closed</text>
+
+  <!-- Ticket Details Card -->
+  <rect x="16" y="144" width="343" height="180" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+  <text x="32" y="170" fill="#1a202c" font-size="16" font-weight="700">Blade Trailing Edge Crack</text>
+  <line x1="32" y1="180" x2="343" y2="180" stroke="#f0f0f0" stroke-width="1"/>
+
+  <text x="32" y="200" fill="#718096" font-size="12">Asset</text>
+  <text x="160" y="200" fill="#1a202c" font-size="13" font-weight="500">WTG-HR-01 · Trailing Edge</text>
+
+  <text x="32" y="222" fill="#718096" font-size="12">Severity</text>
+  <rect x="160" y="209" width="60" height="20" fill="#fed7d7" rx="4"/>
+  <text x="190" y="223" text-anchor="middle" fill="#9b2c2c" font-size="11" font-weight="600">MAJOR</text>
+
+  <text x="32" y="244" fill="#718096" font-size="12">Assignee</text>
+  <text x="160" y="244" fill="#1a202c" font-size="13" font-weight="500">Alex Petrov</text>
+
+  <text x="32" y="266" fill="#718096" font-size="12">SLA Target</text>
+  <text x="160" y="266" fill="#e53e3e" font-size="13" font-weight="600">18h remaining</text>
+
+  <text x="32" y="288" fill="#718096" font-size="12">Created</text>
+  <text x="160" y="288" fill="#1a202c" font-size="13">May 8, 2025 · 09:30</text>
+
+  <text x="32" y="310" fill="#718096" font-size="12">Source</text>
+  <text x="160" y="310" fill="#2c5282" font-size="13" font-weight="500">Inspection #INS-2025-0087 →</text>
+
+  <!-- Evidence Section -->
+  <text x="24" y="350" fill="#1a202c" font-size="16" font-weight="700">Evidence</text>
+  <text x="351" y="350" text-anchor="end" fill="#2c5282" font-size="14" font-weight="600">+ Add</text>
+
+  <rect x="16" y="362" width="108" height="80" fill="#edf2f7" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="70" y="398" text-anchor="middle" fill="#a0aec0" font-size="24">📷</text>
+  <text x="70" y="420" text-anchor="middle" fill="#718096" font-size="10">crack_01.jpg</text>
+
+  <rect x="134" y="362" width="108" height="80" fill="#edf2f7" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="188" y="398" text-anchor="middle" fill="#a0aec0" font-size="24">📷</text>
+  <text x="188" y="420" text-anchor="middle" fill="#718096" font-size="10">crack_02.jpg</text>
+
+  <rect x="252" y="362" width="108" height="80" fill="#edf2f7" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="306" y="398" text-anchor="middle" fill="#a0aec0" font-size="24">🎬</text>
+  <text x="306" y="420" text-anchor="middle" fill="#718096" font-size="10">drone_vid.mp4</text>
+
+  <!-- Activity / Timeline -->
+  <text x="24" y="472" fill="#1a202c" font-size="16" font-weight="700">Activity</text>
+
+  <!-- Timeline entry 1 -->
+  <circle cx="32" cy="500" r="4" fill="#38a169"/>
+  <line x1="32" y1="504" x2="32" y2="536" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="48" y="498" fill="#1a202c" font-size="13" font-weight="500">Assigned to Alex Petrov</text>
+  <text x="48" y="514" fill="#718096" font-size="12">Tom Miller · May 8, 10:15</text>
+
+  <!-- Timeline entry 2 -->
+  <circle cx="32" cy="536" r="4" fill="#3182ce"/>
+  <line x1="32" y1="540" x2="32" y2="572" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="48" y="534" fill="#1a202c" font-size="13" font-weight="500">Triaged</text>
+  <text x="48" y="550" fill="#718096" font-size="12">Tom Miller · May 8, 09:45</text>
+
+  <!-- Timeline entry 3 -->
+  <circle cx="32" cy="572" r="4" fill="#38a169"/>
+  <text x="48" y="570" fill="#1a202c" font-size="13" font-weight="500">Ticket created</text>
+  <text x="48" y="586" fill="#718096" font-size="12">Lena Berg · May 8, 09:30</text>
+
+  <!-- Bottom Action -->
+  <rect x="0" y="690" width="375" height="122" fill="white" filter="drop-shadow(0 -1px 3px rgba(0,0,0,0.08))"/>
+  <line x1="0" y1="690" x2="375" y2="690" stroke="#e2e8f0" stroke-width="1"/>
+
+  <rect x="16" y="704" width="163" height="48" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="97" y="733" text-anchor="middle" fill="#4a5568" font-size="14" font-weight="600">Start Work</text>
+
+  <rect x="196" y="704" width="163" height="48" fill="#2c5282" rx="8"/>
+  <text x="277" y="733" text-anchor="middle" fill="white" font-size="14" font-weight="600">Add Notes</text>
+
+  <rect x="120" y="794" width="135" height="5" fill="#cbd5e0" rx="3"/>
+</svg>

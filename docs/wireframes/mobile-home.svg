@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 812" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="375" height="812" fill="#f7fafc"/>
+
+  <!-- Status Bar -->
+  <rect width="375" height="44" fill="white"/>
+  <text x="24" y="30" fill="#1a202c" font-size="15" font-weight="700">Hello, Alex</text>
+
+  <!-- Sync Status Bar -->
+  <rect x="0" y="44" width="375" height="36" fill="#c6f6d5"/>
+  <circle cx="24" cy="62" r="5" fill="#38a169"/>
+  <text x="38" y="67" fill="#276749" font-size="13" font-weight="500">All data synced — 3 pending</text>
+  <text x="351" y="67" text-anchor="end" fill="#276749" font-size="13">●</text>
+
+  <!-- Today's Inspections Header -->
+  <text x="24" y="110" fill="#1a202c" font-size="18" font-weight="700">Today's Inspections</text>
+  <text x="351" y="110" text-anchor="end" fill="#2c5282" font-size="14" font-weight="600">See all</text>
+
+  <!-- Inspection Card 1 -->
+  <rect x="16" y="124" width="343" height="100" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.08))"/>
+  <rect x="16" y="124" width="4" height="100" fill="#e53e3e" rx="2"/>
+  <text x="32" y="150" fill="#1a202c" font-size="15" font-weight="600">Blade Inspection — WTG-HR-01</text>
+  <text x="32" y="170" fill="#718096" font-size="13">Hornsea Reef · Trailing Edge</text>
+  <text x="32" y="190" fill="#e53e3e" font-size="12" font-weight="600">DUE: 14:00 · HIGH PRIORITY</text>
+  <!-- Status badge -->
+  <rect x="270" y="140" width="75" height="26" fill="#fefcbf" rx="13" stroke="#ecc94b" stroke-width="1"/>
+  <text x="307" y="158" text-anchor="middle" fill="#744210" font-size="11" font-weight="600">ASSIGNED</text>
+
+  <!-- Inspection Card 2 -->
+  <rect x="16" y="234" width="343" height="100" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.08))"/>
+  <rect x="16" y="234" width="4" height="100" fill="#3182ce" rx="2"/>
+  <text x="32" y="260" fill="#1a202c" font-size="15" font-weight="600">Gearbox Inspection — WTG-HR-22</text>
+  <text x="32" y="280" fill="#718096" font-size="13">Hornsea Reef · Main Bearing</text>
+  <text x="32" y="300" fill="#3182ce" font-size="12" font-weight="600">DUE: 16:00 · MEDIUM</text>
+  <rect x="270" y="250" width="75" height="26" fill="#bee3f8" rx="13" stroke="#3182ce" stroke-width="1"/>
+  <text x="307" y="268" text-anchor="middle" fill="#2a4365" font-size="11" font-weight="600">PRE-LOADED</text>
+
+  <!-- Quick Actions -->
+  <text x="24" y="370" fill="#1a202c" font-size="18" font-weight="700">Quick Actions</text>
+
+  <!-- Action Grid -->
+  <!-- Scan QR -->
+  <rect x="16" y="386" width="166" height="90" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.08))"/>
+  <rect x="28" y="400" width="44" height="44" fill="#ebf8ff" rx="10"/>
+  <text x="50" y="428" text-anchor="middle" fill="#2c5282" font-size="22">⊞</text>
+  <text x="28" y="462" fill="#1a202c" font-size="13" font-weight="600">Scan QR Code</text>
+
+  <!-- Report Absence -->
+  <rect x="193" y="386" width="166" height="90" fill="white" rx="10" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.08))"/>
+  <rect x="205" y="400" width="44" height="44" fill="#fff5f5" rx="10"/>
+  <text x="227" y="428" text-anchor="middle" fill="#e53e3e" font-size="22">✕</text>
+  <text x="205" y="462" fill="#1a202c" font-size="13" font-weight="600">Report Absence</text>
+
+  <!-- Recent Activity -->
+  <text x="24" y="516" fill="#1a202c" font-size="18" font-weight="700">Recent Activity</text>
+
+  <rect x="16" y="530" width="343" height="56" fill="white" rx="8" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.08))"/>
+  <circle cx="44" cy="558" r="14" fill="#c6f6d5"/>
+  <text x="44" y="563" text-anchor="middle" fill="#276749" font-size="14">✓</text>
+  <text x="68" y="553" fill="#1a202c" font-size="14" font-weight="500">Blade Insp. WTG-RB-05</text>
+  <text x="68" y="572" fill="#718096" font-size="12">Submitted · 2 hours ago</text>
+
+  <rect x="16" y="594" width="343" height="56" fill="white" rx="8" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.08))"/>
+  <circle cx="44" cy="622" r="14" fill="#bee3f8"/>
+  <text x="44" y="627" text-anchor="middle" fill="#2a4365" font-size="14">↗</text>
+  <text x="68" y="617" fill="#1a202c" font-size="14" font-weight="500">Reassigned to you</text>
+  <text x="68" y="636" fill="#718096" font-size="12">Ticket TKT-2025-0042 · Yesterday</text>
+
+  <!-- Bottom Tab Bar -->
+  <rect x="0" y="728" width="375" height="84" fill="white" filter="drop-shadow(0 -1px 3px rgba(0,0,0,0.08))"/>
+  <line x1="0" y1="728" x2="375" y2="728" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Tab: Home (active) -->
+  <text x="47" y="758" text-anchor="middle" fill="#2c5282" font-size="20">⌂</text>
+  <text x="47" y="778" text-anchor="middle" fill="#2c5282" font-size="10" font-weight="600">Home</text>
+
+  <!-- Tab: Inspections -->
+  <text x="140" y="758" text-anchor="middle" fill="#a0aec0" font-size="20">📋</text>
+  <text x="140" y="778" text-anchor="middle" fill="#a0aec0" font-size="10">Inspections</text>
+
+  <!-- Tab: Tickets -->
+  <text x="234" y="758" text-anchor="middle" fill="#a0aec0" font-size="20">🎫</text>
+  <text x="234" y="778" text-anchor="middle" fill="#a0aec0" font-size="10">Tickets</text>
+
+  <!-- Tab: Profile -->
+  <text x="328" y="758" text-anchor="middle" fill="#a0aec0" font-size="20">👤</text>
+  <text x="328" y="778" text-anchor="middle" fill="#a0aec0" font-size="10">Profile</text>
+
+  <!-- Home indicator -->
+  <rect x="120" y="794" width="135" height="5" fill="#cbd5e0" rx="3"/>
+</svg>

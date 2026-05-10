@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#f7fafc"/>
+
+  <!-- Top Navigation Bar -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">Ticket Management</text>
+
+  <text x="300" y="36" fill="#718096" font-size="14">Dashboard</text>
+  <text x="420" y="36" fill="#718096" font-size="14">Assets</text>
+  <text x="520" y="36" fill="#718096" font-size="14">Inspections</text>
+  <text x="640" y="36" fill="#718096" font-size="14">Dispatch</text>
+  <text x="740" y="36" fill="#2c5282" font-size="14" font-weight="600" text-decoration="underline">Tickets</text>
+  <text x="830" y="36" fill="#718096" font-size="14">Admin</text>
+
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">TM</text>
+
+  <!-- Toolbar -->
+  <rect x="24" y="72" width="1392" height="48" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <rect x="24" y="72" width="120" height="48" fill="#2c5282" rx="8"/>
+  <text x="84" y="101" text-anchor="middle" fill="white" font-size="13" font-weight="600">+ New Ticket</text>
+
+  <!-- Search -->
+  <rect x="160" y="82" width="280" height="28" fill="#edf2f7" rx="6"/>
+  <text x="180" y="101" fill="#a0aec0" font-size="12">Search tickets... (TKT-xxx, keyword)</text>
+
+  <!-- Filters -->
+  <rect x="460" y="82" width="100" height="28" fill="#edf2f7" rx="6"/>
+  <text x="510" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Status ▾</text>
+  <rect x="572" y="82" width="100" height="28" fill="#edf2f7" rx="6"/>
+  <text x="622" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Priority ▾</text>
+  <rect x="684" y="82" width="100" height="28" fill="#edf2f7" rx="6"/>
+  <text x="734" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Assignee ▾</text>
+  <rect x="796" y="82" width="100" height="28" fill="#edf2f7" rx="6"/>
+  <text x="846" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Asset ▾</text>
+  <rect x="908" y="82" width="100" height="28" fill="#edf2f7" rx="6"/>
+  <text x="958" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Date ▾</text>
+
+  <text x="1392" y="101" text-anchor="end" fill="#718096" font-size="12">24 tickets · Page 1 of 3</text>
+
+  <!-- Table Header -->
+  <rect x="24" y="136" width="1392" height="36" fill="#edf2f7" rx="4"/>
+  <text x="40" y="159" fill="#718096" font-size="11" font-weight="700">ID</text>
+  <text x="140" y="159" fill="#718096" font-size="11" font-weight="700">TITLE</text>
+  <text x="400" y="159" fill="#718096" font-size="11" font-weight="700">ASSET</text>
+  <text x="600" y="159" fill="#718096" font-size="11" font-weight="700">STATUS</text>
+  <text x="700" y="159" fill="#718096" font-size="11" font-weight="700">PRIORITY</text>
+  <text x="800" y="159" fill="#718096" font-size="11" font-weight="700">ASSIGNEE</text>
+  <text x="920" y="159" fill="#718096" font-size="11" font-weight="700">SLA</text>
+  <text x="1020" y="159" fill="#718096" font-size="11" font-weight="700">CREATED</text>
+  <text x="1140" y="159" fill="#718096" font-size="11" font-weight="700">SOURCE</text>
+
+  <!-- Row 1 - Critical -->
+  <rect x="24" y="176" width="1392" height="48" fill="white" rx="0"/>
+  <line x1="24" y1="224" x2="1416" y2="224" stroke="#f0f0f0" stroke-width="1"/>
+  <rect x="24" y="176" width="3" height="48" fill="#e53e3e"/>
+  <text x="40" y="205" fill="#2c5282" font-size="12" font-weight="600">TKT-0042</text>
+  <text x="140" y="205" fill="#1a202c" font-size="12">Blade Trailing Edge Crack</text>
+  <text x="400" y="205" fill="#1a202c" font-size="12">WTG-HR-01 · Blade</text>
+  <rect x="600" y="190" width="80" height="20" fill="#ebf8ff" rx="4"/>
+  <text x="640" y="204" text-anchor="middle" fill="#2c5282" font-size="10" font-weight="600">ASSIGNED</text>
+  <rect x="700" y="190" width="70" height="20" fill="#fed7d7" rx="4"/>
+  <text x="735" y="204" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">CRITICAL</text>
+  <text x="800" y="205" fill="#1a202c" font-size="12">Alex Petrov</text>
+  <text x="920" y="205" fill="#e53e3e" font-size="12" font-weight="600">18h left</text>
+  <text x="1020" y="205" fill="#718096" font-size="12">May 8, 09:30</text>
+  <text x="1140" y="205" fill="#2c5282" font-size="12">INS-0087 →</text>
+
+  <!-- Row 2 - Major -->
+  <rect x="24" y="224" width="1392" height="48" fill="#fffff0"/>
+  <line x1="24" y1="272" x2="1416" y2="272" stroke="#f0f0f0" stroke-width="1"/>
+  <rect x="24" y="224" width="3" height="48" fill="#e53e3e"/>
+  <text x="40" y="253" fill="#2c5282" font-size="12" font-weight="600">TKT-0043</text>
+  <text x="140" y="253" fill="#1a202c" font-size="12">Gearbox Oil Leak</text>
+  <text x="400" y="253" fill="#1a202c" font-size="12">WTG-HR-22 · Drivetrain</text>
+  <rect x="600" y="238" width="80" height="20" fill="#c6f6d5" rx="4"/>
+  <text x="640" y="252" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">TRIAGED</text>
+  <rect x="700" y="238" width="50" height="20" fill="#fed7d7" rx="4"/>
+  <text x="725" y="252" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">MAJOR</text>
+  <text x="800" y="253" fill="#a0aec0" font-size="12" font-style="italic">Unassigned</text>
+  <text x="920" y="253" fill="#ecc94b" font-size="12" font-weight="600">2d left</text>
+  <text x="1020" y="253" fill="#718096" font-size="12">May 8, 11:00</text>
+  <text x="1140" y="253" fill="#718096" font-size="12">Manual</text>
+
+  <!-- Row 3 -->
+  <rect x="24" y="272" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="320" x2="1416" y2="320" stroke="#f0f0f0" stroke-width="1"/>
+  <rect x="24" y="272" width="3" height="48" fill="#ecc94b"/>
+  <text x="40" y="301" fill="#2c5282" font-size="12" font-weight="600">TKT-0044</text>
+  <text x="140" y="301" fill="#1a202c" font-size="12">Yaw Bearing Noise</text>
+  <text x="400" y="301" fill="#1a202c" font-size="12">WTG-HR-15 · Nacelle</text>
+  <rect x="600" y="286" width="95" height="20" fill="#bee3f8" rx="4"/>
+  <text x="647" y="300" text-anchor="middle" fill="#2a4365" font-size="10" font-weight="600">IN PROGRESS</text>
+  <rect x="700" y="286" width="55" height="20" fill="#fefcbf" rx="4"/>
+  <text x="727" y="300" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">MINOR</text>
+  <text x="800" y="301" fill="#1a202c" font-size="12">Lena Berg</text>
+  <text x="920" y="301" fill="#38a169" font-size="12">5d left</text>
+  <text x="1020" y="301" fill="#718096" font-size="12">May 7, 14:00</text>
+  <text x="1140" y="301" fill="#2c5282" font-size="12">INS-0084 →</text>
+
+  <!-- Row 4 -->
+  <rect x="24" y="320" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="368" x2="1416" y2="368" stroke="#f0f0f0" stroke-width="1"/>
+  <rect x="24" y="320" width="3" height="48" fill="#3182ce"/>
+  <text x="40" y="349" fill="#2c5282" font-size="12" font-weight="600">TKT-0045</text>
+  <text x="140" y="349" fill="#1a202c" font-size="12">Sensor Calibration — Anemometer</text>
+  <text x="400" y="349" fill="#1a202c" font-size="12">WTG-HR-08 · Sensors</text>
+  <rect x="600" y="334" width="55" height="20" fill="#e2e8f0" rx="4"/>
+  <text x="627" y="348" text-anchor="middle" fill="#4a5568" font-size="10" font-weight="600">NEW</text>
+  <rect x="700" y="334" width="40" height="20" fill="#bee3f8" rx="4"/>
+  <text x="720" y="348" text-anchor="middle" fill="#2a4365" font-size="10" font-weight="600">LOW</text>
+  <text x="800" y="349" fill="#a0aec0" font-size="12" font-style="italic">Unassigned</text>
+  <text x="920" y="349" fill="#38a169" font-size="12">7d left</text>
+  <text x="1020" y="349" fill="#718096" font-size="12">May 8, 15:30</text>
+  <text x="1140" y="349" fill="#718096" font-size="12">Manual</text>
+
+  <!-- Row 5 -->
+  <rect x="24" y="368" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="416" x2="1416" y2="416" stroke="#f0f0f0" stroke-width="1"/>
+  <rect x="24" y="368" width="3" height="48" fill="#38a169"/>
+  <text x="40" y="397" fill="#2c5282" font-size="12" font-weight="600">TKT-0040</text>
+  <text x="140" y="397" fill="#1a202c" font-size="12">Hydraulic Hose Replacement</text>
+  <text x="400" y="397" fill="#1a202c" font-size="12">WTG-HR-03 · Hydraulic</text>
+  <rect x="600" y="382" width="95" height="20" fill="#c6f6d5" rx="4"/>
+  <text x="647" y="396" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">IN REVIEW</text>
+  <rect x="700" y="382" width="50" height="20" fill="#fed7d7" rx="4"/>
+  <text x="725" y="396" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">MAJOR</text>
+  <text x="800" y="397" fill="#1a202c" font-size="12">Karl Nilsen</text>
+  <text x="920" y="397" fill="#38a169" font-size="12">4d left</text>
+  <text x="1020" y="397" fill="#718096" font-size="12">May 5, 10:00</text>
+  <text x="1140" y="397" fill="#2c5282" font-size="12">INS-0078 →</text>
+
+  <!-- Row 6 - Closed -->
+  <rect x="24" y="416" width="1392" height="48" fill="#f7fafc" opacity="0.7"/>
+  <line x1="24" y1="464" x2="1416" y2="464" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="40" y="445" fill="#a0aec0" font-size="12" font-weight="600">TKT-0038</text>
+  <text x="140" y="445" fill="#a0aec0" font-size="12">Bolt Torque Check — Foundation</text>
+  <text x="400" y="445" fill="#a0aec0" font-size="12">WTG-HR-01 · Foundation</text>
+  <rect x="600" y="430" width="60" height="20" fill="#e2e8f0" rx="4"/>
+  <text x="630" y="444" text-anchor="middle" fill="#718096" font-size="10" font-weight="600">CLOSED</text>
+  <rect x="700" y="430" width="55" height="20" fill="#fefcbf" rx="4"/>
+  <text x="727" y="444" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">MINOR</text>
+  <text x="800" y="445" fill="#a0aec0" font-size="12">Sven Andersen</text>
+  <text x="920" y="445" fill="#38a169" font-size="12">Resolved</text>
+  <text x="1020" y="445" fill="#a0aec0" font-size="12">May 3, 08:00</text>
+  <text x="1140" y="445" fill="#a0aec0" font-size="12">Manual</text>
+
+  <!-- Side Panel (Ticket Detail Preview) -->
+  <rect x="1240" y="136" width="176" height="4" fill="#2c5282" rx="2"/>
+
+  <!-- Pagination -->
+  <text x="720" y="870" text-anchor="middle" fill="#718096" font-size="13">← Prev  1  <tspan fill="#2c5282" font-weight="700">2</tspan>  3  4  Next →</text>
+</svg>

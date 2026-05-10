@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMMS MVP — Wireframe Index</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f7fafc; color: #1a202c; padding: 32px; }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  .subtitle { color: #718096; margin-bottom: 32px; font-size: 15px; }
+  .stats { display: flex; gap: 16px; margin-bottom: 32px; }
+  .stat { background: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .stat strong { font-size: 22px; color: #2c5282; }
+  .stat span { font-size: 12px; color: #718096; margin-left: 4px; }
+  .section { margin-bottom: 48px; }
+  .section h2 { font-size: 20px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+  .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: transform 0.15s; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+  .card-header { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+  .card-header h3 { font-size: 14px; font-weight: 600; }
+  .badge { font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
+  .badge-mobile { background: #ebf8ff; color: #2c5282; }
+  .badge-desktop { background: #e9d8fd; color: #553c9a; }
+  .stories { font-size: 10px; color: #38a169; font-weight: 500; margin-top: 2px; }
+  .card-body { padding: 8px; display: flex; justify-content: center; background: #edf2f7; }
+  .card-body img { width: 100%; height: auto; max-height: 500px; object-fit: contain; }
+  .card-footer { padding: 8px 16px; border-top: 1px solid #f0f0f0; }
+  .card-footer p { font-size: 12px; color: #718096; }
+</style>
+</head>
+<body>
+  <h1>CMMS MVP — Wireframe Index</h1>
+  <p class="subtitle">Wind Turbine CMMS/FSM/EAM Platform · All screens for development handoff</p>
+
+  <div class="stats">
+    <div class="stat"><strong>26</strong><span>screens</span></div>
+    <div class="stat"><strong>12</strong><span>mobile</span></div>
+    <div class="stat"><strong>14</strong><span>desktop</span></div>
+    <div class="stat"><strong>52/52</strong><span>user stories covered</span></div>
+  </div>
+
+  <div class="section">
+    <h2>Mobile — Technician</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <h3>Login</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-login.svg" alt="Login"></div>
+        <div class="card-footer"><p>Email/password auth, wind turbine branding</p><p class="stories">AUTH-01, AUTH-02</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Home</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-home.svg" alt="Home"></div>
+        <div class="card-footer"><p>Sync status, assigned inspections, quick actions, activity</p><p class="stories">MOB-01, MOB-02, MOB-03</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Inspection Form</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-inspection-form.svg" alt="Inspection Form"></div>
+        <div class="card-footer"><p>Dynamic form with progress, photos, offline badge, save/submit</p><p class="stories">INS-03, INS-04, INS-05, INS-06, INS-07, OFF-01, OFF-02, OFF-03</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Ticket Detail</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-ticket-detail.svg" alt="Ticket Detail"></div>
+        <div class="card-footer"><p>Status stepper, details, evidence thumbnails, activity timeline</p><p class="stories">TKT-05, TKT-06, TKT-07</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Sync Status</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-sync-status.svg" alt="Sync Status"></div>
+        <div class="card-footer"><p>Connection status, synced/pending/failed counts, retry</p><p class="stories">OFF-01, OFF-02, OFF-03, OFF-05</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Report Absence</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-absence.svg" alt="Absence Report"></div>
+        <div class="card-footer"><p>Reason selection, dates, affected assignments warning</p><p class="stories">AVAIL-03, AVAIL-04</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Evidence Viewer</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-evidence-viewer.svg" alt="Evidence Viewer"></div>
+        <div class="card-footer"><p>Photo/video viewer, annotations, metadata, GPS</p><p class="stories">EVID-01, EVID-02, EVID-03, EVID-04, EVID-06</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Asset Detail</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-asset-detail.svg" alt="Asset Detail"></div>
+        <div class="card-footer"><p>Asset info, component list with health, history, actions</p><p class="stories">ASSET-07</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Status Picker</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-status-picker.svg" alt="Status Picker"></div>
+        <div class="card-footer"><p>Set availability status, sick/leave opens absence form</p><p class="stories">AVAIL-01</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>QR Scanner</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-qr-scanner.svg" alt="QR Scanner"></div>
+        <div class="card-footer"><p>Camera viewfinder, asset scanning, recent scans, manual entry</p><p class="stories">MOB-04</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Assignment Notification</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-assignment-notification.svg" alt="Assignment Notification"></div>
+        <div class="card-footer"><p>Accept/decline assignment, match score, task preview, conflict warning</p><p class="stories">REPL-04</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Conflict Resolution</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-conflict-resolution.svg" alt="Conflict Resolution"></div>
+        <div class="card-footer"><p>Side-by-side server vs local versions, choose winner, progress bar</p><p class="stories">OFF-04</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Profile &amp; Logout</h3>
+          <span class="badge badge-mobile">Mobile</span>
+        </div>
+        <div class="card-body"><img src="mobile-logout.svg" alt="Logout"></div>
+        <div class="card-footer"><p>Profile, settings menu, sync warning, sign-out confirmation</p><p class="stories">AUTH-03</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Desktop — Dispatcher &amp; Management</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <h3>Operations Dashboard</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-dashboard.svg" alt="Dashboard"></div>
+        <div class="card-footer"><p>KPIs, ticket aging, coverage gaps, trends, activity log</p><p class="stories">DASH-01, DASH-02, DASH-05</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Dispatcher Board</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-dispatcher-board.svg" alt="Dispatcher Board"></div>
+        <div class="card-footer"><p>Unassigned tickets, technician coverage, replacement suggestions, SLA timeline</p><p class="stories">DISP-01, DISP-02, DISP-03, REPL-01, REPL-02, AVAIL-02, TKT-03</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Ticket Management</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-ticket-management.svg" alt="Ticket Management"></div>
+        <div class="card-footer"><p>Filterable table, status/priority badges, SLA tracking, batch ops</p><p class="stories">SEARCH-02, TKT-02, TKT-04</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Asset Hierarchy</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-asset-hierarchy.svg" alt="Asset Hierarchy"></div>
+        <div class="card-footer"><p>Tree navigation, detail panel, properties, health, tickets, inspections</p><p class="stories">ASSET-06, ASSET-07</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Asset Create</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-asset-create.svg" alt="Asset Create"></div>
+        <div class="card-footer"><p>Step wizard, asset type selection, RDS-PP codes, hierarchy preview</p><p class="stories">ASSET-01, ASSET-02, ASSET-03, ASSET-04, ASSET-05, ASSET-08</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Create Ticket from Defect</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-create-ticket.svg" alt="Create Ticket"></div>
+        <div class="card-footer"><p>Auto-populated from inspection, priority, SLA, linked evidence</p><p class="stories">TKT-01</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Work Order Detail</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-work-order.svg" alt="Work Order"></div>
+        <div class="card-footer"><p>WO table + detail panel, task checklist, safety reqs, actions</p><p class="stories">TKT-08</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>QA Review Queue</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-qa-review-queue.svg" alt="QA Review Queue"></div>
+        <div class="card-footer"><p>Inspection queue, form data review, approve/reject, auto-ticket</p><p class="stories">QA-01, QA-03</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Evidence Approval</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-evidence-approval.svg" alt="Evidence Approval"></div>
+        <div class="card-footer"><p>Evidence queue, image viewer with annotations, metadata, batch approve</p><p class="stories">QA-02</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Evidence Library</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-evidence-library.svg" alt="Evidence Library"></div>
+        <div class="card-footer"><p>Thumbnail grid, search/filters, status badges, batch actions, tags</p><p class="stories">EVID-05</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Escalation View</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-escalation-view.svg" alt="Escalation View"></div>
+        <div class="card-footer"><p>Unresolved escalations, force assign, extend deadline, external options</p><p class="stories">REPL-03</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Absence History</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-absence-history.svg" alt="Absence History"></div>
+        <div class="card-footer"><p>Filters, summary cards, absence table, pattern alerts, CSV export</p><p class="stories">AVAIL-05</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Global Search</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-global-search.svg" alt="Global Search"></div>
+        <div class="card-footer"><p>Cross-entity search, category tabs, result cards with context</p><p class="stories">SEARCH-01</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Audit Trail</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-audit-trail.svg" alt="Audit Trail"></div>
+        <div class="card-footer"><p>Filterable log, change details, side effects, CSV/PDF export</p><p class="stories">AUDIT-01, AUDIT-02</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Desktop — Administration</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="card-header">
+          <h3>Admin — User Management</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-admin-users.svg" alt="User Management"></div>
+        <div class="card-footer"><p>Users table, roles, certs, availability, assignment load, cert expiry warnings</p><p class="stories">ADMIN-01</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Admin — Skills &amp; Certs</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-admin-certs.svg" alt="Skills &amp; Certifications"></div>
+        <div class="card-footer"><p>Cert table with expiry, skills matrix, renewal actions, expiry alerts</p><p class="stories">ADMIN-02</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Admin — Template Builder</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-admin-template-builder.svg" alt="Template Builder"></div>
+        <div class="card-footer"><p>Template list, field builder with types, conditional logic, versioning</p><p class="stories">INS-01, INS-02, ADMIN-04</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Admin — Workflow Rules</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-admin-workflow.svg" alt="Workflow Rules"></div>
+        <div class="card-footer"><p>State machine editor, guard conditions, side effects, role permissions</p><p class="stories">ADMIN-03</p></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h3>Export Report</h3>
+          <span class="badge badge-desktop">Desktop</span>
+        </div>
+        <div class="card-body"><img src="desktop-export-report.svg" alt="Export Report"></div>
+        <div class="card-footer"><p>Report type, date range, section selection, filters, PDF/Excel/CSV</p><p class="stories">DASH-04</p></div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

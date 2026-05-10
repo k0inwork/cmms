@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Top Nav -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+
+  <!-- Search bar (large) -->
+  <rect x="24" y="72" width="1392" height="56" fill="white" rx="10" filter="drop-shadow(0 2px 8px rgba(0,0,0,0.08))"/>
+  <text x="52" y="106" fill="#a0aec0" font-size="16">🔍</text>
+  <text x="80" y="106" fill="#1a202c" font-size="16" font-weight="500">WTG-HR-01</text>
+  <text x="190" y="106" fill="#a0aec0" font-size="14">|</text>
+  <rect x="1120" y="84" width="80" height="28" fill="#edf2f7" rx="6"/>
+  <text x="1160" y="103" text-anchor="middle" fill="#4a5568" font-size="11">All Types ▾</text>
+  <rect x="1210" y="84" width="80" height="28" fill="#edf2f7" rx="6"/>
+  <text x="1250" y="103" text-anchor="middle" fill="#4a5568" font-size="11">All Time ▾</text>
+  <text x="1392" y="106" text-anchor="end" fill="#718096" font-size="13">23 results in 0.12s</text>
+
+  <!-- Results by category tabs -->
+  <rect x="24" y="144" width="1392" height="36" fill="white" rx="6"/>
+  <text x="40" y="168" fill="#2c5282" font-size="13" font-weight="600">All (23)</text>
+  <line x1="40" y1="176" x2="86" y2="176" stroke="#2c5282" stroke-width="2"/>
+  <text x="120" y="168" fill="#718096" font-size="13">Assets (8)</text>
+  <text x="240" y="168" fill="#718096" font-size="13">Tickets (6)</text>
+  <text x="360" y="168" fill="#718096" font-size="13">Inspections (4)</text>
+  <text x="520" y="168" fill="#718096" font-size="13">Work Orders (3)</text>
+  <text x="680" y="168" fill="#718096" font-size="13">Evidence (2)</text>
+
+  <!-- Assets section -->
+  <text x="24" y="210" fill="#718096" font-size="11" font-weight="700">ASSETS — 8 results</text>
+
+  <rect x="24" y="220" width="1392" height="52" fill="white" rx="6"/>
+  <circle cx="48" cy="246" r="14" fill="#ebf8ff"/>
+  <text x="48" y="250" text-anchor="middle" fill="#2c5282" font-size="11" font-weight="600">💨</text>
+  <text x="72" y="240" fill="#1a202c" font-size="13" font-weight="600">WTG-HR-01</text>
+  <rect x="160" y="228" width="55" height="18" fill="#ebf8ff" rx="3"/>
+  <text x="187" y="241" text-anchor="middle" fill="#2c5282" font-size="9" font-weight="600">TURBINE</text>
+  <text x="230" y="240" fill="#718096" font-size="12">Hornsea Reef · Turbine 01 · Siemens SG 14-222 DD</text>
+  <rect x="1100" y="232" width="50" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="1125" y="245" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">ACTIVE</text>
+  <text x="1160" y="245" fill="#718096" font-size="11">3 open tickets</text>
+  <text x="1280" y="245" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <rect x="24" y="280" width="1392" height="44" fill="#f7fafc" rx="6"/>
+  <circle cx="48" cy="302" r="14" fill="#edf2f7"/>
+  <text x="48" y="306" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="600">🔧</text>
+  <text x="72" y="298" fill="#1a202c" font-size="13" font-weight="500">WTG-HR-01 · Blade Assembly A</text>
+  <rect x="320" y="288" width="70" height="18" fill="#edf2f7" rx="3"/>
+  <text x="355" y="301" text-anchor="middle" fill="#4a5568" font-size="9" font-weight="600">COMPONENT</text>
+  <text x="410" y="298" fill="#718096" font-size="12">Blade · Trailing Edge · Condition: FAIR</text>
+  <text x="1280" y="298" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <rect x="24" y="332" width="1392" height="44" fill="white" rx="6"/>
+  <circle cx="48" cy="354" r="14" fill="#edf2f7"/>
+  <text x="48" y="358" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="600">🔧</text>
+  <text x="72" y="350" fill="#1a202c" font-size="13" font-weight="500">WTG-HR-01 · Drivetrain</text>
+  <rect x="262" y="340" width="65" height="18" fill="#edf2f7" rx="3"/>
+  <text x="294" y="353" text-anchor="middle" fill="#4a5568" font-size="9" font-weight="600">SYSTEM</text>
+  <text x="345" y="350" fill="#718096" font-size="12">Gearbox, Generator, Main Bearing · Condition: GOOD</text>
+  <text x="1280" y="350" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <!-- Tickets section -->
+  <text x="24" y="406" fill="#718096" font-size="11" font-weight="700">TICKETS — 6 results</text>
+
+  <rect x="24" y="416" width="1392" height="44" fill="white" rx="6"/>
+  <rect x="24" y="416" width="3" height="44" fill="#e53e3e"/>
+  <text x="40" y="434" fill="#2c5282" font-size="12" font-weight="600">TKT-2025-0042</text>
+  <text x="160" y="434" fill="#1a202c" font-size="12">Blade Crack Repair — Trailing Edge</text>
+  <rect x="440" y="424" width="60" height="18" fill="#bee3f8" rx="3"/>
+  <text x="470" y="437" text-anchor="middle" fill="#2a4365" font-size="9" font-weight="600">ASSIGNED</text>
+  <text x="520" y="434" fill="#718096" font-size="11">Alex Petrov · Due May 9</text>
+  <text x="1280" y="434" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <rect x="24" y="468" width="1392" height="44" fill="#f7fafc" rx="6"/>
+  <rect x="24" y="468" width="3" height="44" fill="#ecc94b"/>
+  <text x="40" y="486" fill="#2c5282" font-size="12" font-weight="600">TKT-2025-0038</text>
+  <text x="160" y="486" fill="#1a202c" font-size="12">Quarterly Blade Inspection</text>
+  <rect x="380" y="476" width="55" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="407" y="489" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">CLOSED</text>
+  <text x="455" y="486" fill="#718096" font-size="11">Completed Apr 30</text>
+  <text x="1280" y="486" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <!-- Inspections section -->
+  <text x="24" y="542" fill="#718096" font-size="11" font-weight="700">INSPECTIONS — 4 results</text>
+
+  <rect x="24" y="552" width="1392" height="44" fill="white" rx="6"/>
+  <text x="40" y="576" fill="#2c5282" font-size="12" font-weight="600">INS-2025-0087</text>
+  <text x="170" y="576" fill="#1a202c" font-size="12">Blade Inspection — Quarterly</text>
+  <rect x="420" y="564" width="70" height="18" fill="#fefcbf" rx="3"/>
+  <text x="455" y="577" text-anchor="middle" fill="#744210" font-size="9" font-weight="600">SUBMITTED</text>
+  <text x="510" y="576" fill="#718096" font-size="11">Alex Petrov · May 8 · 2 defects found</text>
+  <text x="1280" y="576" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <!-- Work Orders section -->
+  <text x="24" y="626" fill="#718096" font-size="11" font-weight="700">WORK ORDERS — 3 results</text>
+
+  <rect x="24" y="636" width="1392" height="44" fill="white" rx="6"/>
+  <text x="40" y="660" fill="#2c5282" font-size="12" font-weight="600">WO-0042</text>
+  <text x="120" y="660" fill="#1a202c" font-size="12">Blade Crack Repair — Trailing Edge</text>
+  <rect x="400" y="648" width="80" height="18" fill="#bee3f8" rx="3"/>
+  <text x="440" y="661" text-anchor="middle" fill="#2a4365" font-size="9" font-weight="600">IN PROGRESS</text>
+  <text x="500" y="660" fill="#718096" font-size="11">Alex Petrov · 2/5 tasks · Due May 9</text>
+  <text x="1280" y="660" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <!-- Keyboard shortcut hint -->
+  <rect x="24" y="856" width="1392" height="32" fill="#f7fafc" rx="4"/>
+  <text x="40" y="876" fill="#a0aec0" font-size="11">Tip: Press Ctrl+K to open search from anywhere · Tab to switch categories · Enter to open first result</text>
+</svg>

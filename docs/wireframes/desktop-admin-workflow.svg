@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Top Nav -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">Admin — Workflow Rules</text>
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">TM</text>
+
+  <!-- Left: Workflow list -->
+  <rect x="24" y="72" width="380" height="808" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="40" y="100" fill="#1a202c" font-size="15" font-weight="700">Workflows</text>
+  <rect x="320" y="84" width="70" height="24" fill="#2c5282" rx="4"/>
+  <text x="355" y="101" text-anchor="middle" fill="white" font-size="11" font-weight="600">+ New</text>
+
+  <!-- Workflow items -->
+  <rect x="32" y="116" width="364" height="56" fill="#ebf8ff" rx="6" stroke="#2c5282" stroke-width="1"/>
+  <text x="48" y="138" fill="#2c5282" font-size="13" font-weight="600">Ticket Lifecycle</text>
+  <rect x="220" y="126" width="55" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="247" y="139" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">ACTIVE</text>
+  <text x="48" y="158" fill="#718096" font-size="11">7 states · 12 transitions · Last edited May 5</text>
+
+  <rect x="32" y="180" width="364" height="56" fill="white" rx="6"/>
+  <text x="48" y="202" fill="#1a202c" font-size="13" font-weight="500">Inspection Lifecycle</text>
+  <rect x="230" y="190" width="55" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="257" y="203" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">ACTIVE</text>
+  <text x="48" y="222" fill="#718096" font-size="11">5 states · 8 transitions · Last edited Apr 20</text>
+
+  <rect x="32" y="244" width="364" height="56" fill="white" rx="6"/>
+  <text x="48" y="266" fill="#1a202c" font-size="13" font-weight="500">Work Order Lifecycle</text>
+  <rect x="240" y="254" width="55" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="267" y="267" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">ACTIVE</text>
+  <text x="48" y="286" fill="#718096" font-size="11">6 states · 10 transitions · Last edited Apr 18</text>
+
+  <rect x="32" y="308" width="364" height="56" fill="white" rx="6"/>
+  <text x="48" y="330" fill="#1a202c" font-size="13" font-weight="500">Evidence Review</text>
+  <rect x="200" y="318" width="55" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="227" y="331" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">ACTIVE</text>
+  <text x="48" y="350" fill="#718096" font-size="11">4 states · 6 transitions · Last edited Apr 15</text>
+
+  <rect x="32" y="372" width="364" height="56" fill="white" rx="6"/>
+  <text x="48" y="394" fill="#1a202c" font-size="13" font-weight="500">Absence Workflow</text>
+  <rect x="210" y="382" width="75" height="18" fill="#fefcbf" rx="3"/>
+  <text x="247" y="395" text-anchor="middle" fill="#744210" font-size="9" font-weight="600">DRAFT</text>
+  <text x="48" y="414" fill="#718096" font-size="11">3 states · 4 transitions · Not yet deployed</text>
+
+  <!-- Right: State machine editor -->
+  <rect x="420" y="72" width="996" height="808" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="436" y="100" fill="#1a202c" font-size="15" font-weight="700">Ticket Lifecycle — State Machine</text>
+  <rect x="860" y="84" width="80" height="24" fill="#c6f6d5" rx="4"/>
+  <text x="900" y="101" text-anchor="middle" fill="#276749" font-size="11" font-weight="600">ACTIVE</text>
+  <text x="960" y="101" fill="#718096" font-size="11">v3 · Published May 5</text>
+
+  <!-- State machine diagram -->
+  <!-- State: New -->
+  <rect x="460" y="130" width="100" height="40" fill="#edf2f7" rx="20" stroke="#4a5568" stroke-width="2"/>
+  <text x="510" y="154" text-anchor="middle" fill="#1a202c" font-size="12" font-weight="600">New</text>
+
+  <!-- Arrow: New → Triaged -->
+  <line x1="560" y1="150" x2="620" y2="150" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5568"/></marker></defs>
+
+  <!-- State: Triaged -->
+  <rect x="630" y="130" width="100" height="40" fill="#bee3f8" rx="20" stroke="#2a4365" stroke-width="2"/>
+  <text x="680" y="154" text-anchor="middle" fill="#2a4365" font-size="12" font-weight="600">Triaged</text>
+
+  <!-- Arrow: Triaged → Assigned -->
+  <line x1="730" y1="150" x2="790" y2="150" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- State: Assigned -->
+  <rect x="800" y="130" width="100" height="40" fill="#bee3f8" rx="20" stroke="#2a4365" stroke-width="2"/>
+  <text x="850" y="154" text-anchor="middle" fill="#2a4365" font-size="12" font-weight="600">Assigned</text>
+
+  <!-- Arrow: Assigned → In Progress -->
+  <line x1="900" y1="150" x2="960" y2="150" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- State: In Progress -->
+  <rect x="970" y="130" width="110" height="40" fill="#c6f6d5" rx="20" stroke="#276749" stroke-width="2"/>
+  <text x="1025" y="154" text-anchor="middle" fill="#276749" font-size="12" font-weight="600">In Progress</text>
+
+  <!-- Arrow: In Progress → Pending Review -->
+  <line x1="1080" y1="150" x2="1140" y2="150" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- State: Pending Review -->
+  <rect x="1150" y="130" width="130" height="40" fill="#fefcbf" rx="20" stroke="#744210" stroke-width="2"/>
+  <text x="1215" y="154" text-anchor="middle" fill="#744210" font-size="12" font-weight="600">Pending Review</text>
+
+  <!-- Arrow: Pending Review → Closed (down) -->
+  <line x1="1215" y1="170" x2="1215" y2="210" stroke="#4a5568" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- State: Closed -->
+  <rect x="1150" y="220" width="130" height="40" fill="#c6f6d5" rx="20" stroke="#276749" stroke-width="2"/>
+  <text x="1215" y="244" text-anchor="middle" fill="#276749" font-size="12" font-weight="600">Closed</text>
+
+  <!-- Arrow: Closed → Reopened (down-left) -->
+  <line x1="1150" y1="250" x2="1050" y2="300" stroke="#e53e3e" stroke-width="2" stroke-dasharray="6" marker-end="url(#arrowRed)"/>
+  <defs><marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#e53e3e"/></marker></defs>
+
+  <!-- State: Reopened -->
+  <rect x="960" y="300" width="110" height="40" fill="#fed7d7" rx="20" stroke="#9b2c2c" stroke-width="2"/>
+  <text x="1015" y="324" text-anchor="middle" fill="#9b2c2c" font-size="12" font-weight="600">Reopened</text>
+
+  <!-- Arrow: Reopened → Triaged (up-left curve) -->
+  <path d="M 960 320 Q 800 320 680 170" fill="none" stroke="#e53e3e" stroke-width="2" stroke-dasharray="6" marker-end="url(#arrowRed)"/>
+
+  <!-- Transition rules panel -->
+  <line x1="436" y1="360" x2="1400" y2="360" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="436" y="388" fill="#1a202c" font-size="14" font-weight="700">Transition: Assigned → In Progress</text>
+
+  <!-- Transition config -->
+  <text x="436" y="418" fill="#718096" font-size="11" font-weight="600">GUARD CONDITIONS</text>
+
+  <rect x="436" y="430" width="460" height="40" fill="#f7fafc" rx="6"/>
+  <rect x="448" y="442" width="12" height="12" fill="#38a169" rx="2"/>
+  <text x="468" y="454" fill="#1a202c" font-size="12">assignee must be set</text>
+  <text x="860" y="454" fill="#718096" font-size="11">Required</text>
+
+  <rect x="436" y="476" width="460" height="40" fill="#f7fafc" rx="6"/>
+  <rect x="448" y="488" width="12" height="12" fill="#38a169" rx="2"/>
+  <text x="468" y="500" fill="#1a202c" font-size="12">work order must exist (if ticket type = corrective)</text>
+  <text x="860" y="500" fill="#718096" font-size="11">Conditional</text>
+
+  <rect x="436" y="522" width="460" height="40" fill="#f7fafc" rx="6"/>
+  <rect x="448" y="534" width="12" height="12" fill="#ecc94b" rx="2"/>
+  <text x="468" y="546" fill="#1a202c" font-size="12">safety briefing confirmed</text>
+  <text x="860" y="546" fill="#ecc94b" font-size="11">Recommended</text>
+
+  <rect x="436" y="568" width="200" height="28" fill="white" rx="4" stroke="#2c5282" stroke-width="1" stroke-dasharray="4"/>
+  <text x="536" y="586" text-anchor="middle" fill="#2c5282" font-size="11" font-weight="600">+ Add Condition</text>
+
+  <!-- Side effects -->
+  <text x="940" y="418" fill="#718096" font-size="11" font-weight="600">SIDE EFFECTS</text>
+
+  <rect x="940" y="430" width="440" height="40" fill="#f7fafc" rx="6"/>
+  <text x="952" y="454" fill="#1a202c" font-size="12">Set started_at = now()</text>
+  <text x="1340" y="454" fill="#718096" font-size="11">Auto</text>
+
+  <rect x="940" y="476" width="440" height="40" fill="#f7fafc" rx="6"/>
+  <text x="952" y="500" fill="#1a202c" font-size="12">Send notification to dispatcher</text>
+  <text x="1340" y="500" fill="#718096" font-size="11">Auto</text>
+
+  <rect x="940" y="522" width="440" height="40" fill="#f7fafc" rx="6"/>
+  <text x="952" y="546" fill="#1a202c" font-size="12">Start SLA timer for "Pending Review" state</text>
+  <text x="1340" y="546" fill="#718096" font-size="11">Auto</text>
+
+  <rect x="940" y="568" width="200" height="28" fill="white" rx="4" stroke="#2c5282" stroke-width="1" stroke-dasharray="4"/>
+  <text x="1040" y="586" text-anchor="middle" fill="#2c5282" font-size="11" font-weight="600">+ Add Effect</text>
+
+  <!-- Permissions -->
+  <text x="436" y="628" fill="#718096" font-size="11" font-weight="600">ALLOWED ROLES</text>
+  <rect x="436" y="640" width="80" height="24" fill="#bee3f8" rx="12"/>
+  <text x="476" y="656" text-anchor="middle" fill="#2a4365" font-size="10" font-weight="600">Technician</text>
+  <rect x="524" y="640" width="70" height="24" fill="#bee3f8" rx="12"/>
+  <text x="559" y="656" text-anchor="middle" fill="#2a4365" font-size="10" font-weight="600">Admin</text>
+  <rect x="602" y="640" width="90" height="24" fill="#edf2f7" rx="12" stroke="#cbd5e0" stroke-width="1" stroke-dasharray="4"/>
+  <text x="647" y="656" text-anchor="middle" fill="#4a5568" font-size="10" font-weight="600">+ Add Role</text>
+
+  <!-- Actions -->
+  <rect x="436" y="820" width="130" height="36" fill="#2c5282" rx="6"/>
+  <text x="501" y="842" text-anchor="middle" fill="white" font-size="13" font-weight="600">Save Changes</text>
+  <rect x="580" y="820" width="130" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="645" y="842" text-anchor="middle" fill="#4a5568" font-size="13" font-weight="600">Test Workflow</text>
+  <rect x="724" y="820" width="160" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="804" y="842" text-anchor="middle" fill="#4a5568" font-size="13" font-weight="600">Publish as v4</text>
+</svg>

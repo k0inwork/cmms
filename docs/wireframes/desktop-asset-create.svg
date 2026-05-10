@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Top Nav -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">Assets</text>
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">TM</text>
+
+  <!-- Modal overlay -->
+  <rect width="1440" height="900" fill="rgba(0,0,0,0.3)"/>
+  <rect x="180" y="40" width="1080" height="820" fill="white" rx="12" filter="drop-shadow(0 8px 24px rgba(0,0,0,0.15))"/>
+
+  <!-- Header -->
+  <text x="220" y="80" fill="#1a202c" font-size="20" font-weight="700">Add New Asset</text>
+  <text x="1180" y="80" fill="#718096" font-size="20">✕</text>
+  <line x1="220" y1="96" x2="1220" y2="96" stroke="#e2e8f0" stroke-width="1"/>
+
+  <!-- Asset type stepper -->
+  <rect x="220" y="112" width="960" height="40" fill="#f7fafc" rx="6"/>
+  <text x="260" y="137" fill="#2c5282" font-size="12" font-weight="600">1. Type</text>
+  <text x="360" y="137" fill="#718096" font-size="12">→</text>
+  <text x="400" y="137" fill="#718096" font-size="12">2. Location</text>
+  <text x="520" y="137" fill="#718096" font-size="12">→</text>
+  <text x="560" y="137" fill="#718096" font-size="12">3. Details</text>
+  <text x="680" y="137" fill="#718096" font-size="12">→</text>
+  <text x="720" y="137" fill="#718096" font-size="12">4. Classification</text>
+  <text x="880" y="137" fill="#718096" font-size="12">→</text>
+  <text x="920" y="137" fill="#718096" font-size="12">5. Review</text>
+
+  <!-- Step 1 active indicator -->
+  <circle cx="280" cy="130" r="3" fill="#2c5282"/>
+  <line x1="260" y1="148" x2="310" y2="148" stroke="#2c5282" stroke-width="2"/>
+
+  <!-- Asset Type Selection -->
+  <text x="220" y="184" fill="#1a202c" font-size="15" font-weight="700">Select Asset Type</text>
+
+  <!-- Type cards grid -->
+  <rect x="220" y="200" width="220" height="100" fill="#ebf8ff" rx="8" stroke="#2c5282" stroke-width="2"/>
+  <text x="330" y="240" text-anchor="middle" fill="#2c5282" font-size="28">🏭</text>
+  <text x="330" y="268" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">Organization</text>
+  <text x="330" y="286" text-anchor="middle" fill="#2a4365" font-size="10">Company / Operator</text>
+
+  <rect x="460" y="200" width="220" height="100" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="570" y="240" text-anchor="middle" fill="#4a5568" font-size="28">📍</text>
+  <text x="570" y="268" text-anchor="middle" fill="#1a202c" font-size="13" font-weight="500">Site</text>
+  <text x="570" y="286" text-anchor="middle" fill="#718096" font-size="10">Wind farm location</text>
+
+  <rect x="700" y="200" width="220" height="100" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="810" y="240" text-anchor="middle" fill="#4a5568" font-size="28">💨</text>
+  <text x="810" y="268" text-anchor="middle" fill="#1a202c" font-size="13" font-weight="500">Turbine</text>
+  <text x="810" y="286" text-anchor="middle" fill="#718096" font-size="10">Individual WTG unit</text>
+
+  <rect x="940" y="200" width="220" height="100" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1050" y="240" text-anchor="middle" fill="#4a5568" font-size="28">⚙️</text>
+  <text x="1050" y="268" text-anchor="middle" fill="#1a202c" font-size="13" font-weight="500">Subsystem</text>
+  <text x="1050" y="286" text-anchor="middle" fill="#718096" font-size="10">Rotor, Drivetrain, etc.</text>
+
+  <rect x="220" y="316" width="220" height="100" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="330" y="356" text-anchor="middle" fill="#4a5568" font-size="28">🔧</text>
+  <text x="330" y="384" text-anchor="middle" fill="#1a202c" font-size="13" font-weight="500">Component</text>
+  <text x="330" y="402" text-anchor="middle" fill="#718096" font-size="10">Blade, Gearbox, Generator</text>
+
+  <!-- Form fields for Organization -->
+  <text x="220" y="450" fill="#1a202c" font-size="15" font-weight="700">Organization Details</text>
+
+  <text x="220" y="480" fill="#1a202c" font-size="12" font-weight="600">Organization Name *</text>
+  <rect x="220" y="490" width="460" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="236" y="513" fill="#a0aec0" font-size="12">e.g., Hornsea Reef Wind Farm</text>
+
+  <text x="700" y="480" fill="#1a202c" font-size="12" font-weight="600">RDS-PP Code *</text>
+  <rect x="700" y="490" width="460" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="716" y="513" fill="#a0aec0" font-size="12">e.g., WFHR</text>
+
+  <text x="220" y="552" fill="#1a202c" font-size="12" font-weight="600">Location *</text>
+  <rect x="220" y="562" width="460" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="236" y="585" fill="#a0aec0" font-size="12">GPS coordinates or address</text>
+
+  <text x="700" y="552" fill="#1a202c" font-size="12" font-weight="600">Country</text>
+  <rect x="700" y="562" width="460" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="716" y="585" fill="#a0aec0" font-size="12">Select country ▾</text>
+
+  <text x="220" y="624" fill="#1a202c" font-size="12" font-weight="600">Number of Turbines</text>
+  <rect x="220" y="634" width="220" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="236" y="657" fill="#a0aec0" font-size="12">e.g., 54</text>
+
+  <text x="460" y="624" fill="#1a202c" font-size="12" font-weight="600">Commissioning Date</text>
+  <rect x="460" y="634" width="220" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="476" y="657" fill="#a0aec0" font-size="12">YYYY-MM-DD</text>
+
+  <text x="700" y="624" fill="#1a202c" font-size="12" font-weight="600">OEM</text>
+  <rect x="700" y="634" width="460" height="36" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="716" y="657" fill="#a0aec0" font-size="12">e.g., Siemens Gamesa ▾</text>
+
+  <!-- Hierarchy preview -->
+  <rect x="220" y="690" width="940" height="80" fill="#f7fafc" rx="8"/>
+  <text x="236" y="714" fill="#718096" font-size="11" font-weight="600">ASSET HIERARCHY PREVIEW</text>
+  <text x="236" y="736" fill="#1a202c" font-size="12" font-weight="500">WFHR (Organization)</text>
+  <text x="380" y="736" fill="#718096" font-size="12">→</text>
+  <text x="400" y="736" fill="#718096" font-size="12">[Sites will be added as children]</text>
+  <text x="236" y="758" fill="#a0aec0" font-size="11">Asset ID will be auto-generated: WFHR</text>
+
+  <!-- Actions -->
+  <rect x="220" y="790" width="130" height="40" fill="white" rx="8" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="285" y="815" text-anchor="middle" fill="#4a5568" font-size="13" font-weight="600">Cancel</text>
+  <rect x="360" y="790" width="160" height="40" fill="#2c5282" rx="8"/>
+  <text x="440" y="815" text-anchor="middle" fill="white" font-size="13" font-weight="600">Next: Location →</text>
+  <rect x="540" y="790" width="180" height="40" fill="white" rx="8" stroke="#38a169" stroke-width="1"/>
+  <text x="630" y="815" text-anchor="middle" fill="#38a169" font-size="13" font-weight="600">Save &amp; Add Child</text>
+</svg>

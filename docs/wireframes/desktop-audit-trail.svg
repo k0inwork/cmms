@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <rect width="1440" height="900" fill="#f7fafc"/>
+  <!-- Top Nav -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">Audit Trail</text>
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">TM</text>
+
+  <!-- Filters -->
+  <rect x="24" y="72" width="1392" height="48" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <rect x="36" y="82" width="280" height="28" fill="#edf2f7" rx="6"/>
+  <text x="56" y="101" fill="#a0aec0" font-size="12">🔍 Search audit entries...</text>
+  <rect x="330" y="82" width="120" height="28" fill="#edf2f7" rx="6"/>
+  <text x="390" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Entity Type ▾</text>
+  <rect x="462" y="82" width="120" height="28" fill="#edf2f7" rx="6"/>
+  <text x="522" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Action ▾</text>
+  <rect x="594" y="82" width="140" height="28" fill="#edf2f7" rx="6"/>
+  <text x="664" y="101" text-anchor="middle" fill="#4a5568" font-size="12">User ▾</text>
+  <rect x="746" y="82" width="140" height="28" fill="#edf2f7" rx="6"/>
+  <text x="816" y="101" text-anchor="middle" fill="#4a5568" font-size="12">Date Range ▾</text>
+  <rect x="1120" y="82" width="120" height="28" fill="#2c5282" rx="6"/>
+  <text x="1180" y="101" text-anchor="middle" fill="white" font-size="12" font-weight="600">Export CSV</text>
+  <rect x="1252" y="82" width="120" height="28" fill="white" rx="6" stroke="#cbd5e0" stroke-width="1"/>
+  <text x="1312" y="101" text-anchor="middle" fill="#4a5568" font-size="12" font-weight="500">Export PDF</text>
+
+  <!-- Stats bar -->
+  <rect x="24" y="132" width="342" height="44" fill="white" rx="6"/>
+  <text x="40" y="158" fill="#718096" font-size="11">Today's events</text>
+  <text x="200" y="158" fill="#1a202c" font-size="16" font-weight="700">47</text>
+  <rect x="378" y="132" width="342" height="44" fill="white" rx="6"/>
+  <text x="394" y="158" fill="#718096" font-size="11">This week</text>
+  <text x="540" y="158" fill="#1a202c" font-size="16" font-weight="700">312</text>
+  <rect x="732" y="132" width="342" height="44" fill="white" rx="6"/>
+  <text x="748" y="158" fill="#718096" font-size="11">Critical actions</text>
+  <text x="920" y="158" fill="#e53e3e" font-size="16" font-weight="700">8</text>
+  <rect x="1086" y="132" width="330" height="44" fill="white" rx="6"/>
+  <text x="1102" y="158" fill="#718096" font-size="11">Unique users</text>
+  <text x="1260" y="158" fill="#1a202c" font-size="16" font-weight="700">12</text>
+
+  <!-- Timeline entries -->
+  <rect x="24" y="192" width="1392" height="36" fill="#edf2f7" rx="4"/>
+  <text x="40" y="215" fill="#718096" font-size="11" font-weight="700">TIMESTAMP</text>
+  <text x="200" y="215" fill="#718096" font-size="11" font-weight="700">USER</text>
+  <text x="360" y="215" fill="#718096" font-size="11" font-weight="700">ACTION</text>
+  <text x="500" y="215" fill="#718096" font-size="11" font-weight="700">ENTITY</text>
+  <text x="700" y="215" fill="#718096" font-size="11" font-weight="700">DESCRIPTION</text>
+  <text x="1100" y="215" fill="#718096" font-size="11" font-weight="700">IP</text>
+  <text x="1250" y="215" fill="#718096" font-size="11" font-weight="700">DETAILS</text>
+
+  <!-- Entry 1 - Critical -->
+  <rect x="24" y="232" width="1392" height="48" fill="#fff5f5"/>
+  <line x1="24" y1="280" x2="1416" y2="280" stroke="#f0f0f0" stroke-width="1"/>
+  <rect x="24" y="232" width="3" height="48" fill="#e53e3e"/>
+  <text x="40" y="252" fill="#1a202c" font-size="12">May 9, 08:32</text>
+  <text x="40" y="268" fill="#a0aec0" font-size="10">UTC+1</text>
+  <circle cx="210" cy="256" r="10" fill="#fed7d7"/>
+  <text x="210" y="260" text-anchor="middle" fill="#9b2c2c" font-size="8" font-weight="600">JB</text>
+  <text x="226" y="260" fill="#1a202c" font-size="12">James Brown</text>
+  <rect x="360" y="244" width="70" height="18" fill="#fed7d7" rx="3"/>
+  <text x="395" y="257" text-anchor="middle" fill="#9b2c2c" font-size="9" font-weight="600">ABSENCE</text>
+  <text x="500" y="260" fill="#2c5282" font-size="12" font-weight="500">ABS-2025-012</text>
+  <text x="700" y="252" fill="#1a202c" font-size="12">Reported sick absence — Flu-like symptoms</text>
+  <text x="700" y="268" fill="#718096" font-size="10">Impacts: 3 active assignments · Auto-escalated to dispatch</text>
+  <text x="1100" y="260" fill="#718096" font-size="11">10.0.1.42</text>
+  <text x="1250" y="260" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <!-- Entry 2 -->
+  <rect x="24" y="280" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="328" x2="1416" y2="328" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="40" y="300" fill="#1a202c" font-size="12">May 9, 08:15</text>
+  <text x="40" y="316" fill="#a0aec0" font-size="10">UTC+1</text>
+  <circle cx="210" cy="304" r="10" fill="#bee3f8"/>
+  <text x="210" y="308" text-anchor="middle" fill="#2a4365" font-size="8" font-weight="600">AP</text>
+  <text x="226" y="308" fill="#1a202c" font-size="12">Alex Petrov</text>
+  <rect x="360" y="292" width="85" height="18" fill="#bee3f8" rx="3"/>
+  <text x="402" y="305" text-anchor="middle" fill="#2a4365" font-size="9" font-weight="600">ASSIGN</text>
+  <text x="500" y="308" fill="#2c5282" font-size="12" font-weight="500">TKT-2025-0042</text>
+  <text x="700" y="300" fill="#1a202c" font-size="12">Accepted assignment — Blade Crack Repair</text>
+  <text x="700" y="316" fill="#718096" font-size="10">Replaced: James Brown (absent) · Score: 92%</text>
+  <text x="1100" y="308" fill="#718096" font-size="11">10.0.2.18</text>
+  <text x="1250" y="308" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <!-- Entry 3 -->
+  <rect x="24" y="328" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="376" x2="1416" y2="376" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="40" y="348" fill="#1a202c" font-size="12">May 9, 07:55</text>
+  <text x="40" y="364" fill="#a0aec0" font-size="10">UTC+1</text>
+  <circle cx="210" cy="352" r="10" fill="#ebf8ff"/>
+  <text x="210" y="356" text-anchor="middle" fill="#2c5282" font-size="8" font-weight="600">SY</text>
+  <text x="226" y="356" fill="#1a202c" font-size="12">System</text>
+  <rect x="360" y="340" width="70" height="18" fill="#e9d8fd" rx="3"/>
+  <text x="395" y="353" text-anchor="middle" fill="#553c9a" font-size="9" font-weight="600">ESCALATE</text>
+  <text x="500" y="356" fill="#2c5282" font-size="12" font-weight="500">TKT-2025-0042</text>
+  <text x="700" y="348" fill="#1a202c" font-size="12">Auto-escalated — No replacement accepted within 30min</text>
+  <text x="700" y="364" fill="#e53e3e" font-size="10">SLA: 4h remaining · Priority: CRITICAL</text>
+  <text x="1100" y="356" fill="#718096" font-size="11">—</text>
+  <text x="1250" y="356" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <!-- Entry 4 -->
+  <rect x="24" y="376" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="424" x2="1416" y2="424" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="40" y="396" fill="#1a202c" font-size="12">May 8, 16:20</text>
+  <circle cx="210" cy="400" r="10" fill="#c6f6d5"/>
+  <text x="210" y="404" text-anchor="middle" fill="#276749" font-size="8" font-weight="600">LB</text>
+  <text x="226" y="404" fill="#1a202c" font-size="12">Lena Berg</text>
+  <rect x="360" y="388" width="65" height="18" fill="#c6f6d5" rx="3"/>
+  <text x="392" y="401" text-anchor="middle" fill="#276749" font-size="9" font-weight="600">APPROVE</text>
+  <text x="500" y="404" fill="#2c5282" font-size="12" font-weight="500">EVD-2025-142</text>
+  <text x="700" y="396" fill="#1a202c" font-size="12">Approved evidence — crack_trailing_edge_01.jpg</text>
+  <text x="700" y="412" fill="#718096" font-size="10">INS-0087 · WTG-HR-01 · No review comments</text>
+  <text x="1100" y="404" fill="#718096" font-size="11">10.0.1.5</text>
+  <text x="1250" y="404" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <!-- Entry 5 -->
+  <rect x="24" y="424" width="1392" height="48" fill="white"/>
+  <line x1="24" y1="472" x2="1416" y2="472" stroke="#f0f0f0" stroke-width="1"/>
+  <text x="40" y="444" fill="#1a202c" font-size="12">May 8, 14:45</text>
+  <circle cx="210" cy="448" r="10" fill="#bee3f8"/>
+  <text x="210" y="452" text-anchor="middle" fill="#2a4365" font-size="8" font-weight="600">AP</text>
+  <text x="226" y="452" fill="#1a202c" font-size="12">Alex Petrov</text>
+  <rect x="360" y="436" width="75" height="18" fill="#bee3f8" rx="3"/>
+  <text x="397" y="449" text-anchor="middle" fill="#2a4365" font-size="9" font-weight="600">SUBMIT</text>
+  <text x="500" y="452" fill="#2c5282" font-size="12" font-weight="500">INS-2025-0087</text>
+  <text x="700" y="444" fill="#1a202c" font-size="12">Submitted inspection — Blade Inspection</text>
+  <text x="700" y="460" fill="#718096" font-size="10">WTG-HR-01 · 2 FAIL items · 3 evidence files attached</text>
+  <text x="1100" y="452" fill="#718096" font-size="11">10.0.2.18</text>
+  <text x="1250" y="452" fill="#2c5282" font-size="11" font-weight="500">View →</text>
+
+  <!-- Pagination -->
+  <text x="24" y="500" fill="#718096" font-size="12">Showing 1–5 of 312 entries</text>
+  <rect x="1240" y="484" width="30" height="28" fill="#edf2f7" rx="4"/>
+  <text x="1255" y="502" text-anchor="middle" fill="#4a5568" font-size="12">←</text>
+  <rect x="1276" y="484" width="30" height="28" fill="#2c5282" rx="4"/>
+  <text x="1291" y="502" text-anchor="middle" fill="white" font-size="12">1</text>
+  <rect x="1312" y="484" width="30" height="28" fill="#edf2f7" rx="4"/>
+  <text x="1327" y="502" text-anchor="middle" fill="#4a5568" font-size="12">2</text>
+  <rect x="1348" y="484" width="30" height="28" fill="#edf2f7" rx="4"/>
+  <text x="1363" y="502" text-anchor="middle" fill="#4a5568" font-size="12">3</text>
+  <rect x="1384" y="484" width="30" height="28" fill="#edf2f7" rx="4"/>
+  <text x="1399" y="502" text-anchor="middle" fill="#4a5568" font-size="12">→</text>
+
+  <!-- Detail drawer (right side) -->
+  <rect x="960" y="520" width="456" height="368" fill="white" rx="8" filter="drop-shadow(0 2px 8px rgba(0,0,0,0.1))"/>
+  <text x="976" y="548" fill="#1a202c" font-size="14" font-weight="700">Event Detail</text>
+  <text x="1392" y="548" text-anchor="end" fill="#718096" font-size="12">✕</text>
+
+  <line x1="976" y1="560" x2="1400" y2="560" stroke="#e2e8f0" stroke-width="1"/>
+
+  <text x="976" y="584" fill="#718096" font-size="11">Event ID</text>
+  <text x="1150" y="584" fill="#1a202c" font-size="11">AUD-2025-05-09-042</text>
+  <text x="976" y="606" fill="#718096" font-size="11">Timestamp</text>
+  <text x="1150" y="606" fill="#1a202c" font-size="11">2025-05-09T08:32:14.234Z</text>
+  <text x="976" y="628" fill="#718096" font-size="11">User</text>
+  <text x="1150" y="628" fill="#1a202c" font-size="11">James Brown (j.brown@wfhr.com)</text>
+  <text x="976" y="650" fill="#718096" font-size="11">Action</text>
+  <rect x="1150" y="638" width="70" height="18" fill="#fed7d7" rx="3"/>
+  <text x="1185" y="651" text-anchor="middle" fill="#9b2c2c" font-size="9" font-weight="600">ABSENCE</text>
+  <text x="976" y="672" fill="#718096" font-size="11">Entity</text>
+  <text x="1150" y="672" fill="#2c5282" font-size="11" font-weight="500">ABS-2025-012 →</text>
+
+  <line x1="976" y1="684" x2="1400" y2="684" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="976" y="704" fill="#1a202c" font-size="12" font-weight="700">Changes</text>
+  <text x="976" y="726" fill="#718096" font-size="11">status</text>
+  <text x="1100" y="726" fill="#e53e3e" font-size="11">null → "SICK"</text>
+  <text x="976" y="748" fill="#718096" font-size="11">reason</text>
+  <text x="1100" y="748" fill="#1a202c" font-size="11">null → "Flu-like symptoms"</text>
+  <text x="976" y="770" fill="#718096" font-size="11">start_date</text>
+  <text x="1100" y="770" fill="#1a202c" font-size="11">null → "2025-05-09T08:00:00Z"</text>
+
+  <line x1="976" y1="786" x2="1400" y2="786" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="976" y="806" fill="#1a202c" font-size="12" font-weight="700">Side Effects</text>
+  <text x="976" y="828" fill="#e53e3e" font-size="11">→ 3 assignments flagged for replacement</text>
+  <text x="976" y="848" fill="#e53e3e" font-size="11">→ Escalation triggered (SLA: 4h remaining)</text>
+  <text x="976" y="868" fill="#2c5282" font-size="11">→ Notification sent to dispatcher</text>
+</svg>

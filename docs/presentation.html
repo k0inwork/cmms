@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wind CMMS — Platform Pitch</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+<style>
+.reveal { font-size: 28px; }
+.reveal h1 { font-size: 2.2em; text-transform: none; letter-spacing: 0; }
+.reveal h2 { font-size: 1.5em; text-transform: none; letter-spacing: 0; color: #7ec8e3; }
+.reveal h3 { font-size: 1.1em; text-transform: none; color: #a0d2db; }
+.reveal section { text-align: left; }
+.reveal table { font-size: 0.55em; width: 100%; border-collapse: collapse; margin: 0.5em 0; }
+.reveal table th { background: #1a3a4a; color: #7ec8e3; padding: 6px 10px; text-align: left; border-bottom: 2px solid #7ec8e3; }
+.reveal table td { padding: 5px 10px; border-bottom: 1px solid #333; }
+.reveal ul { margin: 0.3em 0; }
+.reveal li { margin: 0.2em 0; font-size: 0.85em; }
+.reveal .fragment { font-size: 0.85em; }
+.reveal code { font-size: 0.65em; background: #1a2a3a; padding: 2px 6px; border-radius: 3px; }
+.reveal pre code { display: block; padding: 12px; line-height: 1.4; }
+.reveal .tag { display: inline-block; background: #1a4a3a; color: #7ee8c8; padding: 2px 8px; border-radius: 4px; font-size: 0.6em; margin: 2px; }
+.reveal .red-tag { background: #4a1a1a; color: #e87777; }
+.reveal .yellow-tag { background: #4a3a1a; color: #e8c877; }
+.reveal .green-tag { background: #1a4a3a; color: #7ee8c8; }
+.reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5em; }
+.reveal .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1em; }
+.reveal .stat { font-size: 2em; font-weight: bold; color: #7ec8e3; }
+.reveal .stat-label { font-size: 0.55em; color: #888; }
+.reveal .box { background: #0d1b2a; border: 1px solid #1b3a4a; border-radius: 8px; padding: 1em; margin: 0.5em 0; }
+.reveal .box h3 { margin-top: 0; color: #7ec8e3; }
+.reveal .arrow { color: #7ec8e3; font-size: 1.2em; }
+.reveal .slides section.scrollable { overflow-y: auto; height: 100%; box-sizing: border-box; padding-bottom: 40px; }
+.reveal .slides section.scrollable::-webkit-scrollbar { width: 6px; }
+.reveal .slides section.scrollable::-webkit-scrollbar-track { background: #0d1b2a; }
+.reveal .slides section.scrollable::-webkit-scrollbar-thumb { background: #1b3a4a; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ============================================================ -->
+<!-- TITLE -->
+<!-- ============================================================ -->
+<section>
+<h1>Wind CMMS</h1>
+<h2>Hybrid Service-Asset Platform for Remote Wind Turbine Inspection & Repair</h2>
+<p style="color:#888; font-size:0.7em; margin-top:2em;">Engineering Briefing &mdash; Confidential</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- PROBLEM STATEMENT -->
+<!-- ============================================================ -->
+<section>
+<h2>The Problem Today</h2>
+<div class="two-col">
+<div class="box">
+<h3>Field Operations</h3>
+<ul>
+<li>Spreadsheets + email to coordinate inspections</li>
+<li>Photos on shared drives, not linked to assets or tickets</li>
+<li>No offline capability &mdash; remote sites have unreliable connectivity</li>
+</ul>
+</div>
+<div class="box">
+<h3>Workforce Management</h3>
+<ul>
+<li>Sick technician? Phone calls + Slack to find replacement</li>
+<li>No system to match skills, certs, proximity</li>
+<li>Missed inspection on a known defect = emergency repair</li>
+</ul>
+</div>
+</div>
+<div class="box" style="margin-top:1em;">
+<h3>Traceability Gap</h3>
+<ul>
+<li>No chain from <code>defect &rarr; inspection &rarr; repair &rarr; evidence &rarr; report</code></li>
+<li>Cannot reproduce reports from stored data</li>
+<li>No audit trail for compliance</li>
+</ul>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- THE COST OF THE GAP -->
+<!-- ============================================================ -->
+<section>
+<h2>What Happens Without a Platform</h2>
+<div class="three-col">
+<div class="box" style="text-align:center;">
+<div class="stat">6h</div>
+<div class="stat-label">Lost per incident when a technician's work is lost to connectivity failure</div>
+</div>
+<div class="box" style="text-align:center;">
+<div class="stat">19x</div>
+<div class="stat-label">Cost multiplier: emergency gearbox repair vs. planned intervention</div>
+</div>
+<div class="box" style="text-align:center;">
+<div class="stat">0</div>
+<div class="stat-label">Traceability from defect to evidence to customer report</div>
+</div>
+</div>
+<p style="font-size:0.6em; color:#666; margin-top:1em;">Gearbox bearing: planned repair ~€20K, emergency failure ~€380K. Blade: ~€15K vs ~€240K.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- SOLUTION: SYSTEM ARCHETYPE -->
+<!-- ============================================================ -->
+<section>
+<h2>The Solution: Hybrid Service-Asset Platform</h2>
+<p style="font-size:0.75em; color:#aaa;">This is not a standard CMMS. Three operational paradigms in one system.</p>
+<table>
+<tr>
+<th></th><th>CMMS</th><th>FSM</th><th>EAM</th>
+</tr>
+<tr>
+<td><strong>Goal</strong></td>
+<td>Asset reliability</td><td>Dispatch & SLA compliance</td><td>Total cost of ownership</td>
+</tr>
+<tr>
+<td><strong>Assets</strong></td>
+<td>Robots, crawlers (internal)</td><td>Customer turbines (external)</td><td>Full fleet (distributed)</td>
+</tr>
+<tr>
+<td><strong>Key workflow</strong></td>
+<td>PM schedules, work orders</td><td>Dispatch, route, close-out</td><td>Capital planning</td>
+</tr>
+<tr>
+<td><strong>Mobility</strong></td><td>Facility WiFi</td><td>Remote-first, offline</td><td>Fleet-wide visibility</td>
+</tr>
+</table>
+<p style="font-size:0.7em; margin-top:0.5em;">Architectural decisions must serve all three dimensions simultaneously.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- SOLUTION: ARCHITECTURE -->
+<!-- ============================================================ -->
+<section>
+<h2>Architecture Overview</h2>
+<svg viewBox="0 0 900 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;margin:0 auto;display:block;">
+  <defs>
+    <linearGradient id="gFrontend" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a5276"/>
+      <stop offset="100%" stop-color="#154360"/>
+    </linearGradient>
+    <linearGradient id="gApi" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a3a4a"/>
+      <stop offset="100%" stop-color="#0d1b2a"/>
+    </linearGradient>
+    <linearGradient id="gModule" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b4a5a"/>
+      <stop offset="100%" stop-color="#163d4d"/>
+    </linearGradient>
+    <linearGradient id="gData" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a1a4a"/>
+      <stop offset="100%" stop-color="#1a0d3a"/>
+    </linearGradient>
+    <linearGradient id="gMobile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a4a3a"/>
+      <stop offset="100%" stop-color="#0d3a2a"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#7ec8e3"/>
+    </marker>
+  </defs>
+
+  <!-- Frontend Layer -->
+  <rect x="50" y="10" width="800" height="80" rx="8" fill="url(#gFrontend)" filter="url(#shadow)" stroke="#7ec8e3" stroke-width="1"/>
+  <text x="450" y="35" text-anchor="middle" fill="#7ec8e3" font-size="14" font-weight="bold">React + Vite PWA (MVP)</text>
+  <rect x="80" y="48" width="150" height="30" rx="5" fill="#1a2a3a" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="155" y="68" text-anchor="middle" fill="#ccc" font-size="11">Admin Portal</text>
+  <rect x="260" y="48" width="170" height="30" rx="5" fill="#1a2a3a" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="345" y="68" text-anchor="middle" fill="#ccc" font-size="11">Dispatch Board</text>
+  <rect x="460" y="48" width="150" height="30" rx="5" fill="#1a2a3a" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="535" y="68" text-anchor="middle" fill="#ccc" font-size="11">Field App</text>
+  <rect x="640" y="48" width="180" height="30" rx="5" fill="#1a2a3a" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="730" y="68" text-anchor="middle" fill="#ccc" font-size="11">Evidence Library</text>
+
+  <!-- Connection line: Frontend → API -->
+  <line x1="300" y1="90" x2="300" y2="120" stroke="#7ec8e3" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="600" y1="90" x2="600" y2="120" stroke="#7ec8e3" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <rect x="370" y="96" width="160" height="18" rx="3" fill="#0d1b2a"/>
+  <text x="450" y="110" text-anchor="middle" fill="#7ec8e3" font-size="10">REST + WebSocket</text>
+
+  <!-- API Layer -->
+  <rect x="50" y="120" width="800" height="200" rx="8" fill="url(#gApi)" filter="url(#shadow)" stroke="#4a7a8a" stroke-width="1"/>
+  <text x="450" y="145" text-anchor="middle" fill="#7ec8e3" font-size="14" font-weight="bold">API Server — TypeScript / Node.js (Fastify)</text>
+
+  <!-- Module Row 1 -->
+  <rect x="70" y="158" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="155" y="178" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Auth</text>
+  <text x="155" y="200" text-anchor="middle" fill="#888" font-size="9">Keycloak · RBAC</text>
+
+  <rect x="255" y="158" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="340" y="178" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Assets</text>
+  <text x="340" y="200" text-anchor="middle" fill="#888" font-size="9">CRUD · Hierarchy · Search</text>
+
+  <rect x="440" y="158" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="525" y="178" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Tickets</text>
+  <text x="525" y="200" text-anchor="middle" fill="#888" font-size="9">Lifecycle · Escalation</text>
+
+  <rect x="625" y="158" width="210" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="730" y="178" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Workforce</text>
+  <text x="730" y="200" text-anchor="middle" fill="#888" font-size="9">Skills · Absence · Replacement</text>
+
+  <!-- Module Row 2 -->
+  <rect x="70" y="223" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="155" y="243" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Evidence</text>
+  <text x="155" y="265" text-anchor="middle" fill="#888" font-size="9">S3 Uploads · Versioning</text>
+
+  <rect x="255" y="223" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="340" y="243" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Inspection Templates</text>
+  <text x="340" y="265" text-anchor="middle" fill="#888" font-size="9">JSON Schema · Dynamic</text>
+
+  <rect x="440" y="223" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="525" y="243" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Sync Engine</text>
+  <text x="525" y="265" text-anchor="middle" fill="#888" font-size="9">Delta · Conflict Resolution</text>
+
+  <rect x="625" y="223" width="210" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="730" y="243" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Reporting</text>
+  <text x="730" y="265" text-anchor="middle" fill="#888" font-size="9">PDF Export · KPIs</text>
+
+  <!-- Connection lines: API → Data -->
+  <line x1="220" y1="320" x2="170" y2="370" stroke="#a080d0" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="450" y1="320" x2="450" y2="370" stroke="#a080d0" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+  <line x1="680" y1="320" x2="730" y2="370" stroke="#a080d0" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+
+  <!-- Data Layer -->
+  <rect x="70" y="375" width="200" height="60" rx="8" fill="url(#gData)" filter="url(#shadow)" stroke="#a080d0" stroke-width="1"/>
+  <text x="170" y="400" text-anchor="middle" fill="#a080d0" font-size="13" font-weight="bold">PostgreSQL</text>
+  <text x="170" y="420" text-anchor="middle" fill="#888" font-size="10">Primary · RLS · JSONB</text>
+
+  <rect x="350" y="375" width="200" height="60" rx="8" fill="url(#gData)" filter="url(#shadow)" stroke="#a080d0" stroke-width="1"/>
+  <text x="450" y="400" text-anchor="middle" fill="#a080d0" font-size="13" font-weight="bold">S3 / MinIO</text>
+  <text x="450" y="420" text-anchor="middle" fill="#888" font-size="10">Media · Presigned URLs</text>
+
+  <rect x="630" y="375" width="200" height="60" rx="8" fill="url(#gData)" filter="url(#shadow)" stroke="#a080d0" stroke-width="1"/>
+  <text x="730" y="400" text-anchor="middle" fill="#a080d0" font-size="13" font-weight="bold">Redis</text>
+  <text x="730" y="420" text-anchor="middle" fill="#888" font-size="10">BullMQ · Queues</text>
+
+  <!-- Phase 3 Mobile -->
+  <rect x="50" y="460" width="800" height="50" rx="8" fill="url(#gMobile)" filter="url(#shadow)" stroke="#7ee8c8" stroke-width="1" stroke-dasharray="6,3"/>
+  <text x="450" y="483" text-anchor="middle" fill="#7ee8c8" font-size="12" font-weight="bold">Phase 3: React Native + Expo + WatermelonDB (SQLite) — Background Sync · Push · Native Hardware</text>
+  <text x="450" y="500" text-anchor="middle" fill="#5a8a7a" font-size="9">Same API layer — migration is frontend-only</text>
+
+  <!-- Dashed connection: Mobile → API -->
+  <line x1="450" y1="460" x2="450" y2="440" stroke="#7ee8c8" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrowhead)"/>
+</svg>
+</section>
+
+<!-- ============================================================ -->
+<!-- SOLUTION: CORE CAPABILITIES -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>Six Core Capabilities</h2>
+<div class="two-col">
+<div>
+<div class="box">
+<h3>1. Offline-First PWA</h3>
+<ul>
+<li>Service Worker + IndexedDB</li>
+<li>Briefcase model: pre-load before site visit</li>
+<li>Full offline capture, auto-sync on return</li>
+</ul>
+</div>
+<div class="box">
+<h3>2. Conflict Resolution</h3>
+<ul>
+<li>Field-level merge for inspections</li>
+<li>State machine for ticket transitions</li>
+<li>Sequence number versioning for safety data</li>
+</ul>
+</div>
+<div class="box">
+<h3>3. Dynamic Templates</h3>
+<ul>
+<li>JSON schema inspection forms</li>
+<li>No app update to add new inspection types</li>
+<li>Versioned &mdash; old inspections keep their template</li>
+</ul>
+</div>
+</div>
+<div>
+<div class="box">
+<h3>4. Absence &rarr; Replacement</h3>
+<ul>
+<li>Weighted scoring: skills 30%, certs 25%, proximity 20%</li>
+<li>Minimum 60% threshold</li>
+<li>Ranked candidates with reason codes</li>
+</ul>
+</div>
+<div class="box">
+<h3>5. Evidence Lifecycle</h3>
+<ul>
+<li>Capture &rarr; Tag &rarr; Sync &rarr; Review &rarr; Approve</li>
+<li>Original files never modified</li>
+<li>Presigned S3 URLs for upload</li>
+</ul>
+</div>
+<div class="box">
+<h3>6. Full Audit Trail</h3>
+<ul>
+<li>Append-only, never deleted or modified</li>
+<li>Every state change, approval, assignment</li>
+<li>Compliance-ready</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- DATA MODEL -->
+<!-- ============================================================ -->
+<section>
+<h2>Core Data Model</h2>
+<svg viewBox="0 0 920 580" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:920px;margin:0 auto;display:block;">
+  <defs>
+    <linearGradient id="dmAsset" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a5276"/>
+      <stop offset="100%" stop-color="#154360"/>
+    </linearGradient>
+    <linearGradient id="dmUser" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a4a3a"/>
+      <stop offset="100%" stop-color="#0d3a2a"/>
+    </linearGradient>
+    <linearGradient id="dmWork" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a1a4a"/>
+      <stop offset="100%" stop-color="#3a0d3a"/>
+    </linearGradient>
+    <linearGradient id="dmInsp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a3a1a"/>
+      <stop offset="100%" stop-color="#3a2a0d"/>
+    </linearGradient>
+    <linearGradient id="dmCross" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a2a3a"/>
+      <stop offset="100%" stop-color="#1a1a2a"/>
+    </linearGradient>
+    <filter id="dmShadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <marker id="dmArrow" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#7ec8e3"/>
+    </marker>
+    <marker id="dmArrowG" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#7ee8c8"/>
+    </marker>
+    <marker id="dmArrowP" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#a080d0"/>
+    </marker>
+    <marker id="dmArrowY" markerWidth="7" markerHeight="5" refX="7" refY="2.5" orient="auto">
+      <polygon points="0 0, 7 2.5, 0 5" fill="#e8c877"/>
+    </marker>
+  </defs>
+
+  <!-- ===== ASSET HIERARCHY (left column) ===== -->
+  <text x="120" y="18" text-anchor="middle" fill="#7ec8e3" font-size="11" font-weight="bold">ASSET HIERARCHY</text>
+
+  <!-- Organization -->
+  <rect x="40" y="25" width="160" height="32" rx="5" fill="url(#dmAsset)" filter="url(#dmShadow)" stroke="#7ec8e3" stroke-width="1"/>
+  <text x="120" y="46" text-anchor="middle" fill="#7ec8e3" font-size="11" font-weight="bold">Organization</text>
+
+  <line x1="120" y1="57" x2="120" y2="72" stroke="#7ec8e3" stroke-width="1" marker-end="url(#dmArrow)"/>
+  <text x="128" y="68" fill="#666" font-size="8">1:N</text>
+
+  <!-- Site -->
+  <rect x="40" y="72" width="160" height="32" rx="5" fill="url(#dmAsset)" filter="url(#dmShadow)" stroke="#7ec8e3" stroke-width="1"/>
+  <text x="120" y="93" text-anchor="middle" fill="#ccc" font-size="11">Site (Wind Farm)</text>
+
+  <line x1="120" y1="104" x2="120" y2="119" stroke="#7ec8e3" stroke-width="1" marker-end="url(#dmArrow)"/>
+  <text x="128" y="115" fill="#666" font-size="8">1:N</text>
+
+  <!-- Turbine -->
+  <rect x="40" y="119" width="160" height="32" rx="5" fill="url(#dmAsset)" filter="url(#dmShadow)" stroke="#7ec8e3" stroke-width="1"/>
+  <text x="120" y="139" text-anchor="middle" fill="#ccc" font-size="10">Turbine (WTG)</text>
+  <text x="120" y="149" text-anchor="middle" fill="#666" font-size="7">IEC 61400-25 / RDS-PP</text>
+
+  <line x1="120" y1="151" x2="120" y2="166" stroke="#7ec8e3" stroke-width="1" marker-end="url(#dmArrow)"/>
+  <text x="128" y="162" fill="#666" font-size="8">1:N</text>
+
+  <!-- Subsystem -->
+  <rect x="40" y="166" width="160" height="28" rx="5" fill="url(#dmAsset)" filter="url(#dmShadow)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="120" y="184" text-anchor="middle" fill="#aaa" font-size="10">Subsystem</text>
+
+  <line x1="120" y1="194" x2="120" y2="209" stroke="#7ec8e3" stroke-width="1" marker-end="url(#dmArrow)"/>
+  <text x="128" y="205" fill="#666" font-size="8">1:N</text>
+
+  <!-- Component -->
+  <rect x="40" y="209" width="160" height="28" rx="5" fill="url(#dmAsset)" filter="url(#dmShadow)" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="120" y="227" text-anchor="middle" fill="#aaa" font-size="10">Component</text>
+
+  <line x1="120" y1="237" x2="120" y2="252" stroke="#7ec8e3" stroke-width="1" marker-end="url(#dmArrow)"/>
+  <text x="128" y="248" fill="#666" font-size="8">1:N</text>
+
+  <!-- Defect -->
+  <rect x="40" y="252" width="160" height="32" rx="5" fill="url(#dmAsset)" filter="url(#dmShadow)" stroke="#e87777" stroke-width="0.8"/>
+  <text x="120" y="273" text-anchor="middle" fill="#e87777" font-size="10">Defect</text>
+  <text x="120" y="282" text-anchor="middle" fill="#666" font-size="7">severity · classification</text>
+
+  <!-- ===== USER DOMAIN (left-bottom) ===== -->
+  <text x="120" y="312" text-anchor="middle" fill="#7ee8c8" font-size="11" font-weight="bold">USER DOMAIN</text>
+
+  <!-- User -->
+  <rect x="40" y="318" width="160" height="32" rx="5" fill="url(#dmUser)" filter="url(#dmShadow)" stroke="#7ee8c8" stroke-width="1"/>
+  <text x="120" y="339" text-anchor="middle" fill="#7ee8c8" font-size="11" font-weight="bold">User (Technician)</text>
+
+  <!-- Skill (M:N) -->
+  <line x1="40" y1="340" x2="20" y2="340" stroke="#7ee8c8" stroke-width="0.8"/>
+  <line x1="20" y1="340" x2="20" y2="375" stroke="#7ee8c8" stroke-width="0.8"/>
+  <rect x="-25" y="370" width="90" height="24" rx="4" fill="url(#dmUser)" filter="url(#dmShadow)" stroke="#5a8a7a" stroke-width="0.5"/>
+  <text x="20" y="386" text-anchor="middle" fill="#aaa" font-size="8">Skill [M:N]</text>
+  <text x="20" y="393" text-anchor="middle" fill="#666" font-size="6">proficiency · acquired</text>
+
+  <!-- Certification (M:N) -->
+  <line x1="200" y1="340" x2="220" y2="340" stroke="#7ee8c8" stroke-width="0.8"/>
+  <line x1="220" y1="340" x2="220" y2="375" stroke="#7ee8c8" stroke-width="0.8"/>
+  <rect x="175" y="370" width="90" height="24" rx="4" fill="url(#dmUser)" filter="url(#dmShadow)" stroke="#5a8a7a" stroke-width="0.5"/>
+  <text x="220" y="386" text-anchor="middle" fill="#aaa" font-size="8">Certification [M:N]</text>
+  <text x="220" y="393" text-anchor="middle" fill="#666" font-size="6">GWO · expiry_date</text>
+
+  <!-- Availability Slot -->
+  <line x1="120" y1="350" x2="120" y2="410" stroke="#7ee8c8" stroke-width="0.8" marker-end="url(#dmArrowG)"/>
+  <rect x="40" y="410" width="100" height="22" rx="4" fill="url(#dmUser)" filter="url(#dmShadow)" stroke="#5a8a7a" stroke-width="0.5"/>
+  <text x="90" y="425" text-anchor="middle" fill="#aaa" font-size="8">Availability Slot</text>
+
+  <!-- Absence Record -->
+  <rect x="150" y="410" width="100" height="22" rx="4" fill="url(#dmUser)" filter="url(#dmShadow)" stroke="#5a8a7a" stroke-width="0.5"/>
+  <text x="200" y="425" text-anchor="middle" fill="#aaa" font-size="8">Absence Record</text>
+
+  <!-- Shift Assignment -->
+  <line x1="120" y1="432" x2="120" y2="450" stroke="#7ee8c8" stroke-width="0.8" marker-end="url(#dmArrowG)"/>
+  <rect x="40" y="450" width="160" height="24" rx="4" fill="url(#dmUser)" filter="url(#dmShadow)" stroke="#5a8a7a" stroke-width="0.5"/>
+  <text x="120" y="466" text-anchor="middle" fill="#aaa" font-size="9">Shift Assignment</text>
+
+  <!-- Replacement Suggestion -->
+  <rect x="40" y="480" width="160" height="24" rx="4" fill="url(#dmUser)" filter="url(#dmShadow)" stroke="#7ee8c8" stroke-width="0.8" stroke-dasharray="4,2"/>
+  <text x="120" y="496" text-anchor="middle" fill="#7ee8c8" font-size="8">Replacement Suggestion</text>
+  <text x="120" y="503" text-anchor="middle" fill="#666" font-size="6">weighted score · reason codes</text>
+  <line x1="120" y1="474" x2="120" y2="480" stroke="#7ee8c8" stroke-width="0.8" stroke-dasharray="3,2"/>
+
+  <!-- ===== INSPECTION DOMAIN (center) ===== -->
+  <text x="500" y="18" text-anchor="middle" fill="#e8c877" font-size="11" font-weight="bold">INSPECTION DOMAIN</text>
+
+  <!-- Inspection Template -->
+  <rect x="400" y="25" width="200" height="36" rx="5" fill="url(#dmInsp)" filter="url(#dmShadow)" stroke="#e8c877" stroke-width="1"/>
+  <text x="500" y="42" text-anchor="middle" fill="#e8c877" font-size="10" font-weight="bold">Inspection Template</text>
+  <text x="500" y="54" text-anchor="middle" fill="#666" font-size="7">JSON schema · versioned</text>
+
+  <line x1="500" y1="61" x2="500" y2="78" stroke="#e8c877" stroke-width="1" marker-end="url(#dmArrowY)"/>
+  <text x="510" y="72" fill="#666" font-size="8">1:N</text>
+
+  <!-- Inspection Record -->
+  <rect x="400" y="78" width="200" height="36" rx="5" fill="url(#dmInsp)" filter="url(#dmShadow)" stroke="#e8c877" stroke-width="1"/>
+  <text x="500" y="95" text-anchor="middle" fill="#e8c877" font-size="10" font-weight="bold">Inspection Record</text>
+  <text x="500" y="107" text-anchor="middle" fill="#666" font-size="7">status · captured_at</text>
+
+  <!-- Measurement -->
+  <line x1="400" y1="100" x2="340" y2="100" stroke="#e8c877" stroke-width="0.8"/>
+  <rect x="260" y="85" width="80" height="28" rx="4" fill="url(#dmInsp)" filter="url(#dmShadow)" stroke="#a09050" stroke-width="0.5"/>
+  <text x="300" y="100" text-anchor="middle" fill="#aaa" font-size="8">Measurement</text>
+  <text x="300" y="109" text-anchor="middle" fill="#666" font-size="6">value · unit</text>
+
+  <!-- Defect link from Inspection -->
+  <line x1="400" y1="110" x2="210" y2="260" stroke="#e87777" stroke-width="0.8" stroke-dasharray="4,2"/>
+  <text x="290" y="180" fill="#e87777" font-size="7" transform="rotate(-35, 290, 180)">→ defects</text>
+
+  <!-- Evidence / Attachment from Inspection -->
+  <line x1="600" y1="100" x2="660" y2="100" stroke="#e8c877" stroke-width="0.8"/>
+  <rect x="660" y="82" width="140" height="36" rx="5" fill="url(#dmCross)" filter="url(#dmShadow)" stroke="#a080d0" stroke-width="0.8"/>
+  <text x="730" y="99" text-anchor="middle" fill="#a080d0" font-size="10" font-weight="bold">Attachment</text>
+  <text x="730" y="111" text-anchor="middle" fill="#666" font-size="7">media_type · sync_status</text>
+
+  <!-- Approval -->
+  <line x1="730" y1="118" x2="730" y2="140" stroke="#a080d0" stroke-width="0.8" marker-end="url(#dmArrowP)"/>
+  <rect x="680" y="140" width="100" height="24" rx="4" fill="url(#dmCross)" filter="url(#dmShadow)" stroke="#7a60a0" stroke-width="0.5"/>
+  <text x="730" y="156" text-anchor="middle" fill="#aaa" font-size="8">Approval</text>
+  <text x="730" y="163" text-anchor="middle" fill="#666" font-size="6">status · reviewer</text>
+
+  <!-- ===== WORK ORDER DOMAIN (center-bottom) ===== -->
+  <text x="500" y="220" text-anchor="middle" fill="#a080d0" font-size="11" font-weight="bold">WORK ORDER DOMAIN</text>
+
+  <!-- Work Order -->
+  <rect x="400" y="228" width="200" height="36" rx="5" fill="url(#dmWork)" filter="url(#dmShadow)" stroke="#a080d0" stroke-width="1"/>
+  <text x="500" y="245" text-anchor="middle" fill="#a080d0" font-size="10" font-weight="bold">Work Order</text>
+  <text x="500" y="257" text-anchor="middle" fill="#666" font-size="7">priority · due_date · status</text>
+
+  <line x1="500" y1="264" x2="500" y2="282" stroke="#a080d0" stroke-width="1" marker-end="url(#dmArrowP)"/>
+  <text x="510" y="277" fill="#666" font-size="8">1:N</text>
+
+  <!-- Ticket -->
+  <rect x="400" y="282" width="200" height="40" rx="5" fill="url(#dmWork)" filter="url(#dmShadow)" stroke="#a080d0" stroke-width="1"/>
+  <text x="500" y="299" text-anchor="middle" fill="#a080d0" font-size="10" font-weight="bold">Ticket</text>
+  <text x="500" y="313" text-anchor="middle" fill="#666" font-size="7">New→Triaged→Assigned→InProgress</text>
+  <text x="500" y="320" text-anchor="middle" fill="#666" font-size="7">→Review→Closed→Reopened</text>
+
+  <!-- Ticket → Defect -->
+  <line x1="400" y1="310" x2="210" y2="272" stroke="#e87777" stroke-width="0.8" stroke-dasharray="4,2"/>
+  <text x="295" y="285" fill="#e87777" font-size="7" transform="rotate(13, 295, 285)">→ defect</text>
+
+  <!-- Ticket → Attachment -->
+  <line x1="600" y1="295" x2="660" y2="110" stroke="#a080d0" stroke-width="0.8" stroke-dasharray="4,2"/>
+  <text x="645" y="200" fill="#a080d0" font-size="7" transform="rotate(-65, 645, 200)">→ attachments</text>
+
+  <!-- ===== CROSS-CUTTING (bottom) ===== -->
+  <text x="460" y="380" text-anchor="middle" fill="#888" font-size="11" font-weight="bold">CROSS-CUTTING</text>
+
+  <!-- Audit Event -->
+  <rect x="330" y="390" width="160" height="32" rx="5" fill="url(#dmCross)" filter="url(#dmShadow)" stroke="#888" stroke-width="0.8"/>
+  <text x="410" y="407" text-anchor="middle" fill="#ccc" font-size="9" font-weight="bold">Audit Event</text>
+  <text x="410" y="417" text-anchor="middle" fill="#666" font-size="7">append-only · immutable</text>
+
+  <!-- Sync Event -->
+  <rect x="510" y="390" width="160" height="32" rx="5" fill="url(#dmCross)" filter="url(#dmShadow)" stroke="#888" stroke-width="0.8"/>
+  <text x="590" y="407" text-anchor="middle" fill="#ccc" font-size="9" font-weight="bold">Sync Event</text>
+  <text x="590" y="417" text-anchor="middle" fill="#666" font-size="7">conflict_meta · resolution</text>
+
+  <!-- Dashed lines from entities to cross-cutting -->
+  <line x1="500" y1="322" x2="410" y2="390" stroke="#555" stroke-width="0.6" stroke-dasharray="3,3"/>
+  <line x1="500" y1="322" x2="590" y2="390" stroke="#555" stroke-width="0.6" stroke-dasharray="3,3"/>
+  <line x1="200" y1="284" x2="330" y2="400" stroke="#555" stroke-width="0.6" stroke-dasharray="3,3"/>
+  <line x1="730" y1="118" x2="670" y2="390" stroke="#555" stroke-width="0.6" stroke-dasharray="3,3"/>
+
+  <!-- ===== KEY RELATIONSHIPS ===== -->
+  <rect x="300" y="450" width="340" height="120" rx="8" fill="#0d1b2a" stroke="#333" stroke-width="1"/>
+  <text x="470" y="470" text-anchor="middle" fill="#7ec8e3" font-size="10" font-weight="bold">KEY RELATIONSHIPS</text>
+
+  <text x="320" y="488" fill="#7ec8e3" font-size="8">Work Order → Turbine</text>
+  <text x="470" y="488" fill="#7ee8c8" font-size="8">Inspection → Template</text>
+  <text x="320" y="504" fill="#a080d0" font-size="8">Work Order → Assignee (User)</text>
+  <text x="470" y="504" fill="#e8c877" font-size="8">Inspection → Technician (User)</text>
+  <text x="320" y="520" fill="#e87777" font-size="8">Ticket → Defect</text>
+  <text x="470" y="520" fill="#e87777" font-size="8">Ticket → Attachments</text>
+  <text x="320" y="536" fill="#888" font-size="8">Attachment → Asset + User + Time</text>
+  <text x="470" y="536" fill="#888" font-size="8">Audit → any entity (polymorphic)</text>
+  <text x="470" y="552" fill="#888" font-size="8">Sync → per-record status</text>
+
+  <text x="320" y="556" fill="#666" font-size="7">Every record → asset + user + point in time</text>
+
+  <!-- User → Inspection link -->
+  <path d="M200 340 Q300 340 400 100" stroke="#7ee8c8" stroke-width="0.8" fill="none" stroke-dasharray="5,3"/>
+  <text x="280" y="310" fill="#7ee8c8" font-size="7" transform="rotate(-25, 280, 310)">technician</text>
+
+  <!-- User → Work Order link -->
+  <path d="M200 350 Q300 350 400 250" stroke="#7ee8c8" stroke-width="0.8" fill="none" stroke-dasharray="5,3"/>
+  <text x="300" y="330" fill="#7ee8c8" font-size="7" transform="rotate(-20, 300, 330)">assignee</text>
+
+  <!-- Turbine → Work Order link -->
+  <path d="M200 140 Q300 180 400 245" stroke="#7ec8e3" stroke-width="0.8" fill="none" stroke-dasharray="5,3"/>
+  <text x="310" y="195" fill="#7ec8e3" font-size="7" transform="rotate(15, 310, 195)">turbine</text>
+
+  <!-- Turbine → Inspection link -->
+  <path d="M200 130 Q300 80 400 90" stroke="#7ec8e3" stroke-width="0.8" fill="none" stroke-dasharray="5,3"/>
+  <text x="300" y="95" fill="#7ec8e3" font-size="7">turbine</text>
+</svg>
+<p style="font-size:0.55em; color:#7ec8e3; margin-top:0.3em; text-align:center;">Every record links to an asset, a user, and a point in time. Full traceability.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- OPEN SOURCE COMPARISON -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>Open Source CMMS: Why None Fit</h2>
+<p style="font-size:0.7em; color:#aaa;">Evaluated 6 platforms against our core requirements.</p>
+<table>
+<tr>
+<th>Requirement</th>
+<th>Atlas CMMS</th>
+<th>SuperCMMS</th>
+<th>Trier OS</th>
+<th>Liberu</th>
+<th>Snipe-IT</th>
+<th>CalemEAM</th>
+</tr>
+<tr>
+<td>Offline mobile sync</td>
+<td class="red-tag">No</td><td class="red-tag">No</td><td class="green-tag">Yes</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">Limited</td>
+</tr>
+<tr>
+<td>Inspection templates</td>
+<td class="red-tag">No</td><td class="green-tag">Yes</td><td class="red-tag">No</td><td class="yellow-tag">Partial</td><td class="red-tag">No</td><td class="green-tag">Yes</td>
+</tr>
+<tr>
+<td>Evidence lifecycle</td>
+<td class="yellow-tag">Basic</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="yellow-tag">Docs only</td><td class="red-tag">No</td><td class="yellow-tag">Basic</td>
+</tr>
+<tr>
+<td>Technician absence/replacement</td>
+<td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">No</td>
+</tr>
+<tr>
+<td>Wind/IEC asset model</td>
+<td class="red-tag">No</td><td class="green-tag">Yes</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">No</td>
+</tr>
+<tr>
+<td>Conflict resolution</td>
+<td class="red-tag">No</td><td class="red-tag">No</td><td class="green-tag">Yes</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">No</td>
+</tr>
+<tr>
+<td>Audit trail</td>
+<td class="green-tag">Yes</td><td class="green-tag">Yes</td><td class="green-tag">Yes</td><td class="green-tag">Yes</td><td class="red-tag">No</td><td class="green-tag">Yes</td>
+</tr>
+</table>
+<p style="font-size:0.65em; margin-top:0.5em;">Zero platforms cover offline sync + inspection templates + evidence + workforce management. Custom build is justified.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- WHAT WE BORROW -->
+<!-- ============================================================ -->
+<section>
+<h2>Patterns We Borrow</h2>
+<div class="two-col">
+<div>
+<div class="box">
+<h3>From Trier OS (MIT)</h3>
+<ul>
+<li>IndexedDB operation queue</li>
+<li>Idempotent sync operations</li>
+<li>Auto-recovery for stuck records</li>
+</ul>
+</div>
+<div class="box">
+<h3>From Atlas CMMS</h3>
+<ul>
+<li>Work order trigger engine</li>
+<li>Presigned S3 URL uploads</li>
+<li>Organization multi-tenancy</li>
+</ul>
+</div>
+</div>
+<div>
+<div class="box">
+<h3>From SuperCMMS</h3>
+<ul>
+<li>SCADA rules engine pattern</li>
+<li>QR code issue reporting</li>
+</ul>
+</div>
+<div class="box">
+<h3>From Liberu</h3>
+<ul>
+<li>Document versioning + compliance</li>
+<li>Custom form schema engine</li>
+</ul>
+</div>
+</div>
+</div>
+<p style="font-size:0.65em; color:#e87777; margin-top:0.5em;">9 components have no open source reference &mdash; must be built from scratch (replacement engine, absence workflow, template builder, evidence annotation, coverage dashboards).</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- MVP STRUCTURE -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>MVP Scope (Months 1&ndash;4)</h2>
+<div class="two-col">
+<div>
+<div class="box">
+<h3>In Scope</h3>
+<ul>
+<li>Asset registry (org &rarr; site &rarr; turbine &rarr; component)</li>
+<li>Offline PWA inspection forms (IndexedDB)</li>
+<li>Evidence uploads (S3 presigned URLs)</li>
+<li>Ticket + work order creation</li>
+<li>Status lifecycle tracking</li>
+<li>Technician availability + absence marking</li>
+<li>Replacement suggestions</li>
+<li>Search, audit trail, basic dashboards</li>
+<li>Report export</li>
+</ul>
+</div>
+</div>
+<div>
+<div class="box">
+<h3>Out of Scope (Later Phases)</h3>
+<ul>
+<li>Predictive maintenance / ML</li>
+<li>Inventory optimization</li>
+<li>Automated defect classification</li>
+<li>Customer portal</li>
+<li>Technician routing optimization</li>
+<li>Native mobile app (Phase 3)</li>
+<li>ERP / CRM / SCADA integrations (Phase 4)</li>
+</ul>
+</div>
+<div class="box">
+<h3>Team</h3>
+<p style="font-size:0.75em;">2 BE &bull; 2 FE &bull; 1 QA &bull; 1 DevOps (part-time)</p>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- MVP COVERAGE MAP -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>MVP Coverage of Core Requirements</h2>
+<table>
+<tr>
+<th>Requirement</th><th>MVP</th><th>Phase 2</th><th>Phase 3</th><th>Phase 4</th>
+</tr>
+<tr><td>Asset registry (IEC/RDS-PP)</td><td class="green-tag">Full</td><td></td><td></td><td></td></tr>
+<tr><td>Offline inspection capture</td><td class="green-tag">Full (PWA)</td><td></td><td>Native app</td><td></td></tr>
+<tr><td>Inspection templates</td><td class="green-tag">Full</td><td></td><td></td><td></td></tr>
+<tr><td>Evidence management</td><td class="green-tag">Upload + link</td><td></td><td>Annotation</td><td></td></tr>
+<tr><td>Ticketing + lifecycle</td><td class="green-tag">Full</td><td></td><td></td><td></td></tr>
+<tr><td>Audit trail</td><td class="green-tag">Full</td><td></td><td>Viewer</td><td></td></tr>
+<tr><td>Availability tracking</td><td class="yellow-tag">Basic</td><td class="green-tag">Full</td><td></td><td></td></tr>
+<tr><td>Absence + replacement</td><td class="yellow-tag">Manual</td><td class="green-tag">Full</td><td></td><td></td></tr>
+<tr><td>Auto-reassignment</td><td></td><td class="green-tag">Full</td><td></td><td></td></tr>
+<tr><td>Coverage gap dashboard</td><td></td><td class="green-tag">Full</td><td></td><td></td></tr>
+<tr><td>Notifications</td><td></td><td class="green-tag">Push/email</td><td></td><td></td></tr>
+<tr><td>Customer reports + PDF</td><td class="yellow-tag">Basic export</td><td></td><td class="green-tag">Full</td><td></td></tr>
+<tr><td>KPI dashboards</td><td class="yellow-tag">Basic</td><td></td><td class="green-tag">Full</td><td></td></tr>
+<tr><td>Native mobile app</td><td></td><td></td><td class="green-tag">Full</td><td></td></tr>
+<tr><td>ERP / CRM / SCADA</td><td></td><td></td><td></td><td class="green-tag">Full</td></tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- TECH STACK -->
+<!-- ============================================================ -->
+<section>
+<h2>Tech Stack</h2>
+<table>
+<tr><th>Layer</th><th>Choice</th><th>Why</th></tr>
+<tr><td>API</td><td>TypeScript + Node.js (Fastify)</td><td>Strong typing, large ecosystem</td></tr>
+<tr><td>Database</td><td>PostgreSQL</td><td>Relational integrity, JSONB, full-text search</td></tr>
+<tr><td>ORM</td><td>Prisma or Drizzle</td><td>Type-safe queries, migrations</td></tr>
+<tr><td>File storage</td><td>S3-compatible (MinIO / AWS)</td><td>Presigned uploads, large media</td></tr>
+<tr><td>Frontend + field</td><td>React + Vite PWA</td><td>Single codebase, offline via IndexedDB + Service Worker</td></tr>
+<tr><td>Native mobile</td><td>React Native + Expo (Phase 3)</td><td>Background sync, push, native hardware</td></tr>
+<tr><td>Auth</td><td>Keycloak</td><td>RBAC, SSO, multi-tenant</td></tr>
+<tr><td>Real-time</td><td>WebSocket (Socket.IO)</td><td>Live status, notifications</td></tr>
+<tr><td>Task queue</td><td>BullMQ + Redis</td><td>Reports, notifications, sync reconciliation</td></tr>
+<tr><td>CI/CD</td><td>GitHub Actions</td><td>Test, lint, build, deploy</td></tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- PHASED TIMELINE -->
+<!-- ============================================================ -->
+<section>
+<h2>Phased Timeline (14 Months)</h2>
+<table>
+<tr><th>Phase</th><th>Months</th><th>Focus</th><th>Team</th></tr>
+<tr><td><strong>1 &mdash; MVP</strong></td><td>1&ndash;4</td><td>Assets, offline PWA inspections, ticketing, evidence, dashboards</td><td>2 BE, 2 FE, 1 QA, 1 DevOps</td></tr>
+<tr><td><strong>2 &mdash; Workforce</strong></td><td>5&ndash;7</td><td>Availability, absence handling, replacement engine, notifications</td><td>2 BE, 1 FE, 1 QA</td></tr>
+<tr><td><strong>3 &mdash; Reporting & Mobile</strong></td><td>8&ndash;10</td><td>Reports, KPIs, audit viewer, native mobile app (React Native)</td><td>1 BE, 2 FE, 1 Mobile, 1 QA</td></tr>
+<tr><td><strong>4 &mdash; Integrations</strong></td><td>11&ndash;14</td><td>ERP, CRM, SCADA hooks, scale testing</td><td>2 BE, 1 DevOps, 1 QA</td></tr>
+</table>
+<p style="font-size:0.7em; color:#888; margin-top:1em;">Total: 14 months, 5&ndash;7 people</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- DAY IN THE LIFE: FIELD TECHNICIAN -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>A Day in the Life: Field Technician</h2>
+<div class="box">
+<h3>Morning (at hotel, WiFi available)</h3>
+<ul>
+<li>Opens PWA on company tablet &rarr; syncs overnight queue</li>
+<li>System pre-loads today's assigned inspections + asset data + templates</li>
+<li>Sees 3 blade inspections at Wind Farm Alpha, WTG-04, WTG-07, WTG-12</li>
+</ul>
+</div>
+<div class="box">
+<h3>On Turbine (no signal)</h3>
+<ul>
+<li>Opens first inspection &rarr; dynamic form renders from JSON template</li>
+<li>Fills pass/fail checks, enters crack measurements (mm), taps to capture photos</li>
+<li>Photos tagged automatically: <code>asset=WTG-07/Blade-A</code>, <code>inspection=INS-2026-0041</code></li>
+<li>Marks severe trailing edge crack &rarr; app auto-flags defect as "critical"</li>
+<li>All data saved to IndexedDB with sync status: <span class="yellow-tag">pending</span></li>
+</ul>
+</div>
+<div class="box">
+<h3>Back at vehicle (signal returns)</h3>
+<ul>
+<li>App auto-syncs: 3 inspections + 14 photos + 2 video clips</li>
+<li>Evidence uploads to S3 via presigned URLs, metadata to API</li>
+<li>Critical defect auto-creates ticket, assigns to site lead</li>
+<li>Status flips to <span class="green-tag">synced</span></li>
+</ul>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- DAY IN THE LIFE: DISPATCHER -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>A Day in the Life: Dispatcher</h2>
+<div class="box">
+<h3>08:00 &mdash; Morning Check</h3>
+<ul>
+<li>Opens dispatch board &rarr; sees today's 12 assignments across 3 sites</li>
+<li>Coverage view shows: Site Alpha = 3 techs (green), Site Bravo = 1 tech (amber)</li>
+</ul>
+</div>
+<div class="box">
+<h3>09:15 &mdash; Technician Calls in Sick</h3>
+<ul>
+<li>Marks technician "Sick" &rarr; system records absence (reason, expected return)</li>
+<li>System finds 2 open assignments now uncovered</li>
+<li>Auto-calculates SLA impact: "Bravo WTG-15 inspection due Thu, now at risk"</li>
+<li>Replacement engine runs: ranks 4 candidates by weighted score</li>
+</ul>
+</div>
+<div class="box">
+<h3>09:20 &mdash; Reassignment</h3>
+<ul>
+<li>Candidate #1: Maria &mdash; 87% match (skill 100%, cert 80%, proximity 90%, workload 70%, site familiarity 95%)</li>
+<li>Dispatcher reassigns with one click &rarr; Maria gets push notification</li>
+<li>Schedule updates, coverage view returns to green</li>
+</ul>
+</div>
+<div class="box">
+<h3>15:00 &mdash; Critical Defect Alert</h3>
+<ul>
+<li>Notification: "Critical defect on WTG-07 Blade-A &mdash; trailing edge crack 120mm"</li>
+<li>Creates emergency work order, assigns repair crew, SLA clock starts</li>
+<li>Full audit trail records every action</li>
+</ul>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- API FLOW: INSPECTION SYNC -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>API Flow: Offline Inspection Capture + Sync</h2>
+<svg viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;margin:0 auto;display:block;">
+  <defs>
+    <linearGradient id="afMorn" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a4a3a"/>
+      <stop offset="100%" stop-color="#0d3a2a"/>
+    </linearGradient>
+    <linearGradient id="afField" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a3a1a"/>
+      <stop offset="100%" stop-color="#3a2a0d"/>
+    </linearGradient>
+    <linearGradient id="afSync" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a5276"/>
+      <stop offset="100%" stop-color="#154360"/>
+    </linearGradient>
+    <filter id="afS">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <marker id="afA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <polygon points="0 0, 8 3, 0 6" fill="#7ec8e3"/>
+    </marker>
+  </defs>
+
+  <!-- Timeline bar -->
+  <rect x="40" y="30" width="820" height="4" rx="2" fill="#333"/>
+  <!-- Time dots -->
+  <circle cx="120" cy="32" r="8" fill="#7ee8c8" stroke="#0d3a2a" stroke-width="2"/>
+  <circle cx="450" cy="32" r="8" fill="#e8c877" stroke="#3a2a0d" stroke-width="2"/>
+  <circle cx="780" cy="32" r="8" fill="#7ec8e3" stroke="#154360" stroke-width="2"/>
+  <!-- Time labels -->
+  <text x="120" y="20" text-anchor="middle" fill="#7ee8c8" font-size="10" font-weight="bold">07:00</text>
+  <text x="450" y="20" text-anchor="middle" fill="#e8c877" font-size="10" font-weight="bold">09:00 – 14:00</text>
+  <text x="780" y="20" text-anchor="middle" fill="#7ec8e3" font-size="10" font-weight="bold">15:00</text>
+
+  <!-- ===== MORNING: PREP ===== -->
+  <rect x="30" y="50" width="250" height="490" rx="10" fill="url(#afMorn)" filter="url(#afS)" stroke="#7ee8c8" stroke-width="1"/>
+  <text x="155" y="75" text-anchor="middle" fill="#7ee8c8" font-size="13" font-weight="bold">MORNING PREP</text>
+  <text x="155" y="90" text-anchor="middle" fill="#5a8a7a" font-size="9">at hotel, WiFi available</text>
+
+  <!-- Step: Open app -->
+  <rect x="45" y="105" width="220" height="55" rx="6" fill="#0d2a1a" stroke="#5a8a7a" stroke-width="0.5"/>
+  <text x="55" y="122" fill="#7ee8c8" font-size="11" font-weight="bold">Open tablet app</text>
+  <text x="55" y="137" fill="#aaa" font-size="9">Overnight queue syncs</text>
+  <text x="55" y="150" fill="#aaa" font-size="9">automatically</text>
+
+  <!-- Arrow down -->
+  <line x1="155" y1="160" x2="155" y2="175" stroke="#7ee8c8" stroke-width="1" marker-end="url(#afA)"/>
+
+  <!-- Step: Download assignments -->
+  <rect x="45" y="180" width="220" height="70" rx="6" fill="#0d2a1a" stroke="#5a8a7a" stroke-width="0.5"/>
+  <text x="55" y="197" fill="#7ee8c8" font-size="11" font-weight="bold">Download today's work</text>
+  <text x="55" y="212" fill="#aaa" font-size="9">3 blade inspections arrive:</text>
+  <text x="55" y="226" fill="#aaa" font-size="9">• WTG-04, WTG-07, WTG-12</text>
+  <text x="55" y="240" fill="#aaa" font-size="9">• Templates + asset data saved</text>
+
+  <!-- Arrow down -->
+  <line x1="155" y1="250" x2="155" y2="265" stroke="#7ee8c8" stroke-width="1" marker-end="url(#afA)"/>
+
+  <!-- Step: Drive to site -->
+  <rect x="45" y="270" width="220" height="55" rx="6" fill="#0d2a1a" stroke="#5a8a7a" stroke-width="0.5"/>
+  <text x="55" y="287" fill="#7ee8c8" font-size="11" font-weight="bold">Drive to wind farm</text>
+  <text x="55" y="302" fill="#aaa" font-size="9">Everything is already on the</text>
+  <text x="55" y="315" fill="#aaa" font-size="9">device — no signal needed</text>
+
+  <!-- Status badge -->
+  <rect x="60" y="340" width="190" height="24" rx="5" fill="#1a3a2a" stroke="#7ee8c8" stroke-width="0.8"/>
+  <text x="155" y="357" text-anchor="middle" fill="#7ee8c8" font-size="10">Status: READY FOR OFFLINE</text>
+
+  <!-- Connectivity icon -->
+  <text x="155" y="395" text-anchor="middle" fill="#7ee8c8" font-size="30">&#x1F4F6;</text>
+  <text x="155" y="415" text-anchor="middle" fill="#5a8a7a" font-size="9">WiFi connected</text>
+
+  <!-- ===== ON TURBINE: OFFLINE ===== -->
+  <rect x="305" y="50" width="250" height="490" rx="10" fill="url(#afField)" filter="url(#afS)" stroke="#e8c877" stroke-width="1"/>
+  <text x="430" y="75" text-anchor="middle" fill="#e8c877" font-size="13" font-weight="bold">ON THE TURBINE</text>
+  <text x="430" y="90" text-anchor="middle" fill="#a09050" font-size="9">80m up, no cell signal</text>
+
+  <!-- No signal badge -->
+  <rect x="360" y="100" width="140" height="24" rx="5" fill="#4a1a1a" stroke="#e87777" stroke-width="0.8"/>
+  <text x="430" y="117" text-anchor="middle" fill="#e87777" font-size="10" font-weight="bold">NO SIGNAL</text>
+
+  <!-- Step: Fill form -->
+  <rect x="320" y="135" width="220" height="55" rx="6" fill="#2a1a0d" stroke="#a09050" stroke-width="0.5"/>
+  <text x="330" y="152" fill="#e8c877" font-size="11" font-weight="bold">Fill inspection form</text>
+  <text x="330" y="167" fill="#aaa" font-size="9">Pass/fail checks, measurements,</text>
+  <text x="330" y="180" fill="#aaa" font-size="9">notes — all from template</text>
+
+  <!-- Arrow down -->
+  <line x1="430" y1="190" x2="430" y2="205" stroke="#e8c877" stroke-width="1" marker-end="url(#afA)"/>
+
+  <!-- Step: Take photos -->
+  <rect x="320" y="210" width="220" height="55" rx="6" fill="#2a1a0d" stroke="#a09050" stroke-width="0.5"/>
+  <text x="330" y="227" fill="#e8c877" font-size="11" font-weight="bold">Take photos &amp; video</text>
+  <text x="330" y="242" fill="#aaa" font-size="9">Camera button — auto-tagged</text>
+  <text x="330" y="255" fill="#aaa" font-size="9">to WTG-07 / Blade-A</text>
+
+  <!-- Arrow down -->
+  <line x1="430" y1="265" x2="430" y2="280" stroke="#e8c877" stroke-width="1" marker-end="url(#afA)"/>
+
+  <!-- Step: Flag defect -->
+  <rect x="320" y="285" width="220" height="55" rx="6" fill="#4a1a1a" stroke="#e87777" stroke-width="0.8"/>
+  <text x="330" y="302" fill="#e87777" font-size="11" font-weight="bold">Flag critical defect</text>
+  <text x="330" y="317" fill="#aaa" font-size="9">Trailing edge crack: 120mm</text>
+  <text x="330" y="330" fill="#aaa" font-size="9">Auto-flagged as CRITICAL</text>
+
+  <!-- Arrow down -->
+  <line x1="430" y1="340" x2="430" y2="355" stroke="#e8c877" stroke-width="1" marker-end="url(#afA)"/>
+
+  <!-- Step: All saved locally -->
+  <rect x="320" y="360" width="220" height="45" rx="6" fill="#2a1a0d" stroke="#a09050" stroke-width="0.5"/>
+  <text x="330" y="377" fill="#e8c877" font-size="11" font-weight="bold">Everything saved locally</text>
+  <text x="330" y="392" fill="#aaa" font-size="9">3 inspections, 14 photos, 2 videos</text>
+
+  <!-- Pending badges -->
+  <rect x="335" y="415" width="70" height="20" rx="4" fill="#4a3a1a" stroke="#e8c877" stroke-width="0.5"/>
+  <text x="370" y="429" text-anchor="middle" fill="#e8c877" font-size="9">pending</text>
+  <rect x="415" y="415" width="110" height="20" rx="4" fill="#1a3a2a" stroke="#7ee8c8" stroke-width="0.5"/>
+  <text x="470" y="429" text-anchor="middle" fill="#7ee8c8" font-size="8">safe on device</text>
+
+  <!-- Connectivity icon -->
+  <text x="430" y="475" text-anchor="middle" fill="#e87777" font-size="30">&#x1F4F5;</text>
+  <text x="430" y="495" text-anchor="middle" fill="#a09050" font-size="9">Offline — no problem</text>
+
+  <!-- ===== RETURN: SYNC ===== -->
+  <rect x="580" y="50" width="250" height="490" rx="10" fill="url(#afSync)" filter="url(#afS)" stroke="#7ec8e3" stroke-width="1"/>
+  <text x="705" y="75" text-anchor="middle" fill="#7ec8e3" font-size="13" font-weight="bold">BACK AT VEHICLE</text>
+  <text x="705" y="90" text-anchor="middle" fill="#4a7a8a" font-size="9">signal returns</text>
+
+  <!-- Step: Auto-sync -->
+  <rect x="595" y="105" width="220" height="55" rx="6" fill="#0d1b2a" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="605" y="122" fill="#7ec8e3" font-size="11" font-weight="bold">Signal detected</text>
+  <text x="605" y="137" fill="#aaa" font-size="9">App starts syncing</text>
+  <text x="605" y="150" fill="#aaa" font-size="9">automatically in background</text>
+
+  <!-- Arrow down -->
+  <line x1="705" y1="160" x2="705" y2="175" stroke="#7ec8e3" stroke-width="1" marker-end="url(#afA)"/>
+
+  <!-- Step: Send inspections -->
+  <rect x="595" y="180" width="220" height="55" rx="6" fill="#0d1b2a" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="605" y="197" fill="#7ec8e3" font-size="11" font-weight="bold">Upload inspections</text>
+  <text x="605" y="212" fill="#aaa" font-size="9">3 completed inspections sent</text>
+  <text x="605" y="225" fill="#aaa" font-size="9">to server, deduplicated</text>
+
+  <!-- Arrow down -->
+  <line x1="705" y1="235" x2="705" y2="250" stroke="#7ec8e3" stroke-width="1" marker-end="url(#afA)"/>
+
+  <!-- Step: Upload evidence -->
+  <rect x="595" y="255" width="220" height="55" rx="6" fill="#0d1b2a" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="605" y="272" fill="#a080d0" font-size="11" font-weight="bold">Upload photos &amp; videos</text>
+  <text x="605" y="287" fill="#aaa" font-size="9">14 photos + 2 videos go</text>
+  <text x="605" y="300" fill="#aaa" font-size="9">directly to cloud storage</text>
+
+  <!-- Arrow down -->
+  <line x1="705" y1="310" x2="705" y2="325" stroke="#7ec8e3" stroke-width="1" marker-end="url(#afA)"/>
+
+  <!-- Step: Auto-ticket -->
+  <rect x="595" y="330" width="220" height="55" rx="6" fill="#1a0d2a" stroke="#a080d0" stroke-width="0.8"/>
+  <text x="605" y="347" fill="#a080d0" font-size="11" font-weight="bold">Critical defect triggers alert</text>
+  <text x="605" y="362" fill="#aaa" font-size="9">Ticket auto-created, assigned</text>
+  <text x="605" y="375" fill="#aaa" font-size="9">to site lead. SLA clock starts.</text>
+
+  <!-- Arrow down -->
+  <line x1="705" y1="385" x2="705" y2="400" stroke="#7ec8e3" stroke-width="1" marker-end="url(#afA)"/>
+
+  <!-- Step: Download updates -->
+  <rect x="595" y="405" width="220" height="45" rx="6" fill="#0d1b2a" stroke="#4a7a8a" stroke-width="0.5"/>
+  <text x="605" y="422" fill="#7ec8e3" font-size="11" font-weight="bold">Download updates</text>
+  <text x="605" y="437" fill="#aaa" font-size="9">Any changes from dispatcher sync back</text>
+
+  <!-- Status: synced -->
+  <rect x="610" y="462" width="190" height="24" rx="5" fill="#1a3a2a" stroke="#7ee8c8" stroke-width="0.8"/>
+  <text x="705" y="479" text-anchor="middle" fill="#7ee8c8" font-size="10" font-weight="bold">ALL SYNCED</text>
+
+  <!-- Connectivity icon -->
+  <text x="705" y="515" text-anchor="middle" fill="#7ec8e3" font-size="30">&#x1F4F6;</text>
+  <text x="705" y="535" text-anchor="middle" fill="#4a7a8a" font-size="9">4G/LTE connected</text>
+</svg>
+</section>
+
+<!-- ============================================================ -->
+<!-- COMPETITIVE MOAT -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>Competitive Moat: Why This, Not IFS/OxMaint</h2>
+<table>
+<tr>
+<th></th>
+<th>IFS Cloud</th>
+<th>OxMaint</th>
+<th>SuperCMMS</th>
+<th><strong>Ours</strong></th>
+</tr>
+<tr>
+<td>Offline mobile sync</td>
+<td class="yellow-tag">Partial</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="green-tag">Full (Briefcase model)</td>
+</tr>
+<tr>
+<td>Wind-specific asset model</td>
+<td class="yellow-tag">Generic</td><td class="green-tag">Yes</td><td class="green-tag">Yes</td><td class="green-tag">IEC 61400-25 + RDS-PP</td>
+</tr>
+<tr>
+<td>Technician absence + replacement</td>
+<td class="yellow-tag">Basic</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="green-tag">Weighted scoring engine</td>
+</tr>
+<tr>
+<td>Robotic inspection integration</td>
+<td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="green-tag">Phase 4: 8K video, LiDAR, 3D</td>
+</tr>
+<tr>
+<td>Evidence traceability</td>
+<td class="yellow-tag">Docs only</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="green-tag">Full lifecycle + versioning</td>
+</tr>
+<tr>
+<td>Safety-critical sync (LOTO)</td>
+<td class="red-tag">No</td><td class="red-tag">No</td><td class="red-tag">No</td><td class="green-tag">Sequence number versioning</td>
+</tr>
+<tr>
+<td>Implementation time</td>
+<td class="red-tag">6-18 months</td><td class="yellow-tag">2-4 months</td><td class="yellow-tag">1-3 months</td><td class="green-tag">4 months (MVP)</td>
+</tr>
+<tr>
+<td>License cost</td>
+<td class="red-tag">$150K+/yr</td><td class="yellow-tag">$30K/yr</td><td class="yellow-tag">SaaS pricing</td><td class="green-tag">Self-hosted, no per-seat</td>
+</tr>
+</table>
+<p style="font-size:0.65em; color:#7ec8e3; margin-top:0.5em;">The differentiator: offline-first field ops + technician absence pipeline + evidence traceability. No product combines all three for wind energy.</p>
+</section>
+
+<!-- ============================================================ -->
+<!-- DEPLOYMENT TOPOLOGY -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>Deployment Topology</h2>
+<svg viewBox="0 0 1140 780" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-height:700px;">
+  <defs>
+    <linearGradient id="dtMvp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a3a5c"/>
+      <stop offset="100%" stop-color="#0d1b2a"/>
+    </linearGradient>
+    <linearGradient id="dtScale" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a4a3a"/>
+      <stop offset="100%" stop-color="#0d2b1a"/>
+    </linearGradient>
+    <linearGradient id="dtMobile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a2a1a"/>
+      <stop offset="100%" stop-color="#2b1a0d"/>
+    </linearGradient>
+    <filter id="dtS">
+      <feDropShadow dx="1" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+    <marker id="dtA" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#4fc3f7"/>
+    </marker>
+  </defs>
+
+  <!-- MVP Column -->
+  <rect x="10" y="10" width="545" height="440" rx="12" fill="url(#dtMvp)" stroke="#4fc3f7" stroke-width="1.5" filter="url(#dtS)"/>
+  <text x="282" y="42" text-anchor="middle" fill="#4fc3f7" font-size="18" font-weight="bold">MVP — Single Server</text>
+  <text x="282" y="62" text-anchor="middle" fill="#7ec8e3" font-size="12">1 server · 8 CPU · 32 GB RAM · ~100 users</text>
+
+  <!-- Server box -->
+  <rect x="35" y="80" width="495" height="240" rx="8" fill="#0a1628" stroke="#2a4a6a" stroke-width="1"/>
+  <text x="282" y="102" text-anchor="middle" fill="#90caf9" font-size="13" font-weight="bold">Docker Compose</text>
+
+  <!-- Service tiles inside MVP -->
+  <!-- Row 1 -->
+  <rect x="55" y="115" width="145" height="55" rx="6" fill="#1565c0" opacity="0.7"/>
+  <text x="127" y="138" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">API Server</text>
+  <text x="127" y="155" text-anchor="middle" fill="#bbdefb" font-size="10">Node.js + Fastify</text>
+
+  <rect x="215" y="115" width="145" height="55" rx="6" fill="#2e7d32" opacity="0.7"/>
+  <text x="287" y="138" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Web App</text>
+  <text x="287" y="155" text-anchor="middle" fill="#c8e6c9" font-size="10">React · Nginx</text>
+
+  <rect x="375" y="115" width="145" height="55" rx="6" fill="#6a1b9a" opacity="0.7"/>
+  <text x="447" y="138" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Keycloak</text>
+  <text x="447" y="155" text-anchor="middle" fill="#e1bee7" font-size="10">Auth · SSO</text>
+
+  <!-- Row 2 -->
+  <rect x="55" y="185" width="145" height="55" rx="6" fill="#00838f" opacity="0.7"/>
+  <text x="127" y="208" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">PostgreSQL</text>
+  <text x="127" y="225" text-anchor="middle" fill="#b2ebf2" font-size="10">Primary DB</text>
+
+  <rect x="215" y="185" width="145" height="55" rx="6" fill="#bf360c" opacity="0.7"/>
+  <text x="287" y="208" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Redis</text>
+  <text x="287" y="225" text-anchor="middle" fill="#ffccbc" font-size="10">Queues · Cache</text>
+
+  <rect x="375" y="185" width="145" height="55" rx="6" fill="#f57f17" opacity="0.7"/>
+  <text x="447" y="208" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">MinIO</text>
+  <text x="447" y="225" text-anchor="middle" fill="#fff9c4" font-size="10">Photos · Files · S3</text>
+
+  <!-- Arrow: user to server -->
+  <line x1="282" y1="350" x2="282" y2="325" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#dtA)"/>
+  <text x="282" y="348" text-anchor="middle" fill="#7ec8e3" font-size="11">Web Browser</text>
+
+  <!-- Capability badge -->
+  <rect x="130" y="370" width="305" height="28" rx="14" fill="#1b5e20" opacity="0.6"/>
+  <text x="282" y="389" text-anchor="middle" fill="#a5d6a7" font-size="11">Handles ~100 users, ~50 concurrent sessions</text>
+
+  <!-- Scale Column -->
+  <rect x="575" y="10" width="555" height="440" rx="12" fill="url(#dtScale)" stroke="#66bb6a" stroke-width="1.5" filter="url(#dtS)"/>
+  <text x="852" y="42" text-anchor="middle" fill="#66bb6a" font-size="18" font-weight="bold">Scale — Kubernetes (Phase 4+)</text>
+  <text x="852" y="62" text-anchor="middle" fill="#a5d6a7" font-size="12">3+ servers · auto-scaling · 500+ users · multi-region</text>
+
+  <!-- K8s cluster box -->
+  <rect x="600" y="80" width="505" height="240" rx="8" fill="#0a1a12" stroke="#2a5a3a" stroke-width="1"/>
+  <text x="852" y="102" text-anchor="middle" fill="#81c784" font-size="13" font-weight="bold">Kubernetes Cluster</text>
+
+  <!-- Service tiles inside Scale -->
+  <!-- Row 1 -->
+  <rect x="620" y="115" width="145" height="55" rx="6" fill="#1565c0" opacity="0.7"/>
+  <text x="692" y="135" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">API Pods</text>
+  <text x="692" y="152" text-anchor="middle" fill="#bbdefb" font-size="10">×3 replicas</text>
+  <text x="692" y="163" text-anchor="middle" fill="#bbdefb" font-size="9">auto-scale</text>
+
+  <rect x="780" y="115" width="145" height="55" rx="6" fill="#2e7d32" opacity="0.7"/>
+  <text x="852" y="135" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Web App</text>
+  <text x="852" y="152" text-anchor="middle" fill="#c8e6c9" font-size="10">CDN (static)</text>
+  <text x="852" y="163" text-anchor="middle" fill="#c8e6c9" font-size="9">edge cached</text>
+
+  <rect x="940" y="115" width="145" height="55" rx="6" fill="#6a1b9a" opacity="0.7"/>
+  <text x="1012" y="135" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Keycloak</text>
+  <text x="1012" y="152" text-anchor="middle" fill="#e1bee7" font-size="10">×2 pods + DB</text>
+  <text x="1012" y="163" text-anchor="middle" fill="#e1bee7" font-size="9">HA cluster</text>
+
+  <!-- Row 2 -->
+  <rect x="620" y="185" width="145" height="55" rx="6" fill="#00838f" opacity="0.7"/>
+  <text x="692" y="205" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">PostgreSQL</text>
+  <text x="692" y="222" text-anchor="middle" fill="#b2ebf2" font-size="10">Primary + 2 replicas</text>
+  <text x="692" y="233" text-anchor="middle" fill="#b2ebf2" font-size="9">read scaling</text>
+
+  <rect x="780" y="185" width="145" height="55" rx="6" fill="#bf360c" opacity="0.7"/>
+  <text x="852" y="205" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Redis</text>
+  <text x="852" y="222" text-anchor="middle" fill="#ffccbc" font-size="10">Sentinel ×3</text>
+  <text x="852" y="233" text-anchor="middle" fill="#ffccbc" font-size="9">failover</text>
+
+  <rect x="940" y="185" width="145" height="55" rx="6" fill="#f57f17" opacity="0.7"/>
+  <text x="1012" y="205" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">MinIO</text>
+  <text x="1012" y="222" text-anchor="middle" fill="#fff9c4" font-size="10">Distributed ×4</text>
+  <text x="1012" y="233" text-anchor="middle" fill="#fff9c4" font-size="9">erasure coding</text>
+
+  <!-- Arrow: CDN to users -->
+  <line x1="852" y1="350" x2="852" y2="325" stroke="#66bb6a" stroke-width="1.5" marker-end="url(#dtA)"/>
+  <text x="852" y="348" text-anchor="middle" fill="#a5d6a7" font-size="11">CDN + Load Balancer</text>
+
+  <!-- Capability badge -->
+  <rect x="680" y="370" width="345" height="28" rx="14" fill="#1b5e20" opacity="0.6"/>
+  <text x="852" y="389" text-anchor="middle" fill="#a5d6a7" font-size="11">500+ users · multi-region · zero-downtime deploys</text>
+
+  <!-- Growth arrow between columns -->
+  <path d="M560,230 L570,230" stroke="#ffd54f" stroke-width="2"/>
+  <polygon points="570,222 586,230 570,238" fill="#ffd54f"/>
+  <text x="578" y="215" text-anchor="middle" fill="#ffd54f" font-size="10" font-weight="bold">grow</text>
+
+  <!-- Mobile Connectivity Section -->
+  <rect x="10" y="470" width="1120" height="290" rx="12" fill="url(#dtMobile)" stroke="#ffb74d" stroke-width="1.5" filter="url(#dtS)"/>
+  <text x="570" y="500" text-anchor="middle" fill="#ffb74d" font-size="18" font-weight="bold">Mobile Connectivity — How Field Devices Connect</text>
+
+  <!-- Technician with tablet -->
+  <rect x="60" y="530" width="120" height="70" rx="10" fill="#3e2723" stroke="#8d6e63" stroke-width="1.5"/>
+  <text x="120" y="555" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Technician</text>
+  <text x="120" y="572" text-anchor="middle" fill="#bcaaa4" font-size="10">Tablet / Phone</text>
+  <text x="120" y="588" text-anchor="middle" fill="#bcaaa4" font-size="9">(PWA)</text>
+
+  <!-- Path 1: Good signal -->
+  <line x1="180" y1="560" x2="330" y2="530" stroke="#4caf50" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#dtA)"/>
+  <rect x="340" y="510" width="230" height="50" rx="8" fill="#1b5e20" opacity="0.5" stroke="#4caf50" stroke-width="1"/>
+  <text x="455" y="532" text-anchor="middle" fill="#a5d6a7" font-size="13" font-weight="bold">Site WiFi / 4G</text>
+  <text x="455" y="550" text-anchor="middle" fill="#c8e6c9" font-size="10">PWA syncs directly to API server</text>
+  <line x1="570" y1="535" x2="710" y2="535" stroke="#4caf50" stroke-width="2" marker-end="url(#dtA)"/>
+  <rect x="720" y="515" width="170" height="45" rx="8" fill="#1565c0" opacity="0.5" stroke="#4fc3f7" stroke-width="1"/>
+  <text x="805" y="535" text-anchor="middle" fill="#90caf9" font-size="13" font-weight="bold">API Server</text>
+  <text x="805" y="550" text-anchor="middle" fill="#bbdefb" font-size="10">Real-time sync</text>
+  <circle cx="960" cy="537" r="14" fill="#4caf50" opacity="0.7"/>
+  <text x="960" y="542" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">✓</text>
+  <text x="960" y="565" text-anchor="middle" fill="#a5d6a7" font-size="9">Instant</text>
+
+  <!-- Path 2: No signal -->
+  <line x1="180" y1="575" x2="330" y2="600" stroke="#ff9800" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#dtA)"/>
+  <rect x="340" y="580" width="230" height="50" rx="8" fill="#e65100" opacity="0.4" stroke="#ff9800" stroke-width="1"/>
+  <text x="455" y="602" text-anchor="middle" fill="#ffe0b2" font-size="13" font-weight="bold">No Signal</text>
+  <text x="455" y="620" text-anchor="middle" fill="#ffcc80" font-size="10">IndexedDB + Service Worker</text>
+  <line x1="570" y1="605" x2="710" y2="605" stroke="#ff9800" stroke-width="2" marker-end="url(#dtA)"/>
+  <rect x="720" y="585" width="170" height="45" rx="8" fill="#3e2723" opacity="0.7" stroke="#8d6e63" stroke-width="1"/>
+  <text x="805" y="605" text-anchor="middle" fill="#bcaaa4" font-size="13" font-weight="bold">Local Storage</text>
+  <text x="805" y="620" text-anchor="middle" fill="#a1887f" font-size="10">Queue for later</text>
+  <circle cx="960" cy="607" r="14" fill="#ff9800" opacity="0.7"/>
+  <text x="960" y="612" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">⏳</text>
+  <text x="960" y="635" text-anchor="middle" fill="#ffe0b2" font-size="9">Auto-sync</text>
+
+  <!-- Path 3: Satellite/VPN -->
+  <line x1="180" y1="590" x2="330" y2="670" stroke="#ce93d8" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#dtA)"/>
+  <rect x="340" y="650" width="230" height="50" rx="8" fill="#4a148c" opacity="0.4" stroke="#ce93d8" stroke-width="1"/>
+  <text x="455" y="672" text-anchor="middle" fill="#e1bee7" font-size="13" font-weight="bold">Satellite / VPN</text>
+  <text x="455" y="690" text-anchor="middle" fill="#ce93d8" font-size="10">Behind customer firewall</text>
+  <line x1="570" y1="675" x2="710" y2="675" stroke="#ce93d8" stroke-width="2" marker-end="url(#dtA)"/>
+  <rect x="720" y="655" width="170" height="45" rx="8" fill="#1565c0" opacity="0.5" stroke="#4fc3f7" stroke-width="1"/>
+  <text x="805" y="675" text-anchor="middle" fill="#90caf9" font-size="13" font-weight="bold">API Server</text>
+  <text x="805" y="690" text-anchor="middle" fill="#bbdefb" font-size="10">On-premise deploy</text>
+  <circle cx="960" cy="677" r="14" fill="#7b1fa2" opacity="0.7"/>
+  <text x="960" y="682" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">🔒</text>
+  <text x="960" y="705" text-anchor="middle" fill="#e1bee7" font-size="9">Secure</text>
+
+  <!-- Label: auto-sync when signal returns -->
+  <text x="805" y="635" text-anchor="middle" fill="#7ec8e3" font-size="9" font-style="italic">↑ Signal returns → queue drains automatically</text>
+</svg>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECURITY MODEL -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>Security Model</h2>
+<div class="two-col">
+<div>
+<div class="box">
+<h3>Authentication & Authorization</h3>
+<ul>
+<li><strong>Keycloak:</strong> OAuth2 + OpenID Connect</li>
+<li><strong>RBAC:</strong> 6 roles (tech, QA, dispatcher, ops manager, customer, admin)</li>
+<li><strong>Multi-tenant:</strong> Row-level security in PostgreSQL (<code>WHERE organization_id = ?</code>)</li>
+<li><strong>SSO:</strong> Google, Microsoft, LDAP, SAML</li>
+</ul>
+</div>
+<div class="box">
+<h3>Data Protection</h3>
+<ul>
+<li><strong>At rest:</strong> PostgreSQL encryption, S3 server-side encryption</li>
+<li><strong>In transit:</strong> TLS 1.3 everywhere (API, WebSocket, S3)</li>
+<li><strong>Local:</strong> IndexedDB encrypted on device (company-managed devices)</li>
+<li><strong>Secrets:</strong> Environment variables, never in source code</li>
+</ul>
+</div>
+</div>
+<div>
+<div class="box">
+<h3>Threat Model</h3>
+<table>
+<tr><th>Threat</th><th>Mitigation</th></tr>
+<tr><td>Tenant data leakage</td><td>Row-level security + automated isolation tests</td></tr>
+<tr><td>Stolen tokens</td><td>Short-lived JWT + refresh rotation</td></tr>
+<tr><td>Offline data on lost device</td><td>Encrypted IndexedDB + remote wipe capability</td></tr>
+<tr><td>Sync replay attacks</td><td>Idempotency keys + 7-day dedup window</td></tr>
+<tr><td>Unauthorized file access</td><td>Presigned URLs expire in 15 min</td></tr>
+<tr><td>Audit tampering</td><td>Append-only events, no delete/update API</td></tr>
+</table>
+</div>
+</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SUCCESS METRICS PER PHASE -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>Success Metrics Per Phase</h2>
+<table>
+<tr><th>Phase</th><th>Milestone</th><th>Measurable Target</th></tr>
+<tr><td rowspan="4"><strong>1 &mdash; MVP</strong></td>
+<td>Asset registry</td><td>100% of active turbines modeled with IEC/RDS-PP naming</td></tr>
+<tr>
+<td>Offline inspections</td><td>Technicians complete 100% of inspections with zero connectivity</td></tr>
+<tr>
+<td>Evidence</td><td>All evidence linked to asset + inspection + ticket (zero orphaned files)</td></tr>
+<tr>
+<td>Sync reliability</td><td>0% data loss across 500+ sync operations in testing</td></tr>
+<tr><td rowspan="3"><strong>2 &mdash; Workforce</strong></td>
+<td>Absence handling</td><td>Replacement suggested within 5 minutes of absence report</td></tr>
+<tr>
+<td>Coverage</td><td>Zero uncovered SLA-critical assignments after replacement workflow</td></tr>
+<tr>
+<td>Notifications</td><td>Assignment changes reach technicians within 30 seconds</td></tr>
+<tr><td rowspan="3"><strong>3 &mdash; Reporting</strong></td>
+<td>Reports</td><td>Customer-ready PDF generated in under 60 seconds from any inspection</td></tr>
+<tr>
+<td>Dashboards</td><td>Real-time SLA compliance visible to ops managers (under 5s load)</td></tr>
+<tr>
+<td>Native app</td><td>Feature parity with PWA + background sync + push notifications</td></tr>
+<tr><td rowspan="2"><strong>4 &mdash; Integrations</strong></td>
+<td>ERP/CRM</td><td>Bi-directional sync with 99.5% uptime</td></tr>
+<tr>
+<td>SCADA</td><td>Automated work order creation from threshold alerts (under 5 min)</td></tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- RISK MITIGATION TIMELINE -->
+<!-- ============================================================ -->
+<section class="scrollable">
+<h2>Risk Mitigation Timeline</h2>
+<table>
+<tr><th>Risk</th><th>Impact</th><th>When Mitigated</th><th>How</th></tr>
+<tr><td>Offline sync data loss</td><td class="red-tag">Critical</td><td>Phase 1, Sprint 3</td><td>IndexedDB + idempotent ops + conflict queue</td></tr>
+<tr><td>Large media performance</td><td class="yellow-tag">Medium</td><td>Phase 1, Sprint 5</td><td>Presigned S3 URLs + client-side compression</td></tr>
+<tr><td>Technician adoption</td><td class="yellow-tag">Medium</td><td>Phase 1, Sprint 3+</td><td>UX testing with field teams from week 7</td></tr>
+<tr><td>Multi-tenant data leakage</td><td class="red-tag">Critical</td><td>Phase 1, Sprint 1</td><td>Row-level security + automated isolation tests</td></tr>
+<tr><td>Safety data inconsistency</td><td class="red-tag">Critical</td><td>Phase 1, Sprint 3</td><td>Sequence number versioning for LOTO/permits</td></tr>
+<tr><td>SCADA misalignment</td><td class="yellow-tag">Medium</td><td>Phase 1, Sprint 2</td><td>IEC/RDS-PP naming from day 1 + client validation</td></tr>
+<tr><td>Scope creep</td><td class="yellow-tag">Medium</td><td>Ongoing</td><td>Phase-gate reviews, separate post-MVP backlog</td></tr>
+<tr><td>ERP integration delays</td><td style="color:#888;">Low</td><td>Phase 4</td><td>Isolated to Phase 4; CMMS standalone until ready</td></tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- CLOSING -->
+<!-- ============================================================ -->
+<section>
+<h1>Build vs. Buy</h1>
+<h2>Build.</h2>
+<p style="font-size:0.8em; color:#aaa; max-width: 600px;">Zero open source platforms cover offline sync + inspection templates + evidence lifecycle + workforce management. The patterns we borrow accelerate delivery, but the core &mdash; offline-first field operations, technician absence pipeline, evidence traceability &mdash; has no precedent. That's the differentiator.</p>
+<p style="font-size:0.7em; color:#666; margin-top:2em;">Full docs: <code>docs/proposal.md</code> &bull; <code>docs/developer-briefing.md</code> &bull; <code>docs/opensource-cmms-review.md</code></p>
+</section>
+
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: true,
+  transition: 'slide',
+  width: 1200,
+  height: 750,
+  margin: 0.06,
+});
+</script>
+</body>
+</html>

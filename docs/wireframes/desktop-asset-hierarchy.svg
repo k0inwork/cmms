@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="1440" height="900" fill="#f7fafc"/>
+
+  <!-- Top Navigation Bar -->
+  <rect width="1440" height="56" fill="white"/>
+  <line x1="0" y1="56" x2="1440" y2="56" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="24" y="36" fill="#2c5282" font-size="18" font-weight="700">CMMS</text>
+  <text x="90" y="36" fill="#718096" font-size="14">|</text>
+  <text x="104" y="36" fill="#1a202c" font-size="15" font-weight="600">Asset Hierarchy</text>
+
+  <text x="300" y="36" fill="#718096" font-size="14">Dashboard</text>
+  <text x="420" y="36" fill="#2c5282" font-size="14" font-weight="600" text-decoration="underline">Assets</text>
+  <text x="520" y="36" fill="#718096" font-size="14">Inspections</text>
+  <text x="640" y="36" fill="#718096" font-size="14">Dispatch</text>
+  <text x="740" y="36" fill="#718096" font-size="14">Tickets</text>
+  <text x="830" y="36" fill="#718096" font-size="14">Admin</text>
+  <circle cx="1380" cy="28" r="16" fill="#ebf8ff"/>
+  <text x="1380" y="33" text-anchor="middle" fill="#2c5282" font-size="13" font-weight="600">TM</text>
+
+  <!-- Breadcrumb -->
+  <text x="24" y="82" fill="#718096" font-size="13">Sites</text>
+  <text x="52" y="82" fill="#718096" font-size="13">›</text>
+  <text x="64" y="82" fill="#718096" font-size="13">Hornsea Reef</text>
+  <text x="144" y="82" fill="#718096" font-size="13">›</text>
+  <text x="156" y="82" fill="#2c5282" font-size="13" font-weight="600">WTG-HR-01</text>
+  <text x="236" y="82" fill="#718096" font-size="13">›</text>
+  <text x="248" y="82" fill="#2c5282" font-size="13" font-weight="600">Blade Assembly A</text>
+
+  <!-- Left: Tree Navigation -->
+  <rect x="24" y="96" width="300" height="780" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+  <text x="40" y="124" fill="#1a202c" font-size="14" font-weight="700">Asset Tree</text>
+  <rect x="260" y="110" width="50" height="24" fill="#edf2f7" rx="4"/>
+  <text x="285" y="126" text-anchor="middle" fill="#4a5568" font-size="10">Filter</text>
+
+  <!-- Site level -->
+  <text x="40" y="160" fill="#2c5282" font-size="13" font-weight="600">▼ Hornsea Reef</text>
+  <!-- Turbine level -->
+  <text x="60" y="184" fill="#2c5282" font-size="13" font-weight="600">▼ WTG-HR-01</text>
+  <!-- Component groups -->
+  <text x="80" y="208" fill="#1a202c" font-size="12" font-weight="600">▸ Blade Assembly A</text>
+  <rect x="80" y="214" width="16" height="3" fill="#e53e3e" rx="1"/>
+  <text x="80" y="232" fill="#718096" font-size="12">▸ Blade Assembly B</text>
+  <text x="80" y="256" fill="#718096" font-size="12">▸ Blade Assembly C</text>
+  <text x="80" y="280" fill="#718096" font-size="12">▸ Gearbox &amp; Drivetrain</text>
+  <rect x="80" y="286" width="16" height="3" fill="#ecc94b" rx="1"/>
+  <text x="80" y="304" fill="#718096" font-size="12">▸ Generator &amp; Electrical</text>
+  <text x="80" y="328" fill="#718096" font-size="12">▸ Nacelle &amp; Tower</text>
+  <text x="80" y="352" fill="#718096" font-size="12">▸ Pitch &amp; Yaw System</text>
+  <text x="80" y="376" fill="#718096" font-size="12">▸ Control &amp; SCADA</text>
+
+  <!-- Other turbines collapsed -->
+  <text x="60" y="408" fill="#718096" font-size="13">▸ WTG-HR-02</text>
+  <text x="60" y="432" fill="#718096" font-size="13">▸ WTG-HR-03</text>
+  <text x="60" y="456" fill="#718096" font-size="13">▸ WTG-HR-04</text>
+  <text x="60" y="480" fill="#a0aec0" font-size="12">... 18 more</text>
+
+  <!-- Expanded: Blade Assembly A children -->
+  <rect x="24" y="500" width="300" height="200" fill="#edf2f7" rx="0" opacity="0.5"/>
+  <text x="100" y="524" fill="#1a202c" font-size="11" font-weight="600">▼ Blade Assembly A</text>
+  <text x="120" y="548" fill="#1a202c" font-size="11">Root Section</text>
+  <text x="120" y="568" fill="#1a202c" font-size="11">Mid Section</text>
+  <text x="120" y="588" fill="#1a202c" font-size="11">Tip Section</text>
+  <text x="120" y="608" fill="#1a202c" font-size="11">Trailing Edge</text>
+  <rect x="120" y="612" width="12" height="3" fill="#e53e3e" rx="1"/>
+  <text x="120" y="632" fill="#718096" font-size="11">Leading Edge</text>
+  <text x="120" y="652" fill="#718096" font-size="11">Lightning Protection</text>
+  <text x="120" y="672" fill="#718096" font-size="11">Pitch Bearings</text>
+
+  <!-- Right: Detail Panel -->
+  <rect x="340" y="96" width="1076" height="780" fill="white" rx="8" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.04))"/>
+
+  <!-- Asset Header -->
+  <text x="360" y="128" fill="#1a202c" font-size="20" font-weight="700">Blade Assembly A</text>
+  <rect x="580" y="112" width="70" height="24" fill="#c6f6d5" rx="12"/>
+  <text x="615" y="129" text-anchor="middle" fill="#276749" font-size="11" font-weight="600">ACTIVE</text>
+  <text x="360" y="152" fill="#718096" font-size="13">RDS-PP: WTN01.HR.001.BLA · Vestas V164 Blade Set A · Serial: VB-2022-A-00142</text>
+
+  <!-- Tabs -->
+  <line x1="360" y1="168" x2="1396" y2="168" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="360" y="190" fill="#2c5282" font-size="13" font-weight="600">Overview</text>
+  <line x1="360" y1="196" x2="416" y2="196" stroke="#2c5282" stroke-width="2"/>
+  <text x="440" y="190" fill="#718096" font-size="13">Children (8)</text>
+  <text x="540" y="190" fill="#718096" font-size="13">Tickets (3)</text>
+  <text x="630" y="190" fill="#718096" font-size="13">Inspections (12)</text>
+  <text x="750" y="190" fill="#718096" font-size="13">History</text>
+  <text x="830" y="190" fill="#718096" font-size="13">Documents</text>
+
+  <!-- Overview Content -->
+  <!-- Details grid -->
+  <rect x="360" y="210" width="520" height="200" fill="#f7fafc" rx="8"/>
+  <text x="376" y="236" fill="#1a202c" font-size="14" font-weight="700">Properties</text>
+
+  <text x="376" y="264" fill="#718096" font-size="12">Parent</text>
+  <text x="500" y="264" fill="#2c5282" font-size="12" font-weight="500">WTG-HR-01 →</text>
+  <text x="376" y="286" fill="#718096" font-size="12">Type</text>
+  <text x="500" y="286" fill="#1a202c" font-size="12">Blade Assembly (Rotary)</text>
+  <text x="376" y="308" fill="#718096" font-size="12">Manufacturer</text>
+  <text x="500" y="308" fill="#1a202c" font-size="12">Vestas Wind Systems A/S</text>
+  <text x="376" y="330" fill="#718096" font-size="12">Model</text>
+  <text x="500" y="330" fill="#1a202c" font-size="12">V164-9.5 MW Blade Set</text>
+  <text x="376" y="352" fill="#718096" font-size="12">Serial</text>
+  <text x="500" y="352" fill="#1a202c" font-size="12">VB-2022-A-00142</text>
+  <text x="376" y="374" fill="#718096" font-size="12">Installed</text>
+  <text x="500" y="374" fill="#1a202c" font-size="12">March 15, 2022</text>
+  <text x="376" y="396" fill="#718096" font-size="12">Warranty</text>
+  <text x="500" y="396" fill="#38a169" font-size="12" font-weight="500">Active until March 2027</text>
+
+  <!-- Health summary -->
+  <rect x="900" y="210" width="500" height="200" fill="#f7fafc" rx="8"/>
+  <text x="916" y="236" fill="#1a202c" font-size="14" font-weight="700">Health Summary</text>
+
+  <rect x="916" y="250" width="110" height="56" fill="#fed7d7" rx="6"/>
+  <text x="971" y="274" text-anchor="middle" fill="#9b2c2c" font-size="20" font-weight="700">3</text>
+  <text x="971" y="294" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">OPEN TICKETS</text>
+
+  <rect x="1040" y="250" width="110" height="56" fill="#c6f6d5" rx="6"/>
+  <text x="1095" y="274" text-anchor="middle" fill="#276749" font-size="20" font-weight="700">12</text>
+  <text x="1095" y="294" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">INSPECTIONS</text>
+
+  <rect x="1164" y="250" width="110" height="56" fill="#fefcbf" rx="6"/>
+  <text x="1219" y="274" text-anchor="middle" fill="#744210" font-size="20" font-weight="700">2</text>
+  <text x="1219" y="294" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">FINDINGS</text>
+
+  <!-- Condition indicator -->
+  <text x="916" y="332" fill="#718096" font-size="12">Condition Rating</text>
+  <rect x="1040" y="318" width="340" height="16" fill="#edf2f7" rx="8"/>
+  <rect x="1040" y="318" width="204" height="16" fill="#ecc94b" rx="8"/>
+  <text x="1220" y="330" fill="#744210" font-size="10" font-weight="600">60% — Fair</text>
+
+  <text x="916" y="362" fill="#718096" font-size="12">Last Inspection</text>
+  <text x="1040" y="362" fill="#1a202c" font-size="12">May 8, 2025 · INS-2025-0087</text>
+
+  <text x="916" y="382" fill="#718096" font-size="12">Next Scheduled</text>
+  <text x="1040" y="382" fill="#2c5282" font-size="12" font-weight="500">May 15, 2025 · Quarterly</text>
+
+  <!-- Active Tickets -->
+  <text x="360" y="434" fill="#1a202c" font-size="14" font-weight="700">Active Tickets</text>
+  <text x="1396" y="434" text-anchor="end" fill="#2c5282" font-size="12" font-weight="600">View all →</text>
+
+  <rect x="360" y="448" width="1040" height="44" fill="white" rx="6" stroke="#fed7d7" stroke-width="1"/>
+  <rect x="360" y="448" width="3" height="44" fill="#e53e3e"/>
+  <text x="376" y="475" fill="#2c5282" font-size="12" font-weight="600">TKT-2025-0042</text>
+  <text x="500" y="475" fill="#1a202c" font-size="12">Blade Trailing Edge Crack — Trailing Edge component</text>
+  <rect x="1100" y="460" width="70" height="20" fill="#fed7d7" rx="4"/>
+  <text x="1135" y="474" text-anchor="middle" fill="#9b2c2c" font-size="10" font-weight="600">CRITICAL</text>
+  <text x="1200" y="475" fill="#e53e3e" font-size="11">18h SLA</text>
+
+  <rect x="360" y="500" width="1040" height="44" fill="white" rx="6" stroke="#fefcbf" stroke-width="1"/>
+  <rect x="360" y="500" width="3" height="44" fill="#ecc94b"/>
+  <text x="376" y="527" fill="#2c5282" font-size="12" font-weight="600">TKT-2025-0039</text>
+  <text x="500" y="527" fill="#1a202c" font-size="12">Leading edge erosion monitoring — Tip Section</text>
+  <rect x="1100" y="512" width="50" height="20" fill="#fefcbf" rx="4"/>
+  <text x="1125" y="526" text-anchor="middle" fill="#744210" font-size="10" font-weight="600">MINOR</text>
+  <text x="1200" y="527" fill="#38a169" font-size="11">5d SLA</text>
+
+  <!-- Recent Inspections -->
+  <text x="360" y="582" fill="#1a202c" font-size="14" font-weight="700">Recent Inspections</text>
+
+  <rect x="360" y="596" width="1040" height="40" fill="white" rx="6" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="380" cy="616" r="4" fill="#38a169"/>
+  <text x="396" y="620" fill="#1a202c" font-size="12">INS-2025-0087 · Blade Inspection · Completed May 8</text>
+  <rect x="1100" y="606" width="90" height="20" fill="#c6f6d5" rx="4"/>
+  <text x="1145" y="620" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">3 FINDINGS</text>
+
+  <rect x="360" y="644" width="1040" height="40" fill="white" rx="6" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="380" cy="664" r="4" fill="#38a169"/>
+  <text x="396" y="668" fill="#1a202c" font-size="12">INS-2025-0072 · Blade Inspection · Completed Apr 15</text>
+  <rect x="1100" y="654" width="90" height="20" fill="#c6f6d5" rx="4"/>
+  <text x="1145" y="668" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">1 FINDING</text>
+
+  <rect x="360" y="692" width="1040" height="40" fill="white" rx="6" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="380" cy="712" r="4" fill="#38a169"/>
+  <text x="396" y="716" fill="#1a202c" font-size="12">INS-2025-0058 · Blade Inspection · Completed Mar 20</text>
+  <rect x="1100" y="702" width="90" height="20" fill="#c6f6d5" rx="4"/>
+  <text x="1145" y="716" text-anchor="middle" fill="#276749" font-size="10" font-weight="600">0 FINDINGS</text>
+</svg>
