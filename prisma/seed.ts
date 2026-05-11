@@ -122,6 +122,45 @@ async function main() {
   const passwordHash = await hash(PASSWORD, 10);
   faker.seed(42);
 
+  // ─── Fixed dev accounts (predictable credentials) ──────────────────────
+  const devOrg = await prisma.organization.create({
+    data: { name: "Dev Organization", description: "Fixed development organization" },
+  });
+
+  const devAdmin = await prisma.user.create({
+    data: {
+      email: "admin@cmms.test",
+      password_hash: passwordHash,
+      first_name: "Admin",
+      last_name: "User",
+      role: Role.ADMINISTRATOR,
+      status: "AVAILABLE",
+      organization_id: devOrg.id,
+    },
+  });
+  const devTech = await prisma.user.create({
+    data: {
+      email: "tech@cmms.test",
+      password_hash: passwordHash,
+      first_name: "Tech",
+      last_name: "User",
+      role: Role.TECHNICIAN,
+      status: "AVAILABLE",
+      organization_id: devOrg.id,
+    },
+  });
+  const devDispatcher = await prisma.user.create({
+    data: {
+      email: "dispatcher@cmms.test",
+      password_hash: passwordHash,
+      first_name: "Dispatcher",
+      last_name: "User",
+      role: Role.DISPATCHER,
+      status: "AVAILABLE",
+      organization_id: devOrg.id,
+    },
+  });
+
   // ─── Organizations ──────────────────────────────────────────────────────
   const org1 = await prisma.organization.create({
     data: { name: "WindTech Energy GmbH", description: "Wind turbine operations and maintenance company" },
