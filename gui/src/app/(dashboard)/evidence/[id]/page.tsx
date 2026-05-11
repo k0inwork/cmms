@@ -7,6 +7,14 @@ import { EvidenceItem } from "@/types";
 import { ArrowLeft, Check, Flag, Image as ImageIcon, Video, FileText } from "lucide-react";
 import Link from "next/link";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+function resolveUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith("http")) return url;
+  return `${API_BASE}${url}`;
+}
+
 export default function EvidenceViewer({ params }: { params: { id: string } }) {
   const { user } = useAuth();
   const [evidence, setEvidence] = useState<EvidenceItem | null>(null);

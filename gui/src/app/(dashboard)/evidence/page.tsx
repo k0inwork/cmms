@@ -8,6 +8,14 @@ import { Image as ImageIcon, Video, FileText, CheckCircle, Flag, Search, Filter 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+function resolveUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith("http")) return url;
+  return `${API_BASE}${url}`;
+}
+
 export default function EvidenceLibrary() {
   const { user } = useAuth();
   const [evidence, setEvidence] = useState<EvidenceItem[]>([]);
@@ -175,8 +183,8 @@ export default function EvidenceLibrary() {
 
               <Link href={`/evidence/${item.id}`} className="block">
                 <div className="relative flex h-48 items-center justify-center bg-slate-100">
-                  {item.thumbnail_url ? (
-                    <img src={item.thumbnail_url} alt="" className="h-full w-full object-cover" />
+                  {resolveUrl(item.thumbnail_url) ? (
+                    <img src={resolveUrl(item.thumbnail_url)} alt="" className="h-full w-full object-cover" />
                   ) : (
                     renderIcon(item.media_type)
                   )}
@@ -270,8 +278,8 @@ export default function EvidenceLibrary() {
                   <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded bg-slate-100 flex items-center justify-center">
-                         {item.thumbnail_url ? (
-                          <img src={item.thumbnail_url} alt="" className="h-full w-full object-cover" />
+                         {resolveUrl(item.thumbnail_url) ? (
+                          <img src={resolveUrl(item.thumbnail_url)} alt="" className="h-full w-full object-cover" />
                         ) : (
                           renderIcon(item.media_type)
                         )}

@@ -1,6 +1,8 @@
 import { Hono } from "hono";
 import { serve } from "@hono/node-server";
+import { serveStatic } from "@hono/node-server/serve-static";
 import { HTTPException } from "hono/http-exception";
+import { mkdirSync } from "fs";
 import { hasErrorCode } from "./utils/errors.js";
 import authRoutes from "./routes/auth.js";
 import organizationRoutes from "./routes/organizations.js";
@@ -30,6 +32,9 @@ import {
   rateLimiter,
 } from "./middleware/production.js";
 
+// Ensure uploads directory exists
+mkdirSync("uploads", { recursive: true });
+
 const app = new Hono();
 
 // Apply production middleware
@@ -42,6 +47,9 @@ app.use("*", rateLimiter());
 app.get("/", (c) => c.json({ status: "ok", service: "cmms", version: "0.1.0" }));
 
 app.get("/health", (c) => c.json({ status: "healthy", timestamp: new Date().toISOString() }));
+
+// Serve uploaded files statically
+app.use("/uploads/*", serveStatic({ root: "./" }));
 
 app.route("/auth", authRoutes);
 app.route("/organizations", organizationRoutes);

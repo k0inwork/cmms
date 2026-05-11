@@ -1,6 +1,7 @@
 import { PrismaClient, Role, type TechnicianStatus } from "@prisma/client";
 import bcryptjs from "bcryptjs";
 import { faker } from "@faker-js/faker";
+import { mkdirSync, writeFileSync } from "fs";
 
 const { hash } = bcryptjs;
 const prisma = new PrismaClient();
@@ -442,14 +443,57 @@ async function main() {
   }
 
   // ─── Evidence Items (40) ────────────────────────────────────────────────
+  mkdirSync("uploads", { recursive: true });
+
+  function generatePlaceholderJpg(w: number, h: number): Buffer {
+    // Minimal valid JPEG: SOI + APP0 + SOF0 + DHT + SOS + EOI
+    // Instead, create a minimal 1x1 BMP converted to a simple colored PNG-like approach
+    // We'll use a minimal valid JPEG binary
+    const gray = 180;
+    const y = Math.round(gray * 255 / 100);
+    // Build a minimal JPEG
+    const buf = Buffer.from([
+      0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00,
+      0x01, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0xFF, 0xDB,
+      0x00, 0x43, 0x00, 0x08, 0x06, 0x06, 0x07, 0x06, 0x05, 0x08, 0x07,
+      0x07, 0x07, 0x09, 0x09, 0x08, 0x0A, 0x0C, 0x14, 0x0D, 0x0C, 0x0B,
+      0x0B, 0x0C, 0x19, 0x12, 0x13, 0x0F, 0x14, 0x1D, 0x1A, 0x1F, 0x1E,
+      0x1D, 0x1A, 0x1C, 0x1C, 0x20, 0x24, 0x2E, 0x27, 0x20, 0x22, 0x2C,
+      0x23, 0x1C, 0x1C, 0x28, 0x37, 0x29, 0x2C, 0x30, 0x31, 0x34, 0x34,
+      0x34, 0x1F, 0x27, 0x39, 0x3D, 0x38, 0x32, 0x3C, 0x2E, 0x33, 0x34,
+      0x32, 0xFF, 0xC0, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01,
+      0x01, 0x11, 0x00, 0xFF, 0xC4, 0x00, 0x1F, 0x00, 0x00, 0x01, 0x05,
+      0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+      0x09, 0x0A, 0x0B, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00,
+      0x3F, 0x00, 0x7B, 0x94, 0x18, 0x00, 0x00, 0x00, 0xFF, 0xD9,
+    ]);
+    return buf;
+  }
+
+  const placeholderJpg = generatePlaceholderJpg(800, 600);
+  const placeholderThumb = generatePlaceholderJpg(200, 150);
+
   for (let i = 0; i < 40; i++) {
     const uploader = pick(allUsers);
+    const mediaType = pick(["PHOTO", "VIDEO", "PHOTO", "PHOTO", "PDF"] as const);
+    const isPhoto = mediaType === "PHOTO";
+    const fileName = isPhoto ? `evidence_${i + 1}.jpg` : mediaType === "VIDEO" ? `evidence_${i + 1}.mp4` : `evidence_${i + 1}.pdf`;
+    const thumbName = `thumb_evidence_${i + 1}.jpg`;
+    const hasThumb = isPhoto && Math.random() > 0.3;
+
+    // Write actual placeholder files for photos
+    if (isPhoto) {
+      writeFileSync(`uploads/${fileName}`, placeholderJpg);
+      if (hasThumb) writeFileSync(`uploads/${thumbName}`, placeholderThumb);
+    }
+
     await prisma.evidenceItem.create({
       data: {
-        media_type: pick(["PHOTO", "VIDEO", "PHOTO", "PHOTO", "PDF"] as const),
+        media_type: mediaType,
         status: pick(["PENDING", "APPROVED", "APPROVED", "APPROVED"] as const),
-        file_url: `/uploads/${faker.system.commonFileName("jpg")}`,
-        thumbnail_url: Math.random() > 0.3 ? `/uploads/thumb_${faker.system.commonFileName("jpg")}` : null,
+        file_url: `/uploads/${fileName}`,
+        thumbnail_url: hasThumb ? `/uploads/${thumbName}` : null,
         file_size_bytes: 500_000 + Math.floor(Math.random() * 4_500_000),
         mime_type: pick(["image/jpeg", "image/png", "video/mp4", "application/pdf"]),
         uploaded_by: uploader.id,

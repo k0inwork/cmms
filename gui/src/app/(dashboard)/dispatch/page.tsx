@@ -102,9 +102,12 @@ export default function DispatchPage() {
     loadData();
   }, [loadData]);
 
+  const [assignError, setAssignError] = useState<string | null>(null);
+
   const handleAssign = async (technicianId: string) => {
     if (!assignModal) return;
     setAssigning(true);
+    setAssignError(null);
     try {
       await apiPost("/dispatch/assign", {
         assignmentType: assignModal.item.type,
@@ -113,8 +116,8 @@ export default function DispatchPage() {
       });
       setAssignModal(null);
       loadData();
-    } catch {
-      // Error handled by apiClient redirect
+    } catch (err) {
+      setAssignError(err instanceof Error ? err.message : "Assignment failed");
     } finally {
       setAssigning(false);
     }
@@ -355,8 +358,9 @@ export default function DispatchPage() {
           item={assignModal.item}
           technicians={assignModal.technicians}
           assigning={assigning}
+          error={assignError}
           onAssign={handleAssign}
-          onClose={() => setAssignModal(null)}
+          onClose={() => { setAssignModal(null); setAssignError(null); }}
         />
       )}
 
@@ -399,12 +403,14 @@ function AssignModal({
   item,
   technicians,
   assigning,
+  error,
   onAssign,
   onClose,
 }: {
   item: SlaRiskItem;
   technicians: TechnicianListItem[];
   assigning: boolean;
+  error: string | null;
   onAssign: (techId: string) => void;
   onClose: () => void;
 }) {
@@ -422,6 +428,10 @@ function AssignModal({
         <p className="mb-4 text-xs text-slate-500">
           {item.type} &middot; SLA in {formatRemaining(item.slaRemainingMs)}
         </p>
+
+        {error && (
+          <div className="mb-3 rounded-md bg-red-50 p-2 text-xs text-red-700">{error}</div>
+        )}
 
         <div className="max-h-64 space-y-2 overflow-y-auto">
           {technicians.length === 0 ? (

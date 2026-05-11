@@ -137,7 +137,7 @@ app.get("/sla-risk", authMiddleware(), requireRoles("DISPATCHER", "ADMINISTRATOR
 // ─── POST /dispatch/assign ─────────────────────────────────────────────────────
 
 const assignSchema = z.object({
-  assignmentType: z.enum(["INSPECTION", "WORK_ORDER"]),
+  assignmentType: z.enum(["INSPECTION", "WORK_ORDER", "TICKET"]),
   assignmentId: z.string().uuid(),
   technicianId: z.string().uuid(),
 });
@@ -166,13 +166,29 @@ app.post("/assign", authMiddleware(), requireRoles("DISPATCHER", "ADMINISTRATOR"
     if (!inspection) {
       throw new NotFoundError("InspectionRecord", assignmentId);
     }
-  } else {
+  } else if (assignmentType === "WORK_ORDER") {
     const wo = await prisma.workOrder.findFirst({
       where: { id: assignmentId, deleted_at: null },
     });
     if (!wo) {
       throw new NotFoundError("WorkOrder", assignmentId);
     }
+  } else if (assignmentType === "TICKET") {
+    const ticket = await prisma.ticket.findFirst({
+      where: { id: assignmentId, deleted_at: null },
+    });
+    if (!ticket) {
+      throw new NotFoundError("Ticket", assignmentId);
+    }
+    // Assign ticket directly via assignee_id
+    await prisma.ticket.update({
+      where: { id: assignmentId },
+      data: { assignee_id: technicianId, status: "ASSIGNED" },
+    });
+  }
+
+  if (assignmentType === "TICKET") {
+    return c.json({ success: true, assignmentType, assignmentId, technicianId }, 201);
   }
 
   const assignment = await prisma.assignment.create({
