@@ -120,6 +120,7 @@ export type TicketStatus =
   | "REOPENED";
 
 export type Priority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+export type Severity = "COSMETIC" | "MINOR" | "MAJOR" | "CRITICAL" | "SAFETY";
 
 export interface Ticket {
   id: string;
@@ -131,6 +132,53 @@ export interface Ticket {
   created_by: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface TicketUser {
+  id: string;
+  first_name: string;
+  last_name: string;
+}
+
+export interface TicketEvidence {
+  id: string;
+  media_type: string;
+  thumbnail_url: string | null;
+}
+
+export interface TicketEvidenceLink {
+  id: string;
+  evidence: TicketEvidence;
+}
+
+export interface TicketAuditEvent {
+  id: string;
+  userName?: string;
+  action: string;
+  timestamp: string;
+}
+
+export interface TicketDetail {
+  id: string;
+  title: string;
+  description: string;
+  priority: Priority;
+  status: TicketStatus;
+  severity?: Severity;
+  resolution_notes?: string;
+  root_cause?: string;
+  due_date?: string;
+  sla_target_date?: string;
+  closed_at?: string;
+  created_at: string;
+  updated_at: string;
+  assignee: TicketUser | null;
+  creator: TicketUser;
+  turbine: { id: string; name: string } | null;
+  component: { id: string; name: string } | null;
+  defect: { id: string; severity: string; description: string } | null;
+  ticket_evidence: TicketEvidenceLink[];
+  audit_events: TicketAuditEvent[];
 }
 
 export type InspectionStatus =
@@ -198,4 +246,163 @@ export interface EvidenceAnnotation {
   data: any;
   version: number;
   created_at: string;
+}
+
+// ─── Admin ──────────────────────────────────────────────────────────────────────
+
+export type TechnicianStatus =
+  | "AVAILABLE"
+  | "ASSIGNED"
+  | "TRAVELING"
+  | "ON_SITE"
+  | "ON_BREAK"
+  | "SICK"
+  | "TRAINING"
+  | "LEAVE"
+  | "UNAVAILABLE";
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: Role;
+  is_active: boolean;
+  status: TechnicianStatus;
+  organization_id: string;
+  created_at: string;
+  updated_at: string;
+  user_skills?: UserSkill[];
+  user_certifications?: UserCertification[];
+}
+
+export interface Skill {
+  id: string;
+  name: string;
+  category?: string | null;
+  description?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Certification {
+  id: string;
+  name: string;
+  issuing_body?: string | null;
+  validity_months?: number | null;
+  description?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface UserSkill {
+  id: string;
+  user_id: string;
+  skill_id: string;
+  proficiency_level: number;
+  acquired_date: string;
+  skill: Skill;
+}
+
+export interface UserCertification {
+  id: string;
+  user_id: string;
+  certification_id: string;
+  issued_date: string;
+  expiry_date?: string | null;
+  certificate_url?: string | null;
+  certification: Certification;
+}
+
+export interface WorkflowRule {
+  id: string;
+  name: string;
+  description?: string;
+  trigger: string;
+  conditions?: Record<string, unknown>;
+  actions?: Record<string, unknown>;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ─── Audit ──────────────────────────────────────────────────────────────────────
+
+export type AuditAction =
+  | "CREATE"
+  | "UPDATE"
+  | "DELETE"
+  | "STATUS_CHANGE"
+  | "ASSIGN"
+  | "APPROVE"
+  | "REJECT"
+  | "SYNC"
+  | "LOGIN"
+  | "LOGOUT";
+
+export interface AuditEvent {
+  id: string;
+  entity_type: string;
+  entity_id: string;
+  action: AuditAction;
+  user_id: string;
+  before_state?: any;
+  after_state?: any;
+  metadata?: any;
+  created_at: string;
+  user?: { id: string; first_name: string; last_name: string; email: string };
+}
+
+// ─── Reports ────────────────────────────────────────────────────────────────────
+
+export interface ReportFilters {
+  dateFrom?: string;
+  dateTo?: string;
+  orgId?: string;
+  siteId?: string;
+}
+
+export interface ComplianceReport {
+  report_type: "compliance";
+  generated_at: string;
+  filters: ReportFilters;
+  summary: {
+    total_inspections: number;
+    completed: number;
+    rejected: number;
+    overdue: number;
+    approval_rate: number;
+    rejection_rate: number;
+  };
+  by_status: Record<string, number>;
+}
+
+export interface InspectionsReport {
+  report_type: "inspections";
+  generated_at: string;
+  filters: ReportFilters;
+  summary: { total: number; avg_completion_hours: number | null };
+  by_status: Record<string, number>;
+}
+
+export interface WorkOrdersReport {
+  report_type: "work-orders";
+  generated_at: string;
+  filters: ReportFilters;
+  summary: { total: number; closed: number; avg_completion_hours: number | null };
+  by_status: Record<string, number>;
+  by_priority: Record<string, number>;
+}
+
+export interface TechnicianProductivityReport {
+  report_type: "technician-productivity";
+  generated_at: string;
+  filters: ReportFilters;
+  data: {
+    technician_id: string;
+    name: string;
+    email: string;
+    work_orders_completed: number;
+    inspections_completed: number;
+  }[];
 }
