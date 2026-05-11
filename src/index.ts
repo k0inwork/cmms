@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { serve } from "@hono/node-server";
 import { HTTPException } from "hono/http-exception";
 import { hasErrorCode } from "./utils/errors.js";
 import authRoutes from "./routes/auth.js";
@@ -79,7 +80,6 @@ const port = Number(process.env.PORT) || 3000;
 
 console.log(`CMMS API starting on port ${port}`);
 
-export default {
-  port,
-  fetch: app.fetch,
-};
+serve({ port, fetch: app.fetch }, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
