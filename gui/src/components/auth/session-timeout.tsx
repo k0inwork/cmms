@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/lib/auth-context";
+import { getStoredTokens, storeTokens } from "@/lib/api-client";
 
 // Access token lifetime is 15 minutes. Show warning at 13 min, force logout at 15.
 const WARNING_AFTER_MS = 13 * 60 * 1000;
@@ -14,7 +15,23 @@ export function SessionTimeout() {
   const lastActivity = useRef(Date.now());
   const timerRef = useRef<ReturnType<typeof setInterval>>();
 
-  const resetTimer = useCallback(() => {
+  const resetTimer = useCallback(async () => {
+    try {
+      const { refresh } = getStoredTokens();
+      if (refresh) {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/auth/refresh`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ refreshToken: refresh }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          storeTokens(data.accessToken, data.refreshToken);
+        }
+      }
+    } catch {
+      // refresh failed, timer will force logout soon anyway
+    }
     lastActivity.current = Date.now();
     setShowWarning(false);
     setCountdown(0);

@@ -17,7 +17,7 @@ export function RouteGuard({ children, roles }: RouteGuardProps) {
   useEffect(() => {
     if (isLoading) return;
     if (!isAuthenticated) {
-      router.replace("/login");
+      router.replace(`/login?next=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
     if (roles && user && !roles.includes(user.role)) {

@@ -176,7 +176,7 @@ export default function TicketDetailPage() {
 
   // Assign form
   const [assigneeSearch, setAssigneeSearch] = useState("");
-  const [users, setUsers] = useState<Array<{ id: string; first_name: string; last_name: string }>>([]);
+  const [users, setUsers] = useState<Array<{ id: string; name: string }>>([]);
 
   const fetchTicket = useCallback(async () => {
     try {
@@ -263,16 +263,10 @@ export default function TicketDetailPage() {
   const loadUsers = async () => {
     if (users.length > 0) return;
     try {
-      const res = await apiGet<Array<{ id: string; first_name: string; last_name: string }>>("/dispatch/technicians?limit=50");
-      setUsers(res);
+      const res = await apiGet<{ data: Array<{ id: string; name: string }>; pagination: unknown }>("/technicians?limit=50");
+      setUsers(res.data);
     } catch {
-      // try without dispatch prefix
-      try {
-        const res = await apiGet<Array<{ id: string; first_name: string; last_name: string }>>("/technicians?limit=50");
-        setUsers(res);
-      } catch {
-        // ignore
-      }
+      // ignore
     }
   };
 
@@ -679,7 +673,7 @@ export default function TicketDetailPage() {
                 .filter(
                   (u) =>
                     !assigneeSearch ||
-                    `${u.first_name} ${u.last_name}`.toLowerCase().includes(assigneeSearch.toLowerCase()),
+                    u.name.toLowerCase().includes(assigneeSearch.toLowerCase()),
                 )
                 .map((u) => (
                   <button
@@ -688,7 +682,7 @@ export default function TicketDetailPage() {
                     className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-50"
                   >
                     <User className="h-4 w-4 text-slate-400" />
-                    {u.first_name} {u.last_name}
+                    {u.name}
                   </button>
                 ))}
               {users.length === 0 && (

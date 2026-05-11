@@ -1,12 +1,15 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { ApiClientError } from "@/lib/api-client";
 import { Wind } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
   const { login, isLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,6 +19,8 @@ export default function LoginPage() {
     setError("");
     try {
       await login(email, password);
+      const next = searchParams.get("next") || "/";
+      router.push(next);
     } catch (err) {
       if (err instanceof ApiClientError) {
         setError(err.body.error || "Invalid credentials");
@@ -115,5 +120,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
