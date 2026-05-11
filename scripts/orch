@@ -926,7 +926,9 @@ cmd_spawn() {
   pane_id=$(tmux split-window -h -P -F '#{pane_index}' "cd '$abs_path' && openclaude --dangerously-skip-permissions")
 
   # Store pane→worktree mapping
-  echo "${pane_id}:${abs_path}:${branch_name}" >> "/tmp/orch-worktrees-${PROJECT_NAME}.txt"
+  local wt_file="/tmp/orch-worktrees-${PROJECT_NAME}.txt"
+  grep -v "^${pane_id}:" "$wt_file" 2>/dev/null > "${wt_file}.tmp" && mv "${wt_file}.tmp" "$wt_file" || true
+  echo "${pane_id}:${abs_path}:${branch_name}" >> "$wt_file"
 
   echo "Spawned CC in pane $pane_id"
   echo "  worktree: $wt_path"
