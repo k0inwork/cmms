@@ -445,57 +445,128 @@ async function main() {
   // ─── Evidence Items (40) ────────────────────────────────────────────────
   mkdirSync("uploads", { recursive: true });
 
-  function generatePlaceholderJpg(w: number, h: number): Buffer {
-    // Minimal valid JPEG: SOI + APP0 + SOF0 + DHT + SOS + EOI
-    // Instead, create a minimal 1x1 BMP converted to a simple colored PNG-like approach
-    // We'll use a minimal valid JPEG binary
-    const gray = 180;
-    const y = Math.round(gray * 255 / 100);
-    // Build a minimal JPEG
-    const buf = Buffer.from([
-      0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46, 0x49, 0x46, 0x00,
-      0x01, 0x01, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0xFF, 0xDB,
-      0x00, 0x43, 0x00, 0x08, 0x06, 0x06, 0x07, 0x06, 0x05, 0x08, 0x07,
-      0x07, 0x07, 0x09, 0x09, 0x08, 0x0A, 0x0C, 0x14, 0x0D, 0x0C, 0x0B,
-      0x0B, 0x0C, 0x19, 0x12, 0x13, 0x0F, 0x14, 0x1D, 0x1A, 0x1F, 0x1E,
-      0x1D, 0x1A, 0x1C, 0x1C, 0x20, 0x24, 0x2E, 0x27, 0x20, 0x22, 0x2C,
-      0x23, 0x1C, 0x1C, 0x28, 0x37, 0x29, 0x2C, 0x30, 0x31, 0x34, 0x34,
-      0x34, 0x1F, 0x27, 0x39, 0x3D, 0x38, 0x32, 0x3C, 0x2E, 0x33, 0x34,
-      0x32, 0xFF, 0xC0, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01,
-      0x01, 0x11, 0x00, 0xFF, 0xC4, 0x00, 0x1F, 0x00, 0x00, 0x01, 0x05,
-      0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-      0x09, 0x0A, 0x0B, 0xFF, 0xDA, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00,
-      0x3F, 0x00, 0x7B, 0x94, 0x18, 0x00, 0x00, 0x00, 0xFF, 0xD9,
-    ]);
-    return buf;
+  // Minimal PNG encoder — creates an uncompressed RGBA PNG
+  function createPng(width: number, height: number, rgba: (x: number, y: number) => [number, number, number, number]): Buffer {
+    const { deflateSync } = require("zlib");
+
+    // Build raw image data: filter byte (0) + RGBA pixels per row
+    const rawRows: Buffer[] = [];
+    for (let y = 0; y < height; y++) {
+      const row = Buffer.alloc(1 + width * 4); // filter byte + RGBA
+      row[0] = 0; // no filter
+      for (let x = 0; x < width; x++) {
+        const [r, g, b, a] = rgba(x, y);
+        const off = 1 + x * 4;
+        row[off] = r; row[off + 1] = g; row[off + 2] = b; row[off + 3] = a;
+      }
+      rawRows.push(row);
+    }
+    const raw = Buffer.concat(rawRows);
+    const compressed = deflateSync(raw);
+
+    // PNG signature
+    const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+
+    function chunk(type: string, data: Buffer): Buffer {
+      const len = Buffer.alloc(4);
+      len.writeUInt32BE(data.length);
+      const typeB = Buffer.from(type);
+      const crcData = Buffer.concat([typeB, data]);
+      const crc = Buffer.alloc(4);
+      crc.writeUInt32BE(require("zlib").crc32(crcData) >>> 0);
+      return Buffer.concat([len, typeB, data, crc]);
+    }
+
+    // IHDR
+    const ihdr = Buffer.alloc(13);
+    ihdr.writeUInt32BE(width, 0);
+    ihdr.writeUInt32BE(height, 4);
+    ihdr[8] = 8;  // bit depth
+    ihdr[9] = 6;  // color type: RGBA
+    ihdr[10] = 0; // compression
+    ihdr[11] = 0; // filter
+    ihdr[12] = 0; // interlace
+
+    return Buffer.concat([sig, chunk("IHDR", ihdr), chunk("IDAT", compressed), chunk("IEND", Buffer.alloc(0))]);
   }
 
-  const placeholderJpg = generatePlaceholderJpg(800, 600);
-  const placeholderThumb = generatePlaceholderJpg(200, 150);
+  function generatePhoto(index: number): Buffer {
+    // Colored gradient photo placeholder
+    const colors: [number, number, number][] = [
+      [41, 128, 185], [39, 174, 96], [192, 57, 43], [142, 68, 173],
+      [243, 156, 18], [22, 160, 133], [44, 62, 80], [211, 84, 0],
+    ];
+    const [br, bg, bb] = colors[index % colors.length];
+    return createPng(640, 480, (x, y) => {
+      const t = (x + y) / (640 + 480);
+      return [
+        Math.round(br * (1 - t * 0.3)),
+        Math.round(bg * (1 - t * 0.3)),
+        Math.round(bb * (1 - t * 0.3)),
+        255,
+      ];
+    });
+  }
+
+  function generateThumbnail(mediaType: string, index: number): Buffer {
+    // Colored thumbnail with type badge
+    const colors: [number, number, number][] = [
+      [52, 152, 219], [46, 204, 113], [231, 76, 60], [155, 89, 182],
+      [241, 196, 15], [26, 188, 156], [52, 73, 94], [230, 126, 34],
+    ];
+    const [br, bg, bb] = colors[index % colors.length];
+    const w = 320, h = 180;
+
+    // Badge position (centered)
+    const bx1 = Math.floor(w * 0.35), bx2 = Math.floor(w * 0.65);
+    const by1 = Math.floor(h * 0.38), by2 = Math.floor(h * 0.62);
+
+    return createPng(w, h, (x, y) => {
+      // Gradient background
+      const t = (x + y) / (w + h);
+      let r = Math.round(br * (1 - t * 0.4));
+      let g = Math.round(bg * (1 - t * 0.4));
+      let b = Math.round(bb * (1 - t * 0.4));
+
+      // White rounded badge in center
+      const cx = (bx1 + bx2) / 2, cy = (by1 + by2) / 2;
+      const rw = (bx2 - bx1) / 2, rh = (by2 - by1) / 2;
+      const dx = (x - cx) / rw, dy = (y - cy) / rh;
+      if (dx * dx + dy * dy <= 1) {
+        // Inside ellipse: white with slight transparency
+        const alpha = dx * dx + dy * dy;
+        if (alpha > 0.85) {
+          // border ring
+          return [255, 255, 255, 230];
+        }
+        return [255, 255, 255, 200];
+      }
+
+      return [r, g, b, 255];
+    });
+  }
 
   for (let i = 0; i < 40; i++) {
     const uploader = pick(allUsers);
     const mediaType = pick(["PHOTO", "VIDEO", "PHOTO", "PHOTO", "PDF"] as const);
     const isPhoto = mediaType === "PHOTO";
-    const fileName = isPhoto ? `evidence_${i + 1}.jpg` : mediaType === "VIDEO" ? `evidence_${i + 1}.mp4` : `evidence_${i + 1}.pdf`;
-    const thumbName = `thumb_evidence_${i + 1}.jpg`;
-    const hasThumb = isPhoto && Math.random() > 0.3;
+    const fileName = isPhoto ? `evidence_${i + 1}.png` : mediaType === "VIDEO" ? `evidence_${i + 1}.mp4` : `evidence_${i + 1}.pdf`;
+    const thumbName = `thumb_evidence_${i + 1}.png`;
 
-    // Write actual placeholder files for photos
+    // Write actual placeholder files
     if (isPhoto) {
-      writeFileSync(`uploads/${fileName}`, placeholderJpg);
-      if (hasThumb) writeFileSync(`uploads/${thumbName}`, placeholderThumb);
+      writeFileSync(`uploads/${fileName}`, generatePhoto(i));
     }
+    writeFileSync(`uploads/${thumbName}`, generateThumbnail(mediaType, i));
 
     await prisma.evidenceItem.create({
       data: {
         media_type: mediaType,
         status: pick(["PENDING", "APPROVED", "APPROVED", "APPROVED"] as const),
         file_url: `/uploads/${fileName}`,
-        thumbnail_url: hasThumb ? `/uploads/${thumbName}` : null,
+        thumbnail_url: `/uploads/${thumbName}`,
         file_size_bytes: 500_000 + Math.floor(Math.random() * 4_500_000),
-        mime_type: pick(["image/jpeg", "image/png", "video/mp4", "application/pdf"]),
+        mime_type: isPhoto ? "image/png" : mediaType === "VIDEO" ? "video/mp4" : "application/pdf",
         uploaded_by: uploader.id,
         description: Math.random() > 0.4 ? faker.lorem.sentence() : null,
         created_at: daysAgo(1, 90),
