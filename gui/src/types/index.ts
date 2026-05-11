@@ -120,7 +120,7 @@ export type TicketStatus =
   | "REOPENED";
 
 export type Priority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-export type Severity = "COSMETIC" | "MINOR" | "MAJOR" | "CRITICAL" | "SAFETY";
+export type Severity = "COSMETIC" | "MINOR" | "MAJOR" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" | "SAFETY";
 
 export interface Ticket {
   id: string;
@@ -138,6 +138,7 @@ export interface TicketUser {
   id: string;
   first_name: string;
   last_name: string;
+  email: string;
 }
 
 export interface TicketEvidence {
@@ -153,31 +154,28 @@ export interface TicketEvidenceLink {
 
 export interface TicketAuditEvent {
   id: string;
-  userName?: string;
   action: string;
+  performed_by: string;
+  userName?: string;
+  performer?: TicketUser;
   timestamp: string;
+  created_at: string;
+  changes?: Record<string, unknown>;
 }
 
-export interface TicketDetail {
-  id: string;
-  title: string;
-  description: string;
-  priority: Priority;
-  status: TicketStatus;
+export interface TicketDetail extends Ticket {
   severity?: Severity;
   resolution_notes?: string;
   root_cause?: string;
-  due_date?: string;
   sla_target_date?: string;
+  due_date?: string;
   closed_at?: string;
-  created_at: string;
-  updated_at: string;
-  assignee: TicketUser | null;
-  creator: TicketUser;
   turbine: { id: string; name: string } | null;
   component: { id: string; name: string } | null;
+  assignee: TicketUser | null;
+  creator: TicketUser;
   defect: { id: string; severity: string; description: string } | null;
-  ticket_evidence: TicketEvidenceLink[];
+  ticket_evidence: { id: string; evidence: { media_type: string; file_url: string; thumbnail_url: string | null; description: string | null } }[];
   audit_events: TicketAuditEvent[];
 }
 
@@ -249,6 +247,7 @@ export interface EvidenceAnnotation {
 }
 
 // ─── Admin ──────────────────────────────────────────────────────────────────────
+// ─── Dispatch ───────────────────────────────────────────────────────────────
 
 export type TechnicianStatus =
   | "AVAILABLE"
@@ -405,4 +404,100 @@ export interface TechnicianProductivityReport {
     work_orders_completed: number;
     inspections_completed: number;
   }[];
+}
+
+export interface TechnicianListItem {
+  id: string;
+  name: string;
+  email: string;
+  status: TechnicianStatus;
+  skills: { id: string; name: string; proficiencyLevel: string | null }[];
+  certifications: { id: string; name: string; isValid: boolean }[];
+  activeAssignments: number;
+  lastStatusChange: string;
+}
+
+export interface CoverageTechnician {
+  id: string;
+  name: string;
+  status: string;
+  assignments: { id: string; type: "INSPECTION" | "WORK_ORDER"; title: string | null }[];
+  coverageGaps: unknown[];
+}
+
+export interface CoverageResponse {
+  date: string;
+  siteId: string | null;
+  technicians: CoverageTechnician[];
+  gaps: unknown[];
+}
+
+export interface SlaRiskItem {
+  id: string;
+  type: "TICKET" | "WORK_ORDER";
+  title: string;
+  assigneeId: string | null;
+  assigneeName: string | null;
+  slaTarget: string | null;
+  slaRemainingMs: number;
+  riskLevel: "CRITICAL" | "HIGH" | "MEDIUM";
+}
+
+export interface SlaRiskResponse {
+  atRisk: SlaRiskItem[];
+}
+
+export interface Assignment {
+  id: string;
+  status: string;
+  assignedAt: string;
+  acceptedAt: string | null;
+  type: "INSPECTION" | "WORK_ORDER";
+  reference: { id: string; status: string; title?: string } | null;
+}
+
+export interface AbsenceRecord {
+  id: string;
+  user_id: string;
+  reason: "SICK" | "PERSONAL_LEAVE" | "TRAINING" | "VACATION" | "OTHER";
+  start_date: string;
+  expected_return_date: string | null;
+  notes: string | null;
+  is_approved: boolean;
+  created_at: string;
+}
+
+export interface AbsenceResponse {
+  id: string;
+  technicianId: string;
+  reason: string;
+  startDate: string;
+  expectedReturnDate: string | null;
+  approvalStatus: string;
+  affectedAssignments: number;
+  replacementSuggestionsAvailable: boolean;
+}
+
+export interface ReplacementCandidate {
+  technicianId: string;
+  name: string;
+  totalScore: number;
+  scoreBreakdown: {
+    skillMatch: number;
+    certificationMatch: number;
+    proximity: number;
+    workloadCapacity: number;
+    siteFamiliarity: number;
+  };
+  currentStatus: string;
+  currentAssignments: number;
+  isAboveThreshold: boolean;
+}
+
+export interface ReplacementSuggestionsResponse {
+  absentTechnicianId: string;
+  absenceId: string | null;
+  affectedAssignments: { id: string; type: string; title: string | null }[];
+  candidates: ReplacementCandidate[];
+  escalationRequired: boolean;
 }
