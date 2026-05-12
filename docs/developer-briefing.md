@@ -36,8 +36,9 @@ EAM depth    → track long-term turbine health across the fleet
 | **QA Reviewer** | Validates inspection quality, approves reports. |
 | **Dispatcher / Planner** | Assigns work, handles substitutions, optimizes schedules. |
 | **Operations Manager** | Monitors fleet status, SLA risk, workforce coverage. |
-| **Customer User** | Views approved reports and case summaries (read-only). |
 | **Admin** | Manages templates, roles, master data, workflow rules. |
+
+> **Phase 2+:** Customer User (read-only reports), HR/Workforce Coordinator (absences, qualifications).
 
 ---
 
@@ -45,39 +46,29 @@ EAM depth    → track long-term turbine health across the fleet
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    React Web App                         │
-│         (Admin Portal, Dispatch Board, Dashboard)        │
+│              Next.js 14 Web App (App Router)              │
+│       (Admin Portal, Dispatch Board, Dashboard)          │
 └──────────────────────┬──────────────────────────────────┘
-                       │ REST + WebSocket
+                       │ REST API
 ┌──────────────────────┴──────────────────────────────────┐
-│              API Server (TypeScript / Node.js)           │
-│                 Fastify or NestJS                        │
+│              API Server (TypeScript / Hono)              │
 │    ┌──────────┬───────────┬──────────┬───────────────┐  │
 │    │ Auth     │ Assets    │ Tickets  │ Workforce     │  │
-│    │ (Keycloak)│ (CRUD)   │ (Lifecycle)│ (Skills, Abs) │  │
+│    │ (JWT)    │ (CRUD)    │(Lifecycle)│ (Skills, Abs)│  │
 │    └──────────┴───────────┴──────────┴───────────────┘  │
 │    ┌──────────┬───────────┬──────────┬───────────────┐  │
 │    │ Evidence │ Inspect.  │ Sync     │ Reporting     │  │
-│    │ (S3)     │ Templates │ Engine   │ (PDF Export)  │  │
+│    │ (URLs)   │ Templates │ Engine   │ (CSV Export)  │  │
 │    └──────────┴───────────┴──────────┴───────────────┘  │
-└────────┬────────────────┬────────────────┬──────────────┘
-         │                │                │
-    ┌────┴────┐    ┌──────┴──────┐   ┌────┴────┐
-    │PostgreSQL│    │ S3/MinIO   │   │  Redis  │
-    │(Primary) │    │(Media Files)│   │(Queues) │
-    └─────────┘    └─────────────┘   └─────────┘
+└──────────────────────┬──────────────────────────────────┘
+                       │
+                  ┌────┴────┐
+                  │PostgreSQL│
+                  │(Primary) │
+                  └─────────┘
 
-┌─────────────────────────────────────────────────────────┐
-│         React PWA (Service Worker + IndexedDB)           │
-│  • Installable to home screen, single codebase with web  │
-│  • Reads/writes locally at all times                     │
-│  • Tracks sync status per record                         │
-│  • Queues operations when offline via Service Worker     │
-│  • Two-way sync via REST + delta endpoints               │
-│                                                         │
-│  Phase 3: React Native + Expo + WatermelonDB (SQLite)   │
-│  • Background sync, push notifications, native hardware  │
-└─────────────────────────────────────────────────────────┘
+Phase 2+: Real-time (WebSocket/SSE), File storage (S3/MinIO), Task queue (Redis/BullMQ)
+Phase 3+: React Native + Expo + WatermelonDB (SQLite) — background sync, push, native hardware
 ```
 
 ---
@@ -107,25 +98,23 @@ Inspection Record
   ├── → Template (JSON schema)
   ├── → Technician (User)
   ├── → Turbine / Component
-  ├── Measurements
+  ├── InspectionFieldData
   ├── Defects
-  └── Attachments (evidence)
+  └── EvidenceItems
 
 Work Order
   ├── → Turbine / Component
   ├── → Assignee (User)
   ├── Tickets
   │     ├── → Defect
-  │     ├── Attachments
-  │     ├── Approvals
+  │     ├── TicketEvidence
   │     └── Audit Events
-  └── Attachments
+  └── WorkOrderEvidence
 
-Attachment (Evidence)
-  ├── → Inspection or Work Order or Ticket
-  ├── → Turbine / Component
+EvidenceItem
+  ├── → Inspection or Work Order or Ticket (via junction tables)
   ├── → Author (User)
-  ├── media_type, sync_status, approval_status
+  ├── media_type, sync_status
   └── versioned (never deleted, superseded)
 ```
 
@@ -282,10 +271,9 @@ Critical defects (severity = critical) trigger automatic escalation rules and no
 
 - **REST-first.** Resources map to entities. Standard HTTP methods.
 - **Delta sync endpoints.** `GET /sync/changes?since=<timestamp>` returns only records changed since last sync.
-- **Presigned upload URLs.** `POST /evidence/upload-url` returns an S3 presigned URL. Client uploads directly.
-- **WebSocket events.** Assignment changes, ticket status updates, sync notifications pushed in real-time.
 - **Webhook events.** For external integrations (ERP, CRM, BI tools). Key lifecycle events fire webhooks.
 - **Idempotency keys.** Every write operation accepts an `X-Idempotency-Key` header. Server deduplicates.
+- **Phase 2+:** Presigned upload URLs (`POST /evidence/upload-url` → S3), WebSocket events (assignment changes, ticket status updates pushed in real-time).
 
 ---
 
@@ -293,17 +281,19 @@ Critical defects (severity = critical) trigger automatic escalation rules and no
 
 | Layer | Choice | Why |
 |---|---|---|
-| API | TypeScript + Node.js (Fastify or NestJS) | Strong typing, large ecosystem |
+| API | TypeScript + Hono | Lightweight, type-safe, edge-ready |
 | Database | PostgreSQL | Relational integrity, JSONB for flexible form data, full-text search |
-| ORM | Prisma or Drizzle | Type-safe queries, migrations, schema-as-code |
-| File storage | S3-compatible (MinIO or AWS S3) | Large media, presigned uploads |
-| Frontend + field app | React + Vite PWA (Service Worker + IndexedDB) | Single codebase, installable to home screen, offline via IndexedDB |
-| Native mobile app | React Native + Expo (Phase 3) | Background sync, push, native hardware; deferred from MVP |
-| Auth | Keycloak | RBAC, SSO, multi-tenant |
-| Real-time | WebSocket (Socket.IO) | Live status updates |
-| Task queue | BullMQ + Redis | Background jobs: reports, notifications, sync |
-| Search | PostgreSQL FTS + optional Meilisearch | Fast filtering |
+| ORM | Prisma | Type-safe queries, migrations, schema-as-code |
+| Frontend + field app | Next.js 14 App Router + Tailwind CSS | SSR, responsive, file-based routing |
+| Native mobile app | React Native + Expo (Phase 3+) | Background sync, push, native hardware; deferred from MVP |
+| Auth | Custom JWT (access 15m + refresh 7d with rotation) | RBAC, organization-scoped, refresh token rotation |
+| Real-time | Phase 2+ (WebSocket / Server-Sent Events) | Live status updates; not in MVP |
+| File storage | Phase 2+ (S3-compatible) | Large media, presigned uploads |
+| Task queue | Phase 2+ (BullMQ + Redis) | Background jobs: reports, notifications, sync |
+| Search | PostgreSQL FTS | Fast filtering |
 | CI/CD | GitHub Actions | Automated test, lint, build, deploy |
+| Infrastructure | Docker Compose (3 services: API, PostgreSQL, pgAdmin) | Scales from MVP to multi-site |
+| Testing | Vitest (mock-first London School) | Unit + integration tests |
 
 ---
 
@@ -332,11 +322,11 @@ These are Phase 4+ items. The MVP must nail offline inspections, ticketing, and 
 
 ## Key Constraints for Developers
 
-1. **Offline is not optional.** Every field screen must work without network. Design for zero connectivity first. MVP uses Service Worker + IndexedDB (PWA). Native mobile with WatermelonDB comes in Phase 3.
+1. **Offline is not optional.** Every field screen must work without network. Design for zero connectivity first. MVP uses responsive Next.js web app; offline PWA capabilities and native mobile with WatermelonDB come in Phase 2+.
 2. **Idempotent writes.** Every mutation must be safe to replay. Use operation IDs.
 3. **Safety data is sacred.** LOTO, permit-to-work, and safety statuses use strict versioning. No last-write-wins.
 4. **Asset naming follows standards.** IEC 61400-25 and RDS-PP. Don't invent your own naming scheme.
 5. **Evidence is immutable.** Once captured, original files are never modified. Annotations are separate.
 6. **Audit trail is append-only.** Never delete or modify audit events.
 7. **Multi-tenant from day one.** Every query scoped by `organization_id`. Row-level security in PostgreSQL.
-8. **File uploads bypass the API.** Presigned S3 URLs. The API only stores metadata.
+8. **File uploads bypass the API.** Phase 2+: Presigned S3 URLs. MVP stores evidence as URLs only.

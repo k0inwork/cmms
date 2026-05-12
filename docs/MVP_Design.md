@@ -1,8 +1,8 @@
 # MVP Design Document
 
 ## Design principles
-- Offline-first. Briefcase sync model: pre-load curated data before site visits, reconcile on return. MVP uses IndexedDB + Service Worker (PWA). Native mobile app (React Native + WatermelonDB) deferred to Phase 3.
-- Mobile-first PWA. Large buttons, minimal typing, camera-first evidence capture via browser APIs.
+- Offline-first. Briefcase sync model: pre-load curated data before site visits, reconcile on return. MVP is a responsive Next.js 14 web app; offline PWA capabilities and native mobile app (React Native + WatermelonDB) deferred to Phase 2+.
+- Mobile-first responsive design. Large buttons, minimal typing, camera-first evidence capture via browser APIs.
 - Structured data before unstructured notes.
 - Evidence tied to records, not stored separately.
 - Simple workflows over feature-heavy screens.
@@ -19,11 +19,11 @@ This is a Hybrid Service-Asset Platform combining:
 Architectural decisions must serve all three dimensions.
 
 ## Main modules
-### Mobile PWA (MVP)
-Used by technicians for inspections, evidence capture, and status updates. Works fully offline via Service Worker + IndexedDB. Installable to home screen. Single React codebase shared with the web portal.
+### Responsive Web App (MVP)
+Used by technicians for inspections, evidence capture, and status updates. Next.js 14 App Router with Tailwind CSS. Works on desktop and mobile browsers. Phase 2+: offline PWA capabilities.
 
 ### Admin web portal
-Used to manage assets, users, forms, skills, and workflow rules. Shares the same React codebase as the field PWA.
+Shares the same Next.js 14 codebase as the field app. Used to manage assets, users, forms, skills, and workflow rules.
 
 ### Dispatch board
 Used by planners to manage assignments, absences, and replacements.
@@ -36,7 +36,7 @@ Used to monitor open issues, coverage gaps, and aging tickets. KPIs include tick
 
 ## Key screens
 - Login.
-- Technician home (with offline/sync status indicator; PWA installable to home screen).
+- Technician home (with offline/sync status indicator; responsive web, Phase 2+: PWA installable to home screen).
 - Assigned inspections (pre-loaded for offline use).
 - Inspection form (rendered dynamically from template schema).
 - Evidence viewer (with annotation support).

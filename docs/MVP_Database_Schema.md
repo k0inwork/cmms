@@ -1291,11 +1291,11 @@ Each turbine gets 5 subsystems:
 
 | Name | Email | Role |
 |---|---|---|
-| Jan Technician | jan.tech@aerowind.dev | TECHNICIAN |
-| Anna Dispatcher | anna.dispatch@aerowind.dev | DISPATCHER |
-| Max QA | max.qa@aerowind.dev | QA_REVIEWER |
-| Sarah Ops | sarah.ops@aerowind.dev | OPERATIONS_MANAGER |
-| Admin User | admin@aerowind.dev | ADMINISTRATOR |
+| Jan Technician | jan.tech@cmms.test | TECHNICIAN |
+| Anna Dispatcher | anna.dispatch@cmms.test | DISPATCHER |
+| Max QA | max.qa@cmms.test | QA_REVIEWER |
+| Sarah Ops | sarah.ops@cmms.test | OPERATIONS_MANAGER |
+| Admin User | admin@cmms.test | ADMINISTRATOR |
 
 All passwords: use a known test hash (e.g., bcrypt of `password123`).
 

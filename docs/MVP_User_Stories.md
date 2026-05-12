@@ -227,7 +227,7 @@ Roles: Technician, Dispatcher, QA Reviewer, Operations Manager, Administrator
 - Upload progress is visible.
 - Failed uploads are retried automatically.
 
-### US-EVID-04: View and annotate evidence
+### US-EVID-04: View and annotate evidence *(Phase 2+)*
 **As a** user, **I want to** view evidence items and add annotations **so that** I can highlight defect locations and add context.
 
 **Acceptance criteria:**
@@ -244,7 +244,7 @@ Roles: Technician, Dispatcher, QA Reviewer, Operations Manager, Administrator
 - Results show thumbnails with metadata.
 - Clicking a result opens the full evidence item with context (linked records).
 
-### US-EVID-06: Evidence versioning
+### US-EVID-06: Evidence versioning *(Phase 2+)*
 **As a** user, **I want to** see the version history of evidence items **so that** I can track changes and annotations over time.
 
 **Acceptance criteria:**
@@ -545,7 +545,7 @@ Roles: Technician, Dispatcher, QA Reviewer, Operations Manager, Administrator
 - If offline, submission is queued for sync.
 - Success confirmation is shown.
 
-### US-MOB-04: Scan a QR code to identify an asset
+### US-MOB-04: Scan a QR code to identify an asset *(Phase 2+)*
 **As a** technician, **I want to** scan a QR code on a turbine or component **so that** I can quickly open the right asset and report issues.
 
 **Acceptance criteria:**
@@ -561,7 +561,7 @@ Roles: Technician, Dispatcher, QA Reviewer, Operations Manager, Administrator
 - Summary view shows count of pending and failed syncs.
 - Failed records have a retry action.
 
-### US-MOB-06: Install the PWA to my home screen
+### US-MOB-06: Install the PWA to my home screen *(Phase 2+)*
 **As a** technician, **I want to** install the app to my phone's home screen **so that** it feels like a native app.
 
 **Acceptance criteria:**
@@ -599,7 +599,7 @@ Roles: Technician, Dispatcher, QA Reviewer, Operations Manager, Administrator
 - Admin can set escalation rules for critical-priority tickets.
 - Admin can configure notification triggers for key events.
 
-### US-ADMIN-04: Build inspection templates
+### US-ADMIN-04: Build inspection templates *(Phase 2+)*
 **As an** administrator, **I want to** use a template builder to create and edit inspection forms **so that** I don't need developer help to change forms.
 
 **Acceptance criteria:**
@@ -628,7 +628,7 @@ Roles: Technician, Dispatcher, QA Reviewer, Operations Manager, Administrator
 - Failed syncs are queued and retried with exponential backoff.
 - Sync events are logged for traceability.
 
-### US-NFR-03: Secure mobile storage
+### US-NFR-03: Secure mobile storage *(Phase 2+)*
 **As a** technician, **I want to** my locally cached data to be secure **so that** sensitive information is not exposed if I lose my device.
 
 **Acceptance criteria:**

@@ -327,13 +327,13 @@ const modules = [
       { id: 'EVID-03', title: 'Upload files as evidence', roles: ['tech'], wireframe: 'mobile-inspection-form',
         asA: 'technician', action: 'upload existing files (PDFs, images, documents)', value: 'I can attach pre-existing documentation',
         criteria: ['File picker supports JPEG, PNG, MP4, PDF formats', 'Files are linked to the current inspection, asset, and ticket', 'Upload progress is visible', 'Failed uploads are retried automatically'] },
-      { id: 'EVID-04', title: 'View and annotate evidence', roles: ['multi'], wireframe: 'mobile-evidence-viewer',
+      { id: 'EVID-04', title: 'View and annotate evidence (Phase 2+)', roles: ['multi'], wireframe: 'mobile-evidence-viewer',
         asA: 'user', action: 'view evidence items and add annotations', value: 'I can highlight defect locations and add context',
         criteria: ['Evidence viewer displays the media with zoom and pan', 'Annotation tools allow markup on images (arrows, circles, text labels)', 'Annotations are saved as separate overlay data, not baked into the original', 'Annotations are visible to all users who can view the evidence'] },
       { id: 'EVID-05', title: 'Search the evidence library', roles: ['multi'], wireframe: 'desktop-evidence-library',
         asA: 'user', action: 'search for evidence by asset, site, date, or type', value: 'I can reuse evidence across tickets and reports',
         criteria: ['Search supports filtering by asset ID, site, turbine, component, inspection ID, ticket ID, date range, media type, and author', 'Results show thumbnails with metadata', 'Clicking a result opens the full evidence item with context'] },
-      { id: 'EVID-06', title: 'Evidence versioning', roles: ['multi'], wireframe: 'mobile-evidence-viewer',
+      { id: 'EVID-06', title: 'Evidence versioning (Phase 2+)', roles: ['multi'], wireframe: 'mobile-evidence-viewer',
         asA: 'user', action: 'see the version history of evidence items', value: 'I can track changes and annotations over time',
         criteria: ['Each evidence item has a version history showing upload, annotation, and approval events', 'Original file is always preserved; annotations are separate', 'Version history includes author and timestamp for each change'] }
     ]
@@ -474,13 +474,13 @@ const modules = [
       { id: 'MOB-03', title: 'Complete an inspection from my phone', roles: ['tech'], wireframe: 'mobile-inspection-form',
         asA: 'technician', action: 'complete and submit an inspection from my phone', value: 'I can move to the next task',
         criteria: ['Submit button validates all required fields', 'Completion time is recorded automatically', 'If offline, submission is queued for sync', 'Success confirmation is shown'] },
-      { id: 'MOB-04', title: 'Scan a QR code to identify an asset', roles: ['tech'], wireframe: 'mobile-qr-scanner',
+      { id: 'MOB-04', title: 'Scan a QR code to identify an asset (Phase 2+)', roles: ['tech'], wireframe: 'mobile-qr-scanner',
         asA: 'technician', action: 'scan a QR code on a turbine or component', value: 'I can quickly open the right asset and report issues',
         criteria: ['Camera opens from any screen via QR scan button', 'Scanned code resolves to the correct asset in the hierarchy', 'Technician can start an inspection or create a ticket directly from the scanned asset'] },
       { id: 'MOB-05', title: 'View sync status of my records', roles: ['tech'], wireframe: 'mobile-sync-status',
         asA: 'technician', action: 'see which of my records are synced, pending, or failed', value: 'I know my data is safe',
         criteria: ['Sync status indicator on every record (pending, synced, failed, conflict)', 'Summary view shows count of pending and failed syncs', 'Failed records have a retry action'] },
-      { id: 'MOB-06', title: 'Install the PWA to my home screen', roles: ['tech'], wireframe: null,
+      { id: 'MOB-06', title: 'Install the PWA to my home screen (Phase 2+)', roles: ['tech'], wireframe: null,
         asA: 'technician', action: 'install the app to my phone\'s home screen', value: 'it feels like a native app',
         criteria: ['Browser prompts "Add to Home Screen"', 'Installed app opens in fullscreen mode (no browser chrome)', 'App icon and splash screen match branding'] }
     ]
@@ -498,7 +498,7 @@ const modules = [
       { id: 'ADMIN-03', title: 'Configure workflow rules', roles: ['admin'], wireframe: 'desktop-admin-workflow',
         asA: 'administrator', action: 'configure ticket lifecycle states and escalation rules', value: 'workflows match our processes',
         criteria: ['Admin can define which status transitions are allowed', 'Admin can set escalation rules for critical-priority tickets', 'Admin can configure notification triggers for key events'] },
-      { id: 'ADMIN-04', title: 'Build inspection templates', roles: ['admin'], wireframe: 'desktop-admin-template-builder',
+      { id: 'ADMIN-04', title: 'Build inspection templates (Phase 2+)', roles: ['admin'], wireframe: 'desktop-admin-template-builder',
         asA: 'administrator', action: 'use a template builder to create and edit inspection forms', value: 'I don\'t need developer help to change forms',
         criteria: ['Drag-and-drop form builder with supported field types', 'Preview mode shows the form as the technician would see it', 'Templates can be scoped by inspection type, turbine model, customer, or site'] }
     ]
@@ -513,7 +513,7 @@ const modules = [
       { id: 'NFR-02', title: 'Data integrity during sync', roles: ['tech'], wireframe: null,
         asA: 'technician', action: 'never lose my captured data even if sync fails', value: 'my field work is never wasted',
         criteria: ['Local data in IndexedDB persists across app restarts', 'Failed syncs are queued and retried with exponential backoff', 'Sync events are logged for traceability'] },
-      { id: 'NFR-03', title: 'Secure mobile storage', roles: ['tech'], wireframe: null,
+      { id: 'NFR-03', title: 'Secure mobile storage (Phase 2+)', roles: ['tech'], wireframe: null,
         asA: 'technician', action: 'have my locally cached data be secure', value: 'sensitive information is not exposed if I lose my device',
         criteria: ['Local storage is encrypted at rest', 'Data is scoped to the logged-in user', 'Logout clears session data but preserves encrypted offline cache'] },
       { id: 'NFR-04', title: 'Scalable performance under load', roles: ['ops'], wireframe: null,

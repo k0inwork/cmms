@@ -49,14 +49,10 @@ Assigns work, handles substitutions, and re-optimizes schedules.
 ### Operations manager
 Monitors fleet status, open issues, SLA risk, and workforce coverage.
 
-### Customer user
-Views approved reports, case summaries, and closure evidence.
-
 ### Administrator
 Manages templates, access control, master data, workflow rules, and integrations.
 
-### HR or workforce coordinator
-Maintains absences, shift coverage, and technician qualification records.
+> **Phase 2+:** Customer User (read-only reports), HR/Workforce Coordinator (absences, shift coverage).
 
 ## 6. Scope
 
@@ -502,42 +498,37 @@ Sync Event
 
 | Layer | Technology | Rationale |
 |---|---|---|
-| **API** | TypeScript + Node.js (Fastify or NestJS) | Strong typing, large ecosystem, team familiarity |
+| **API** | TypeScript + Node.js (Hono) | Lightweight, type-safe, fast cold starts, edge-compatible |
 | **Database** | PostgreSQL | Relational integrity, JSONB for flexible form data, full-text search |
-| **ORM** | Prisma or Drizzle | Type-safe queries, migrations, schema-as-code |
-| **File storage** | S3-compatible (MinIO self-hosted or AWS S3) | Large media files, presigned upload URLs, cost-effective |
-| **Frontend + offline field app** | React + Vite PWA (Service Worker + IndexedDB) | Single codebase for web and field use; installable to home screen; offline via Service Worker and IndexedDB |
+| **ORM** | Prisma | Type-safe queries, migrations, schema-as-code |
+| **File storage** | S3-compatible (Phase 2+, MinIO self-hosted or AWS S3) | Large media files, presigned upload URLs; MVP stores URLs only |
+| **Frontend** | Next.js 14 App Router (React + Tailwind CSS) | SSR/SSG, file-based routing, responsive design |
 | **Native mobile app** | React Native + Expo (Phase 3+) | Full native capabilities: background sync, push notifications, hardware access (LiDAR, Bluetooth); deferred from MVP |
-| **Auth** | Keycloak or Auth0 | RBAC, SSO, multi-tenant ready |
-| **Real-time** | WebSocket (Socket.IO or native) | Live status updates, notifications |
-| **Task queue** | BullMQ + Redis | Background jobs: report generation, notifications, sync reconciliation |
-| **Search** | PostgreSQL full-text + optional Meilisearch | Fast filtering on assets, tickets, evidence metadata |
+| **Auth** | Custom JWT (access 15m + refresh 7d with rotation) | Role-based access control, token refresh rotation, organization-scoped |
+| **Real-time** | Phase 2+ (WebSocket / Server-Sent Events) | Live status updates, notifications; not in MVP |
+| **Task queue** | Phase 2+ (BullMQ + Redis) | Background jobs: report generation, notifications, sync reconciliation |
+| **Search** | PostgreSQL full-text search | Fast filtering on assets, tickets, evidence metadata |
 | **CI/CD** | GitHub Actions | Automated test, lint, build, deploy |
-| **Infrastructure** | Docker + Kubernetes or single-server Docker Compose | Scales from MVP to multi-site |
-| **Monitoring** | OpenTelemetry + Grafana | Performance, error tracking, sync health |
+| **Infrastructure** | Docker Compose (3 services: API, PostgreSQL, pgAdmin) | Scales from MVP to multi-site |
+| **Testing** | Vitest (mock-first London School) | Unit + integration tests, 760+ tests |
 
 ### Offline architecture
 
-**MVP (PWA):**
+**MVP (Responsive Web):**
 ```
-PWA (React, installed to home screen)
-  └── Service Worker
-        ├── Caches app shell and static assets
-        ├── Routes API calls through sync-aware fetch layer
-        └── IndexedDB (local storage)
-              ├── Reads/writes locally at all times
-              ├── Tracks sync status per record
-              └── Two-way sync via REST + delta endpoints (triggered on app open)
-                    └── Server (PostgreSQL)
-                          ├── Receives changes, resolves conflicts
-                          ├── Returns updated records since last sync
-                          └── Emits real-time events to connected clients
+Next.js 14 Web App (responsive, works on mobile browsers)
+  └── Server-Side Rendering + Client-Side Navigation
+        ├── Auth via JWT (access + refresh tokens)
+        ├── REST API calls to Hono backend
+        └── Server (PostgreSQL via Prisma)
+              ├── Receives changes, resolves conflicts
+              └── Returns updated records
 ```
 
-**Phase 3+ (Native mobile):**
+**Phase 2+ (Offline-capable PWA or native mobile):**
 ```
-Native App (React Native + Expo)
-  └── WatermelonDB (local SQLite)
+Native App (React Native + Expo) or enhanced PWA
+  └── WatermelonDB (local SQLite) or IndexedDB
         ├── Reads/writes locally at all times
         ├── Tracks sync status per record
         ├── Background sync queue drain
@@ -545,7 +536,7 @@ Native App (React Native + Expo)
               └── Server (PostgreSQL)
 ```
 
-The PWA and native app share the same API layer. Migration to native is a frontend-only concern — no backend changes needed.
+All clients share the same REST API layer. Migration to native is a frontend-only concern — no backend changes needed.
 
 Conflict resolution strategy:
 - **Default**: last-write-wins with server timestamp as authority.

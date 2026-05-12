@@ -171,7 +171,7 @@
 
   <!-- Frontend Layer -->
   <rect x="50" y="10" width="800" height="80" rx="8" fill="url(#gFrontend)" filter="url(#shadow)" stroke="#7ec8e3" stroke-width="1"/>
-  <text x="450" y="35" text-anchor="middle" fill="#7ec8e3" font-size="14" font-weight="bold">React + Vite PWA (MVP)</text>
+  <text x="450" y="35" text-anchor="middle" fill="#7ec8e3" font-size="14" font-weight="bold">Next.js 14 App Router (MVP)</text>
   <rect x="80" y="48" width="150" height="30" rx="5" fill="#1a2a3a" stroke="#4a7a8a" stroke-width="0.5"/>
   <text x="155" y="68" text-anchor="middle" fill="#ccc" font-size="11">Admin Portal</text>
   <rect x="260" y="48" width="170" height="30" rx="5" fill="#1a2a3a" stroke="#4a7a8a" stroke-width="0.5"/>
@@ -185,16 +185,16 @@
   <line x1="300" y1="90" x2="300" y2="120" stroke="#7ec8e3" stroke-width="1.5" marker-end="url(#arrowhead)"/>
   <line x1="600" y1="90" x2="600" y2="120" stroke="#7ec8e3" stroke-width="1.5" marker-end="url(#arrowhead)"/>
   <rect x="370" y="96" width="160" height="18" rx="3" fill="#0d1b2a"/>
-  <text x="450" y="110" text-anchor="middle" fill="#7ec8e3" font-size="10">REST + WebSocket</text>
+  <text x="450" y="110" text-anchor="middle" fill="#7ec8e3" font-size="10">REST API</text>
 
   <!-- API Layer -->
   <rect x="50" y="120" width="800" height="200" rx="8" fill="url(#gApi)" filter="url(#shadow)" stroke="#4a7a8a" stroke-width="1"/>
-  <text x="450" y="145" text-anchor="middle" fill="#7ec8e3" font-size="14" font-weight="bold">API Server — TypeScript / Node.js (Fastify)</text>
+  <text x="450" y="145" text-anchor="middle" fill="#7ec8e3" font-size="14" font-weight="bold">API Server — TypeScript / Hono</text>
 
   <!-- Module Row 1 -->
   <rect x="70" y="158" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
   <text x="155" y="178" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Auth</text>
-  <text x="155" y="200" text-anchor="middle" fill="#888" font-size="9">Keycloak · RBAC</text>
+  <text x="155" y="200" text-anchor="middle" fill="#888" font-size="9">JWT · RBAC</text>
 
   <rect x="255" y="158" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
   <text x="340" y="178" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Assets</text>
@@ -211,7 +211,7 @@
   <!-- Module Row 2 -->
   <rect x="70" y="223" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
   <text x="155" y="243" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Evidence</text>
-  <text x="155" y="265" text-anchor="middle" fill="#888" font-size="9">S3 Uploads · Versioning</text>
+  <text x="155" y="265" text-anchor="middle" fill="#888" font-size="9">URL-based Evidence</text>
 
   <rect x="255" y="223" width="170" height="55" rx="5" fill="url(#gModule)" stroke="#4a7a8a" stroke-width="0.5"/>
   <text x="340" y="243" text-anchor="middle" fill="#ccc" font-size="11" font-weight="bold">Inspection Templates</text>
@@ -236,12 +236,12 @@
   <text x="170" y="420" text-anchor="middle" fill="#888" font-size="10">Primary · RLS · JSONB</text>
 
   <rect x="350" y="375" width="200" height="60" rx="8" fill="url(#gData)" filter="url(#shadow)" stroke="#a080d0" stroke-width="1"/>
-  <text x="450" y="400" text-anchor="middle" fill="#a080d0" font-size="13" font-weight="bold">S3 / MinIO</text>
-  <text x="450" y="420" text-anchor="middle" fill="#888" font-size="10">Media · Presigned URLs</text>
+  <text x="450" y="400" text-anchor="middle" fill="#a080d0" font-size="13" font-weight="bold">PostgreSQL (Prisma)</text>
+  <text x="450" y="420" text-anchor="middle" fill="#888" font-size="10">ORM · Migrations · Schema</text>
 
   <rect x="630" y="375" width="200" height="60" rx="8" fill="url(#gData)" filter="url(#shadow)" stroke="#a080d0" stroke-width="1"/>
-  <text x="730" y="400" text-anchor="middle" fill="#a080d0" font-size="13" font-weight="bold">Redis</text>
-  <text x="730" y="420" text-anchor="middle" fill="#888" font-size="10">BullMQ · Queues</text>
+  <text x="730" y="400" text-anchor="middle" fill="#a080d0" font-size="13" font-weight="bold">Vitest</text>
+  <text x="730" y="420" text-anchor="middle" fill="#888" font-size="10">Unit + Integration Tests</text>
 
   <!-- Phase 3 Mobile -->
   <rect x="50" y="460" width="800" height="50" rx="8" fill="url(#gMobile)" filter="url(#shadow)" stroke="#7ee8c8" stroke-width="1" stroke-dasharray="6,3"/>
@@ -461,9 +461,9 @@
 
   <!-- Measurement -->
   <line x1="400" y1="100" x2="340" y2="100" stroke="#e8c877" stroke-width="0.8"/>
-  <rect x="260" y="85" width="80" height="28" rx="4" fill="url(#dmInsp)" filter="url(#dmShadow)" stroke="#a09050" stroke-width="0.5"/>
-  <text x="300" y="100" text-anchor="middle" fill="#aaa" font-size="8">Measurement</text>
-  <text x="300" y="109" text-anchor="middle" fill="#666" font-size="6">value · unit</text>
+  <rect x="255" y="85" width="95" height="28" rx="4" fill="url(#dmInsp)" filter="url(#dmShadow)" stroke="#a09050" stroke-width="0.5"/>
+  <text x="302" y="100" text-anchor="middle" fill="#aaa" font-size="7">InspectionFieldData</text>
+  <text x="302" y="109" text-anchor="middle" fill="#666" font-size="6">value · unit</text>
 
   <!-- Defect link from Inspection -->
   <line x1="400" y1="110" x2="210" y2="260" stroke="#e87777" stroke-width="0.8" stroke-dasharray="4,2"/>
@@ -472,14 +472,8 @@
   <!-- Evidence / Attachment from Inspection -->
   <line x1="600" y1="100" x2="660" y2="100" stroke="#e8c877" stroke-width="0.8"/>
   <rect x="660" y="82" width="140" height="36" rx="5" fill="url(#dmCross)" filter="url(#dmShadow)" stroke="#a080d0" stroke-width="0.8"/>
-  <text x="730" y="99" text-anchor="middle" fill="#a080d0" font-size="10" font-weight="bold">Attachment</text>
+  <text x="730" y="99" text-anchor="middle" fill="#a080d0" font-size="10" font-weight="bold">EvidenceItem</text>
   <text x="730" y="111" text-anchor="middle" fill="#666" font-size="7">media_type · sync_status</text>
-
-  <!-- Approval -->
-  <line x1="730" y1="118" x2="730" y2="140" stroke="#a080d0" stroke-width="0.8" marker-end="url(#dmArrowP)"/>
-  <rect x="680" y="140" width="100" height="24" rx="4" fill="url(#dmCross)" filter="url(#dmShadow)" stroke="#7a60a0" stroke-width="0.5"/>
-  <text x="730" y="156" text-anchor="middle" fill="#aaa" font-size="8">Approval</text>
-  <text x="730" y="163" text-anchor="middle" fill="#666" font-size="6">status · reviewer</text>
 
   <!-- ===== WORK ORDER DOMAIN (center-bottom) ===== -->
   <text x="500" y="220" text-anchor="middle" fill="#a080d0" font-size="11" font-weight="bold">WORK ORDER DOMAIN</text>
@@ -504,7 +498,7 @@
 
   <!-- Ticket → Attachment -->
   <line x1="600" y1="295" x2="660" y2="110" stroke="#a080d0" stroke-width="0.8" stroke-dasharray="4,2"/>
-  <text x="645" y="200" fill="#a080d0" font-size="7" transform="rotate(-65, 645, 200)">→ attachments</text>
+  <text x="645" y="200" fill="#a080d0" font-size="7" transform="rotate(-65, 645, 200)">→ evidence</text>
 
   <!-- ===== CROSS-CUTTING (bottom) ===== -->
   <text x="460" y="380" text-anchor="middle" fill="#888" font-size="11" font-weight="bold">CROSS-CUTTING</text>
@@ -534,8 +528,8 @@
   <text x="320" y="504" fill="#a080d0" font-size="8">Work Order → Assignee (User)</text>
   <text x="470" y="504" fill="#e8c877" font-size="8">Inspection → Technician (User)</text>
   <text x="320" y="520" fill="#e87777" font-size="8">Ticket → Defect</text>
-  <text x="470" y="520" fill="#e87777" font-size="8">Ticket → Attachments</text>
-  <text x="320" y="536" fill="#888" font-size="8">Attachment → Asset + User + Time</text>
+  <text x="470" y="520" fill="#e87777" font-size="8">Ticket → EvidenceItem</text>
+  <text x="320" y="536" fill="#888" font-size="8">EvidenceItem → Asset + User + Time</text>
   <text x="470" y="536" fill="#888" font-size="8">Audit → any entity (polymorphic)</text>
   <text x="470" y="552" fill="#888" font-size="8">Sync → per-record status</text>
 
@@ -729,15 +723,17 @@
 <h2>Tech Stack</h2>
 <table>
 <tr><th>Layer</th><th>Choice</th><th>Why</th></tr>
-<tr><td>API</td><td>TypeScript + Node.js (Fastify)</td><td>Strong typing, large ecosystem</td></tr>
+<tr><td>API</td><td>TypeScript + Hono</td><td>Lightweight, type-safe, edge-ready</td></tr>
 <tr><td>Database</td><td>PostgreSQL</td><td>Relational integrity, JSONB, full-text search</td></tr>
-<tr><td>ORM</td><td>Prisma or Drizzle</td><td>Type-safe queries, migrations</td></tr>
-<tr><td>File storage</td><td>S3-compatible (MinIO / AWS)</td><td>Presigned uploads, large media</td></tr>
-<tr><td>Frontend + field</td><td>React + Vite PWA</td><td>Single codebase, offline via IndexedDB + Service Worker</td></tr>
-<tr><td>Native mobile</td><td>React Native + Expo (Phase 3)</td><td>Background sync, push, native hardware</td></tr>
-<tr><td>Auth</td><td>Keycloak</td><td>RBAC, SSO, multi-tenant</td></tr>
-<tr><td>Real-time</td><td>WebSocket (Socket.IO)</td><td>Live status, notifications</td></tr>
-<tr><td>Task queue</td><td>BullMQ + Redis</td><td>Reports, notifications, sync reconciliation</td></tr>
+<tr><td>ORM</td><td>Prisma</td><td>Type-safe queries, migrations, schema-as-code</td></tr>
+<tr><td>Frontend + field</td><td>Next.js 14 App Router + Tailwind CSS</td><td>SSR, responsive, file-based routing</td></tr>
+<tr><td>Native mobile</td><td>React Native + Expo (Phase 3+)</td><td>Background sync, push, native hardware</td></tr>
+<tr><td>Auth</td><td>Custom JWT (access 15m + refresh 7d)</td><td>RBAC, organization-scoped, token rotation</td></tr>
+<tr><td>Real-time</td><td>Phase 2+ (WebSocket / SSE)</td><td>Live status, notifications</td></tr>
+<tr><td>File storage</td><td>Phase 2+ (S3-compatible)</td><td>Presigned uploads, large media</td></tr>
+<tr><td>Task queue</td><td>Phase 2+ (BullMQ + Redis)</td><td>Reports, notifications, sync reconciliation</td></tr>
+<tr><td>Infrastructure</td><td>Docker Compose (3 services)</td><td>API, PostgreSQL, pgAdmin</td></tr>
+<tr><td>Testing</td><td>Vitest (mock-first London School)</td><td>Unit + integration tests</td></tr>
 <tr><td>CI/CD</td><td>GitHub Actions</td><td>Test, lint, build, deploy</td></tr>
 </table>
 </section>
@@ -1092,38 +1088,34 @@
   <!-- MVP Column -->
   <rect x="10" y="10" width="545" height="440" rx="12" fill="url(#dtMvp)" stroke="#4fc3f7" stroke-width="1.5" filter="url(#dtS)"/>
   <text x="282" y="42" text-anchor="middle" fill="#4fc3f7" font-size="18" font-weight="bold">MVP — Single Server</text>
-  <text x="282" y="62" text-anchor="middle" fill="#7ec8e3" font-size="12">1 server · 8 CPU · 32 GB RAM · ~100 users</text>
+  <text x="282" y="62" text-anchor="middle" fill="#7ec8e3" font-size="12">1 server · ~100 users</text>
 
   <!-- Server box -->
   <rect x="35" y="80" width="495" height="240" rx="8" fill="#0a1628" stroke="#2a4a6a" stroke-width="1"/>
-  <text x="282" y="102" text-anchor="middle" fill="#90caf9" font-size="13" font-weight="bold">Docker Compose</text>
+  <text x="282" y="102" text-anchor="middle" fill="#90caf9" font-size="13" font-weight="bold">Docker Compose (3 services)</text>
 
   <!-- Service tiles inside MVP -->
   <!-- Row 1 -->
   <rect x="55" y="115" width="145" height="55" rx="6" fill="#1565c0" opacity="0.7"/>
   <text x="127" y="138" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">API Server</text>
-  <text x="127" y="155" text-anchor="middle" fill="#bbdefb" font-size="10">Node.js + Fastify</text>
+  <text x="127" y="155" text-anchor="middle" fill="#bbdefb" font-size="10">Hono + TypeScript</text>
 
   <rect x="215" y="115" width="145" height="55" rx="6" fill="#2e7d32" opacity="0.7"/>
   <text x="287" y="138" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Web App</text>
-  <text x="287" y="155" text-anchor="middle" fill="#c8e6c9" font-size="10">React · Nginx</text>
+  <text x="287" y="155" text-anchor="middle" fill="#c8e6c9" font-size="10">Next.js 14</text>
 
   <rect x="375" y="115" width="145" height="55" rx="6" fill="#6a1b9a" opacity="0.7"/>
-  <text x="447" y="138" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Keycloak</text>
-  <text x="447" y="155" text-anchor="middle" fill="#e1bee7" font-size="10">Auth · SSO</text>
+  <text x="447" y="138" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">pgAdmin</text>
+  <text x="447" y="155" text-anchor="middle" fill="#e1bee7" font-size="10">DB Management</text>
 
   <!-- Row 2 -->
   <rect x="55" y="185" width="145" height="55" rx="6" fill="#00838f" opacity="0.7"/>
   <text x="127" y="208" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">PostgreSQL</text>
   <text x="127" y="225" text-anchor="middle" fill="#b2ebf2" font-size="10">Primary DB</text>
 
-  <rect x="215" y="185" width="145" height="55" rx="6" fill="#bf360c" opacity="0.7"/>
-  <text x="287" y="208" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">Redis</text>
-  <text x="287" y="225" text-anchor="middle" fill="#ffccbc" font-size="10">Queues · Cache</text>
-
-  <rect x="375" y="185" width="145" height="55" rx="6" fill="#f57f17" opacity="0.7"/>
-  <text x="447" y="208" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">MinIO</text>
-  <text x="447" y="225" text-anchor="middle" fill="#fff9c4" font-size="10">Photos · Files · S3</text>
+  <rect x="215" y="185" width="305" height="55" rx="6" fill="#1b5e20" opacity="0.4"/>
+  <text x="367" y="208" text-anchor="middle" fill="#a5d6a7" font-size="13" font-weight="bold">Phase 2+: Redis, MinIO, WebSocket</text>
+  <text x="367" y="225" text-anchor="middle" fill="#81c784" font-size="10">Job queues · File storage · Real-time</text>
 
   <!-- Arrow: user to server -->
   <line x1="282" y1="350" x2="282" y2="325" stroke="#4fc3f7" stroke-width="1.5" marker-end="url(#dtA)"/>
@@ -1252,18 +1244,18 @@
 <div class="box">
 <h3>Authentication & Authorization</h3>
 <ul>
-<li><strong>Keycloak:</strong> OAuth2 + OpenID Connect</li>
-<li><strong>RBAC:</strong> 6 roles (tech, QA, dispatcher, ops manager, customer, admin)</li>
-<li><strong>Multi-tenant:</strong> Row-level security in PostgreSQL (<code>WHERE organization_id = ?</code>)</li>
-<li><strong>SSO:</strong> Google, Microsoft, LDAP, SAML</li>
+<li><strong>Auth:</strong> Custom JWT (access 15m + refresh 7d with rotation)</li>
+<li><strong>RBAC:</strong> 5 roles (tech, QA, dispatcher, ops manager, admin)</li>
+<li><strong>Multi-tenant:</strong> Organization-scoped queries (<code>WHERE organization_id = ?</code>)</li>
+<li><strong>Phase 2+:</strong> SSO (Google, Microsoft, LDAP, SAML)</li>
 </ul>
 </div>
 <div class="box">
 <h3>Data Protection</h3>
 <ul>
-<li><strong>At rest:</strong> PostgreSQL encryption, S3 server-side encryption</li>
-<li><strong>In transit:</strong> TLS 1.3 everywhere (API, WebSocket, S3)</li>
-<li><strong>Local:</strong> IndexedDB encrypted on device (company-managed devices)</li>
+<li><strong>At rest:</strong> PostgreSQL encryption</li>
+<li><strong>In transit:</strong> TLS 1.3 everywhere (API)</li>
+<li><strong>Phase 2+:</strong> S3 server-side encryption, encrypted local storage on device</li>
 <li><strong>Secrets:</strong> Environment variables, never in source code</li>
 </ul>
 </div>
@@ -1275,9 +1267,9 @@
 <tr><th>Threat</th><th>Mitigation</th></tr>
 <tr><td>Tenant data leakage</td><td>Row-level security + automated isolation tests</td></tr>
 <tr><td>Stolen tokens</td><td>Short-lived JWT + refresh rotation</td></tr>
-<tr><td>Offline data on lost device</td><td>Encrypted IndexedDB + remote wipe capability</td></tr>
+<tr><td>Offline data on lost device</td><td>Phase 2+: encrypted local storage + remote wipe</td></tr>
 <tr><td>Sync replay attacks</td><td>Idempotency keys + 7-day dedup window</td></tr>
-<tr><td>Unauthorized file access</td><td>Presigned URLs expire in 15 min</td></tr>
+<tr><td>Unauthorized file access</td><td>Phase 2+: Presigned URLs expire in 15 min</td></tr>
 <tr><td>Audit tampering</td><td>Append-only events, no delete/update API</td></tr>
 </table>
 </div>
