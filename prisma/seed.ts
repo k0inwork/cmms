@@ -2,6 +2,7 @@ import { PrismaClient, Role, type TechnicianStatus } from "@prisma/client";
 import bcryptjs from "bcryptjs";
 import { faker } from "@faker-js/faker";
 import { mkdirSync, writeFileSync } from "fs";
+import { deflateSync } from "zlib";
 
 const { hash } = bcryptjs;
 const prisma = new PrismaClient();
@@ -115,6 +116,13 @@ function daysAgo(min: number, max: number): Date {
   return d;
 }
 
+function daysFromNow(min: number, max: number): Date {
+  const days = min + Math.floor(Math.random() * (max - min));
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -130,35 +138,32 @@ async function main() {
 
   const devAdmin = await prisma.user.create({
     data: {
-      email: "admin@cmms.test",
-      password_hash: passwordHash,
-      first_name: "Admin",
-      last_name: "User",
-      role: Role.ADMINISTRATOR,
-      status: "AVAILABLE",
-      organization_id: devOrg.id,
+      email: "admin@cmms.test", password_hash: passwordHash, first_name: "Admin", last_name: "User",
+      role: Role.ADMINISTRATOR, status: "AVAILABLE", organization_id: devOrg.id,
     },
   });
   const devTech = await prisma.user.create({
     data: {
-      email: "tech@cmms.test",
-      password_hash: passwordHash,
-      first_name: "Tech",
-      last_name: "User",
-      role: Role.TECHNICIAN,
-      status: "AVAILABLE",
-      organization_id: devOrg.id,
+      email: "tech@cmms.test", password_hash: passwordHash, first_name: "Tech", last_name: "User",
+      role: Role.TECHNICIAN, status: "AVAILABLE", organization_id: devOrg.id,
     },
   });
   const devDispatcher = await prisma.user.create({
     data: {
-      email: "dispatcher@cmms.test",
-      password_hash: passwordHash,
-      first_name: "Dispatcher",
-      last_name: "User",
-      role: Role.DISPATCHER,
-      status: "AVAILABLE",
-      organization_id: devOrg.id,
+      email: "dispatcher@cmms.test", password_hash: passwordHash, first_name: "Dispatcher", last_name: "User",
+      role: Role.DISPATCHER, status: "AVAILABLE", organization_id: devOrg.id,
+    },
+  });
+  const devQA = await prisma.user.create({
+    data: {
+      email: "qa@cmms.test", password_hash: passwordHash, first_name: "QA", last_name: "Reviewer",
+      role: Role.QA_REVIEWER, status: "AVAILABLE", organization_id: devOrg.id,
+    },
+  });
+  const devOps = await prisma.user.create({
+    data: {
+      email: "ops@cmms.test", password_hash: passwordHash, first_name: "Ops", last_name: "Manager",
+      role: Role.OPERATIONS_MANAGER, status: "AVAILABLE", organization_id: devOrg.id,
     },
   });
 
@@ -180,8 +185,8 @@ async function main() {
         data: {
           organization_id: i < 2 ? org1.id : i < 4 ? org2.id : org3.id,
           name: s.name,
-          latitude: s.lat + faker.location.latitude({ min: -0.02, max: 0.02 }) * 0,
-          longitude: s.lon + faker.location.longitude({ min: -0.02, max: 0.02 }) * 0,
+          latitude: s.lat,
+          longitude: s.lon,
           time_zone: s.tz,
         },
       }),
@@ -200,10 +205,15 @@ async function main() {
     ),
   );
 
-  // ─── Users (50+) ────────────────────────────────────────────────────────
+  // ─── Users (55+) ────────────────────────────────────────────────────────
   const allUsers: Awaited<ReturnType<typeof prisma.user.create>>[] = [];
+  const roleCounters: Record<string, number> = { TECHNICIAN: 0, DISPATCHER: 0, QA_REVIEWER: 0, OPERATIONS_MANAGER: 0, ADMINISTRATOR: 0 };
+  function loginEmail(role: string, firstName: string, lastName: string): string {
+    roleCounters[role] = (roleCounters[role] ?? 0) + 1;
+    const slug = String(role).toLowerCase().replace(/_/g, "");
+    return `${slug}${roleCounters[role]}@cmms.test`;
+  }
 
-  // Create users for org1 (majority)
   for (let i = 0; i < 35; i++) {
     const role = i < ROLES.length ? ROLES[i] : pick([Role.TECHNICIAN, Role.TECHNICIAN, Role.TECHNICIAN, Role.DISPATCHER]);
     const firstName = faker.person.firstName();
@@ -212,10 +222,8 @@ async function main() {
     allUsers.push(
       await prisma.user.create({
         data: {
-          email: faker.internet.email({ firstName, lastName }).toLowerCase(),
-          password_hash: passwordHash,
-          first_name: firstName,
-          last_name: lastName,
+          email: loginEmail(role, firstName, lastName),
+          password_hash: passwordHash, first_name: firstName, last_name: lastName,
           role,
           status: pick(["AVAILABLE", "ASSIGNED", "AVAILABLE", "AVAILABLE", "ON_SITE"] as TechnicianStatus[]),
           organization_id: orgId,
@@ -224,19 +232,17 @@ async function main() {
     );
   }
 
-  // Extra org2 and org3 users
   for (let i = 0; i < 20; i++) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
     const orgId = i < 12 ? org2.id : org3.id;
+    const role = i < 8 ? Role.TECHNICIAN : i < 12 ? Role.DISPATCHER : pick([Role.TECHNICIAN, Role.QA_REVIEWER]);
     allUsers.push(
       await prisma.user.create({
         data: {
-          email: faker.internet.email({ firstName, lastName }).toLowerCase(),
-          password_hash: passwordHash,
-          first_name: firstName,
-          last_name: lastName,
-          role: i < 8 ? Role.TECHNICIAN : i < 12 ? Role.DISPATCHER : pick([Role.TECHNICIAN, Role.QA_REVIEWER]),
+          email: loginEmail(role, firstName, lastName),
+          password_hash: passwordHash, first_name: firstName, last_name: lastName,
+          role,
           status: "AVAILABLE" as TechnicianStatus,
           organization_id: orgId,
         },
@@ -258,8 +264,7 @@ async function main() {
     return chosen.map((skill) =>
       prisma.userSkill.create({
         data: {
-          user_id: tech.id,
-          skill_id: skill.id,
+          user_id: tech.id, skill_id: skill.id,
           proficiency_level: 2 + Math.floor(Math.random() * 4),
           acquired_date: daysAgo(180, 730),
         },
@@ -276,8 +281,7 @@ async function main() {
     return chosen.map((cert) =>
       prisma.userCertification.create({
         data: {
-          user_id: user.id,
-          certification_id: cert.id,
+          user_id: user.id, certification_id: cert.id,
           issued_date: daysAgo(90, 730),
           expiry_date: daysAgo(-30, -400),
         },
@@ -289,7 +293,7 @@ async function main() {
   // ─── Turbines (75) ──────────────────────────────────────────────────────
   const turbines: Awaited<ReturnType<typeof prisma.turbine.create>>[] = [];
   for (const site of siteRecords) {
-    const count = 10 + Math.floor(Math.random() * 5); // 10-14 per site
+    const count = 10 + Math.floor(Math.random() * 5);
     for (let i = 0; i < count; i++) {
       const idx = i + 1;
       const tm = pick(TURBINE_MODELS);
@@ -309,6 +313,8 @@ async function main() {
   }
 
   // ─── Subsystems & Components ────────────────────────────────────────────
+  // Collect component IDs for linking to inspections/defects
+  const componentMap: { turbineId: string; subsystemType: string; componentName: string; componentId: string }[] = [];
   for (const turbine of turbines) {
     const subs = await Promise.all(
       SUBSYSTEM_DEFS.map((sd) =>
@@ -318,13 +324,16 @@ async function main() {
     for (const sub of subs) {
       const sd = SUBSYSTEM_DEFS.find((s) => s.name === sub.name)!;
       const compNames = COMPONENT_DEFS[sd.type] ?? [];
-      await Promise.all(
+      const comps = await Promise.all(
         compNames.map((cn) =>
           prisma.component.create({
             data: { subsystem_id: sub.id, name: cn, status: Math.random() > 0.05 ? "ACTIVE" : "MAINTENANCE" },
           }),
         ),
       );
+      for (const comp of comps) {
+        componentMap.push({ turbineId: turbine.id, subsystemType: sd.type, componentName: comp.name, componentId: comp.id });
+      }
     }
   }
 
@@ -337,23 +346,165 @@ async function main() {
     prisma.inspectionTemplate.create({ data: { name: "End-of-Warranty Inspection", description: "Full turbine condition assessment before warranty expiry", inspection_type: "WARRANTY", is_active: true } }),
   ]);
 
-  const templateVersions = await Promise.all(
-    templates.map((t, i) =>
+  // Template versions — v1 for all, v2 for first two templates
+  const templateVersions = await Promise.all([
+    ...templates.map((t, i) =>
       prisma.inspectionTemplateVersion.create({
         data: {
-          template_id: t.id,
-          version: 1,
-          schema: { fields: [{ key: `field_${i}_1`, label: "Condition", type: "PASS_FAIL" }] },
+          template_id: t.id, version: 1,
+          schema: { fields: [
+            { key: "condition", label: "Overall Condition", type: "PASS_FAIL", required: true },
+            { key: "notes", label: "Technician Notes", type: "TEXT" },
+            { key: "temperature", label: "Temperature (°C)", type: "NUMERIC" },
+          ] },
           changelog: "Initial version",
           created_by: managers[0]?.id ?? allUsers[0].id,
         },
       }),
     ),
-  );
+    // v2 for first two templates — test version history
+    prisma.inspectionTemplateVersion.create({
+      data: {
+        template_id: templates[0].id, version: 2,
+        schema: { fields: [
+          { key: "condition", label: "Overall Condition", type: "PASS_FAIL", required: true },
+          { key: "notes", label: "Technician Notes", type: "TEXT" },
+          { key: "temperature", label: "Temperature (°C)", type: "NUMERIC" },
+          { key: "photo_evidence", label: "Photo Evidence", type: "PHOTO" },
+          { key: "erosion_depth", label: "Erosion Depth (mm)", type: "NUMERIC" },
+        ] },
+        changelog: "Added photo evidence and erosion depth fields",
+        created_by: managers[0]?.id ?? allUsers[0].id,
+      },
+    }),
+    prisma.inspectionTemplateVersion.create({
+      data: {
+        template_id: templates[1].id, version: 2,
+        schema: { fields: [
+          { key: "condition", label: "Overall Condition", type: "PASS_FAIL", required: true },
+          { key: "notes", label: "Technician Notes", type: "TEXT" },
+          { key: "oil_viscosity", label: "Oil Viscosity (cSt)", type: "NUMERIC" },
+          { key: "vibration_mm_s", label: "Vibration (mm/s)", type: "NUMERIC" },
+          { key: "particle_count", label: "Particle Count", type: "NUMERIC" },
+        ] },
+        changelog: "Added oil viscosity and vibration fields",
+        created_by: managers[0]?.id ?? allUsers[0].id,
+      },
+    }),
+  ]);
 
-  // ─── Tickets (120) ──────────────────────────────────────────────────────
+  // ─── Inspections (60) with field data and defects ───────────────────────
+  const inspectionStatuses = ["ASSIGNED", "IN_PROGRESS", "SUBMITTED", "APPROVED", "REJECTED", "CHANGES_REQUESTED"] as const;
+  const inspectionRecords: Awaited<ReturnType<typeof prisma.inspectionRecord.create>>[] = [];
+
+  for (let i = 0; i < 60; i++) {
+    const turbine = pick(turbines);
+    const tech = pick(technicians.length ? technicians : allUsers);
+    const tv = pick(templateVersions);
+    const status = pick(inspectionStatuses);
+    const createdAt = daysAgo(1, 120);
+
+    // Pick a component on this turbine for some inspections
+    const turbineComps = componentMap.filter((c) => c.turbineId === turbine.id);
+    const comp = turbineComps.length > 0 && Math.random() > 0.3 ? pick(turbineComps) : null;
+
+    const record = await prisma.inspectionRecord.create({
+      data: {
+        template_version_id: tv.id,
+        technician_id: tech.id,
+        turbine_id: turbine.id,
+        component_id: comp?.componentId ?? null,
+        status,
+        started_at: status !== "ASSIGNED" ? createdAt : null,
+        completed_at: ["SUBMITTED", "APPROVED", "REJECTED"].includes(status) ? daysAgo(1, 30) : null,
+        submitted_at: ["SUBMITTED", "APPROVED", "REJECTED"].includes(status) ? daysAgo(1, 28) : null,
+        reviewed_by: ["APPROVED", "REJECTED"].includes(status) && reviewers.length ? pick(reviewers).id : null,
+        reviewed_at: ["APPROVED", "REJECTED"].includes(status) ? daysAgo(1, 25) : null,
+        review_notes: Math.random() > 0.5 ? faker.lorem.sentence() : null,
+        due_date: daysFromNow(-5, 30),
+        created_at: createdAt,
+      },
+    });
+    inspectionRecords.push(record);
+
+    // Add field data for inspections past ASSIGNED status
+    if (status !== "ASSIGNED") {
+      const schema = tv.schema as { fields: { key: string; type: string; label: string; required?: boolean }[] };
+      const fields = schema?.fields ?? [];
+      for (const field of fields) {
+        let fieldValue: { field_type: string; value_string?: string | null; value_numeric?: number | null; value_boolean?: boolean | null };
+        switch (field.type) {
+          case "PASS_FAIL":
+            fieldValue = { field_type: "PASS_FAIL", value_boolean: Math.random() > 0.2 };
+            break;
+          case "NUMERIC":
+            fieldValue = { field_type: "NUMERIC", value_numeric: Math.round((Math.random() * 100 + 20) * 10) / 10 };
+            break;
+          default:
+            fieldValue = { field_type: "TEXT", value_string: faker.lorem.sentence() };
+        }
+        await prisma.inspectionFieldData.create({
+          data: {
+            inspection_id: record.id,
+            field_key: field.key,
+            ...fieldValue,
+          },
+        });
+      }
+
+      // Add defects to ~40% of completed inspections (for US-TKT-01)
+      if (comp && ["SUBMITTED", "APPROVED", "REJECTED", "CHANGES_REQUESTED"].includes(status) && Math.random() > 0.6) {
+        const defectCount = 1 + Math.floor(Math.random() * 3);
+        for (let d = 0; d < defectCount; d++) {
+          await prisma.defect.create({
+            data: {
+              inspection_id: record.id,
+              component_id: comp.componentId,
+              description: faker.lorem.sentence(),
+              severity: pick(SEVERITIES),
+              location_detail: `${comp.componentName} — ${faker.word.adjective()} section`,
+              notes: Math.random() > 0.5 ? faker.lorem.sentence() : null,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  // ─── Tickets (120) — some linked to defects ─────────────────────────────
   const tickets: Awaited<ReturnType<typeof prisma.ticket.create>>[] = [];
-  for (let i = 0; i < 120; i++) {
+
+  // First, create tickets from actual defects (US-TKT-01)
+  const defects = await prisma.defect.findMany();
+  for (const defect of defects.slice(0, 15)) {
+    const insp = inspectionRecords.find((r) => r.id === defect.inspection_id);
+    const status = pick(["NEW", "TRIAGED", "ASSIGNED", "IN_PROGRESS", "PENDING_REVIEW", "CLOSED"] as const);
+    const assignee = Math.random() > 0.3 && technicians.length ? pick(technicians) : null;
+
+    tickets.push(
+      await prisma.ticket.create({
+        data: {
+          defect_id: defect.id,
+          turbine_id: insp?.turbine_id ?? pick(turbines).id,
+          component_id: defect.component_id,
+          title: `Defect: ${defect.description.slice(0, 80)}`,
+          description: defect.description,
+          priority: defect.severity === "SAFETY" || defect.severity === "CRITICAL" ? "CRITICAL" : pick(PRIORITIES),
+          severity: defect.severity as any,
+          status,
+          created_by: reviewers.length ? pick(reviewers).id : pick(allUsers).id,
+          assignee_id: assignee?.id ?? null,
+          due_date: Math.random() > 0.3 ? daysFromNow(-5, 30) : null,
+          sla_target_date: Math.random() > 0.4 ? daysFromNow(-3, 15) : null,
+          closed_at: status === "CLOSED" ? daysAgo(1, 30) : null,
+          created_at: daysAgo(1, 60),
+        },
+      }),
+    );
+  }
+
+  // Remaining random tickets
+  for (let i = tickets.length; i < 120; i++) {
     const failure = weightedPick(FAILURE_TEMPLATES);
     const title = pick(failure.titles);
     const description = pick(failure.descs);
@@ -375,8 +526,8 @@ async function main() {
           status,
           created_by: creator.id,
           assignee_id: assignee?.id ?? null,
-          due_date: Math.random() > 0.3 ? daysAgo(-5, 30) : null,
-          sla_target_date: Math.random() > 0.4 ? daysAgo(-3, 15) : null,
+          due_date: Math.random() > 0.3 ? daysFromNow(-5, 30) : null,
+          sla_target_date: Math.random() > 0.4 ? daysFromNow(-3, 15) : null,
           closed_at: status === "CLOSED" ? daysAgo(1, 30) : null,
           created_at: daysAgo(1, 180),
         },
@@ -384,11 +535,10 @@ async function main() {
     );
   }
 
-  // ─── Work Orders (80) ───────────────────────────────────────────────────
+  // ─── Work Orders (80) — linked to real tickets ──────────────────────────
   const workOrders: Awaited<ReturnType<typeof prisma.workOrder.create>>[] = [];
   for (let i = 0; i < 80; i++) {
-    const ticket = pick(tickets);
-    const turbine = pick(turbines);
+    const ticket = tickets[i % tickets.length]; // deterministic spread across tickets
     const creator = pick(dispatchers.length ? dispatchers : allUsers);
     const assignee = Math.random() > 0.25 && technicians.length ? pick(technicians) : null;
     const status = pick(["NEW", "ASSIGNED", "IN_PROGRESS", "PENDING_REVIEW", "CLOSED"] as const);
@@ -398,14 +548,15 @@ async function main() {
       await prisma.workOrder.create({
         data: {
           ticket_id: ticket.id,
-          turbine_id: turbine.id,
+          turbine_id: ticket.turbine_id,
+          component_id: ticket.component_id ?? null,
           title: `WO: ${ticket.title}`,
           description: `Remediation work for ticket ${ticket.id.slice(0, 8)}`,
           priority,
           status,
           created_by: creator.id,
           assignee_id: assignee?.id ?? null,
-          due_date: Math.random() > 0.3 ? daysAgo(-3, 21) : null,
+          due_date: Math.random() > 0.3 ? daysFromNow(-3, 21) : null,
           started_at: ["IN_PROGRESS", "PENDING_REVIEW", "CLOSED"].includes(status) ? daysAgo(1, 14) : null,
           completed_at: status === "CLOSED" ? daysAgo(1, 7) : null,
           resolution_notes: status === "CLOSED" ? "Issue resolved. Components replaced and tested." : null,
@@ -415,45 +566,32 @@ async function main() {
     );
   }
 
-  // ─── Inspections (60) ───────────────────────────────────────────────────
-  const inspectionStatuses = ["ASSIGNED", "IN_PROGRESS", "SUBMITTED", "APPROVED", "REJECTED", "CHANGES_REQUESTED"] as const;
-  for (let i = 0; i < 60; i++) {
-    const turbine = pick(turbines);
-    const tech = pick(technicians.length ? technicians : allUsers);
-    const tv = pick(templateVersions);
-    const status = pick(inspectionStatuses);
-    const createdAt = daysAgo(1, 120);
-
-    await prisma.inspectionRecord.create({
-      data: {
-        template_version_id: tv.id,
-        technician_id: tech.id,
-        turbine_id: turbine.id,
-        status,
-        started_at: status !== "ASSIGNED" ? createdAt : null,
-        completed_at: ["SUBMITTED", "APPROVED", "REJECTED"].includes(status) ? daysAgo(1, 30) : null,
-        submitted_at: ["SUBMITTED", "APPROVED", "REJECTED"].includes(status) ? daysAgo(1, 28) : null,
-        reviewed_by: ["APPROVED", "REJECTED"].includes(status) && reviewers.length ? pick(reviewers).id : null,
-        reviewed_at: ["APPROVED", "REJECTED"].includes(status) ? daysAgo(1, 25) : null,
-        review_notes: Math.random() > 0.5 ? faker.lorem.sentence() : null,
-        due_date: daysAgo(-5, 30),
-        created_at: createdAt,
-      },
-    });
-  }
-
-  // ─── Evidence Items (40) ────────────────────────────────────────────────
+  // ─── Evidence Items (40) — linked to inspections, components, tickets ────
   mkdirSync("uploads", { recursive: true });
 
-  // Minimal PNG encoder — creates an uncompressed RGBA PNG
-  function createPng(width: number, height: number, rgba: (x: number, y: number) => [number, number, number, number]): Buffer {
-    const { deflateSync } = require("zlib");
+  // Minimal PNG encoder for non-photo thumbnails (VIDEO, PDF)
+  function crc32(buf: Buffer): number {
+    let crc = ~0;
+    for (let i = 0; i < buf.length; i++) {
+      crc = (crc >>> 8) ^ crc32Table[(crc ^ buf[i]) & 0xff];
+    }
+    return (crc ^ ~0) >>> 0;
+  }
+  const crc32Table = (() => {
+    const t: number[] = [];
+    for (let i = 0; i < 256; i++) {
+      let c = i;
+      for (let j = 0; j < 8; j++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+      t.push(c);
+    }
+    return t;
+  })();
 
-    // Build raw image data: filter byte (0) + RGBA pixels per row
+  function createPng(width: number, height: number, rgba: (x: number, y: number) => [number, number, number, number]): Buffer {
     const rawRows: Buffer[] = [];
     for (let y = 0; y < height; y++) {
-      const row = Buffer.alloc(1 + width * 4); // filter byte + RGBA
-      row[0] = 0; // no filter
+      const row = Buffer.alloc(1 + width * 4);
+      row[0] = 0;
       for (let x = 0; x < width; x++) {
         const [r, g, b, a] = rgba(x, y);
         const off = 1 + x * 4;
@@ -463,126 +601,399 @@ async function main() {
     }
     const raw = Buffer.concat(rawRows);
     const compressed = deflateSync(raw);
-
-    // PNG signature
     const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-
     function chunk(type: string, data: Buffer): Buffer {
       const len = Buffer.alloc(4);
       len.writeUInt32BE(data.length);
       const typeB = Buffer.from(type);
       const crcData = Buffer.concat([typeB, data]);
       const crc = Buffer.alloc(4);
-      crc.writeUInt32BE(require("zlib").crc32(crcData) >>> 0);
+      crc.writeUInt32BE(crc32(crcData));
       return Buffer.concat([len, typeB, data, crc]);
     }
-
-    // IHDR
     const ihdr = Buffer.alloc(13);
     ihdr.writeUInt32BE(width, 0);
     ihdr.writeUInt32BE(height, 4);
-    ihdr[8] = 8;  // bit depth
-    ihdr[9] = 6;  // color type: RGBA
-    ihdr[10] = 0; // compression
-    ihdr[11] = 0; // filter
-    ihdr[12] = 0; // interlace
-
+    ihdr[8] = 8; ihdr[9] = 6; ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
     return Buffer.concat([sig, chunk("IHDR", ihdr), chunk("IDAT", compressed), chunk("IEND", Buffer.alloc(0))]);
   }
 
-  function generatePhoto(index: number): Buffer {
-    // Colored gradient photo placeholder
+  function makePlaceholderThumbnail(mediaType: string, index: number): Buffer {
     const colors: [number, number, number][] = [
-      [41, 128, 185], [39, 174, 96], [192, 57, 43], [142, 68, 173],
-      [243, 156, 18], [22, 160, 133], [44, 62, 80], [211, 84, 0],
+      [30, 60, 90], [45, 80, 55], [90, 35, 30], [60, 40, 80],
+      [80, 70, 30], [30, 75, 75], [50, 50, 60], [85, 50, 25],
     ];
     const [br, bg, bb] = colors[index % colors.length];
-    return createPng(640, 480, (x, y) => {
-      const t = (x + y) / (640 + 480);
+    const w = 320, h = 180;
+    return createPng(w, h, (x, y) => {
+      const vignette = 1 - 0.3 * Math.pow(Math.sqrt(Math.pow((x - w / 2) / (w / 2), 2) + Math.pow((y - h / 2) / (h / 2), 2)), 1.5);
+      const r = Math.round(Math.max(0, Math.min(255, br * vignette)));
+      const g = Math.round(Math.max(0, Math.min(255, bg * vignette)));
+      const b = Math.round(Math.max(0, Math.min(255, bb * vignette)));
+      // Draw a centered play button triangle for VIDEO, page icon for PDF
+      const cx = w / 2, cy = h / 2;
+      if (mediaType === "VIDEO") {
+        const size = 24;
+        const tx = x - cx, ty = y - cy;
+        const inTriangle = tx >= -size * 0.6 && tx <= size * 0.8 && ty >= -size && ty <= size && ty >= tx * 0.8 - size && ty <= -tx * 0.8 + size;
+        if (inTriangle) return [255, 255, 255, 220];
+      } else {
+        // PDF: horizontal lines suggesting text
+        const lineY = [50, 62, 74, 86, 98, 110, 122, 134].map(ly => ly + 8);
+        for (const ly of lineY) {
+          if (y >= ly && y <= ly + 3 && x >= 60 && x <= w - 60) {
+            return [200, 210, 220, 180];
+          }
+        }
+      }
+      return [r, g, b, 255];
+    });
+  }
+
+  // Download real photos for PHOTO evidence
+  async function downloadPhoto(seed: number, width: number, height: number): Promise<Buffer> {
+    // Try multiple sources — first success wins
+    const sources = [
+      () => fetch(`https://picsum.photos/seed/cmms${seed}/${width}/${height}`, { signal: AbortSignal.timeout(8000) }),
+      () => fetch(`https://placebear.com/${width}/${height}`, { signal: AbortSignal.timeout(8000) }),
+    ];
+    for (const attempt of sources) {
+      try {
+        const res = await attempt();
+        if (!res.ok) continue;
+        const buf = Buffer.from(await res.arrayBuffer());
+        if (buf.length > 1000) return buf;
+      } catch { /* try next */ }
+    }
+    console.warn(`  ⚠ Could not download photo seed=${seed}, using fallback`);
+    return createPng(width, height, (x, y) => {
+      const t = (x + y) / (width + height);
+      const s = seed * 37;
       return [
-        Math.round(br * (1 - t * 0.3)),
-        Math.round(bg * (1 - t * 0.3)),
-        Math.round(bb * (1 - t * 0.3)),
+        Math.round((40 + (s % 80)) * (1 - t * 0.3)),
+        Math.round((60 + ((s >> 4) % 60)) * (1 - t * 0.3)),
+        Math.round((80 + ((s >> 8) % 60)) * (1 - t * 0.3)),
         255,
       ];
     });
   }
 
-  function generateThumbnail(mediaType: string, index: number): Buffer {
-    // Colored thumbnail with type badge
-    const colors: [number, number, number][] = [
-      [52, 152, 219], [46, 204, 113], [231, 76, 60], [155, 89, 182],
-      [241, 196, 15], [26, 188, 156], [52, 73, 94], [230, 126, 34],
-    ];
-    const [br, bg, bb] = colors[index % colors.length];
-    const w = 320, h = 180;
+  console.log("  Downloading evidence photos from picsum.photos...");
+  const evidenceItems: Awaited<ReturnType<typeof prisma.evidenceItem.create>>[] = [];
+  for (let i = 0; i < 40; i++) {
+    const uploader = pick(technicians.length ? technicians : allUsers);
+    const mediaType = pick(["PHOTO", "VIDEO", "PHOTO", "PHOTO", "PDF"] as const);
+    const isPhoto = mediaType === "PHOTO";
+    const fileName = isPhoto ? `evidence_${i + 1}.jpg` : mediaType === "VIDEO" ? `evidence_${i + 1}.mp4` : `evidence_${i + 1}.pdf`;
+    const thumbName = `thumb_evidence_${i + 1}.jpg`;
 
-    // Badge position (centered)
-    const bx1 = Math.floor(w * 0.35), bx2 = Math.floor(w * 0.65);
-    const by1 = Math.floor(h * 0.38), by2 = Math.floor(h * 0.62);
+    if (isPhoto) {
+      // Download real photo (640x480) and thumbnail (320x225)
+      const [photo, thumb] = await Promise.all([
+        downloadPhoto(i + 100, 640, 480),
+        downloadPhoto(i + 100, 320, 225),
+      ]);
+      writeFileSync(`uploads/${fileName}`, photo);
+      writeFileSync(`uploads/${thumbName}`, thumb);
+    } else {
+      // VIDEO/PDF: generate a styled placeholder thumbnail
+      writeFileSync(`uploads/${thumbName}`, makePlaceholderThumbnail(mediaType, i));
+    }
 
-    return createPng(w, h, (x, y) => {
-      // Gradient background
-      const t = (x + y) / (w + h);
-      let r = Math.round(br * (1 - t * 0.4));
-      let g = Math.round(bg * (1 - t * 0.4));
-      let b = Math.round(bb * (1 - t * 0.4));
+    // Link ~60% of evidence to inspections and ~40% to components
+    const linkInsp = Math.random() > 0.4 ? pick(inspectionRecords) : null;
+    const turbineComps = linkInsp
+      ? componentMap.filter((c) => c.turbineId === linkInsp.turbine_id)
+      : [];
+    const linkComp = turbineComps.length > 0 ? pick(turbineComps) : (Math.random() > 0.5 ? pick(componentMap) : null);
 
-      // White rounded badge in center
-      const cx = (bx1 + bx2) / 2, cy = (by1 + by2) / 2;
-      const rw = (bx2 - bx1) / 2, rh = (by2 - by1) / 2;
-      const dx = (x - cx) / rw, dy = (y - cy) / rh;
-      if (dx * dx + dy * dy <= 1) {
-        // Inside ellipse: white with slight transparency
-        const alpha = dx * dx + dy * dy;
-        if (alpha > 0.85) {
-          // border ring
-          return [255, 255, 255, 230];
-        }
-        return [255, 255, 255, 200];
+    evidenceItems.push(
+      await prisma.evidenceItem.create({
+        data: {
+          media_type: mediaType,
+          status: pick(["PENDING", "APPROVED", "APPROVED", "APPROVED"] as const),
+          file_url: `/uploads/${fileName}`,
+          thumbnail_url: `/uploads/${thumbName}`,
+          file_size_bytes: 500_000 + Math.floor(Math.random() * 4_500_000),
+          mime_type: isPhoto ? "image/jpeg" : mediaType === "VIDEO" ? "video/mp4" : "application/pdf",
+          uploaded_by: uploader.id,
+          inspection_id: linkInsp?.id ?? null,
+          component_id: linkComp?.componentId ?? null,
+          description: Math.random() > 0.4 ? faker.lorem.sentence() : null,
+          created_at: daysAgo(1, 90),
+        },
+      }),
+    );
+  }
+
+  // ─── Evidence Annotations (on photo evidence) ──────────────────────────
+  const photoEvidence = evidenceItems.filter((e) => e.media_type === "PHOTO");
+  for (let i = 0; i < Math.min(15, photoEvidence.length); i++) {
+    const ev = photoEvidence[i];
+    const annCount = 1 + Math.floor(Math.random() * 2);
+    for (let a = 0; a < annCount; a++) {
+      await prisma.evidenceAnnotation.create({
+        data: {
+          evidence_id: ev.id,
+          author_id: pick(allUsers).id,
+          annotation_type: pick(["ARROW", "CIRCLE", "TEXT"] as const),
+          data: pick([
+            { x: 100 + Math.random() * 200, y: 80 + Math.random() * 150, dx: 50, dy: -30 },
+            { cx: 200 + Math.random() * 100, cy: 150 + Math.random() * 80, r: 30 + Math.random() * 40 },
+            { x: 150 + Math.random() * 200, y: 120 + Math.random() * 100, text: faker.word.words(3) },
+          ]),
+        },
+      });
+    }
+  }
+
+  // ─── Ticket Evidence links (US-TKT-07) ─────────────────────────────────
+  for (let i = 0; i < 25; i++) {
+    const ticket = pick(tickets);
+    const evidence = pick(evidenceItems);
+    try {
+      await prisma.ticketEvidence.create({
+        data: {
+          ticket_id: ticket.id,
+          evidence_id: evidence.id,
+          linked_by: pick(allUsers).id,
+        },
+      });
+    } catch {
+      // Skip duplicate links
+    }
+  }
+
+  // ─── Work Order Evidence links (US-TKT-05) ─────────────────────────────
+  for (let i = 0; i < 20; i++) {
+    const wo = pick(workOrders);
+    const evidence = pick(evidenceItems);
+    try {
+      await prisma.workOrderEvidence.create({
+        data: {
+          work_order_id: wo.id,
+          evidence_id: evidence.id,
+          linked_by: pick(allUsers).id,
+        },
+      });
+    } catch {
+      // Skip duplicate links
+    }
+  }
+
+  // ─── Availability Slots (US-AVAIL-01/02, US-DISP-01) ───────────────────
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay());
+  for (const tech of technicians.slice(0, 20)) {
+    // Create 7 days of availability slots (current week)
+    for (let d = 0; d < 7; d++) {
+      const dayStart = new Date(startOfWeek);
+      dayStart.setDate(startOfWeek.getDate() + d);
+      dayStart.setHours(8, 0, 0, 0);
+      const dayEnd = new Date(dayStart);
+      dayEnd.setHours(17, 0, 0, 0);
+
+      if (Math.random() > 0.15) { // 85% chance of being available each day
+        await prisma.availabilitySlot.create({
+          data: {
+            user_id: tech.id,
+            status: pick(["AVAILABLE", "ASSIGNED", "ON_SITE", "AVAILABLE"] as TechnicianStatus[]),
+            start_time: dayStart,
+            end_time: dayEnd,
+            site_id: Math.random() > 0.5 ? pick(siteRecords).id : null,
+            notes: Math.random() > 0.8 ? faker.lorem.sentence() : null,
+          },
+        });
       }
+    }
+  }
 
-      return [r, g, b, 255];
+  // ─── Absence Records (US-AVAIL-03/04/05, US-REPL-01/02/03) ────────────
+  const absenceRecords: Awaited<ReturnType<typeof prisma.absenceRecord.create>>[] = [];
+  const absenceReasons = ["SICK", "PERSONAL_LEAVE", "TRAINING", "VACATION", "OTHER"] as const;
+  // Create 8 absence records: 3 past (approved), 3 current (active), 2 future
+  const absentTechs = technicians.slice(0, 8);
+
+  // Past absences (approved, returned)
+  for (let i = 0; i < 3; i++) {
+    const startDate = daysAgo(14 + i * 7, 20 + i * 7);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 2 + Math.floor(Math.random() * 3));
+    absenceRecords.push(
+      await prisma.absenceRecord.create({
+        data: {
+          user_id: absentTechs[i].id,
+          reason: pick(absenceReasons),
+          start_date: startDate,
+          expected_return_date: endDate,
+          actual_return_date: new Date(endDate.getTime() + Math.random() * 86400000),
+          is_approved: true,
+          approved_by: managers[0]?.id ?? devOps.id,
+          notes: faker.lorem.sentence(),
+        },
+      }),
+    );
+  }
+
+  // Current absences (active — user is currently absent)
+  for (let i = 3; i < 6; i++) {
+    const startDate = daysAgo(1, 3);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 3 + Math.floor(Math.random() * 5));
+    absenceRecords.push(
+      await prisma.absenceRecord.create({
+        data: {
+          user_id: absentTechs[i].id,
+          reason: pick(absenceReasons),
+          start_date: startDate,
+          expected_return_date: endDate,
+          is_approved: Math.random() > 0.3,
+          approved_by: Math.random() > 0.3 ? (managers[0]?.id ?? devOps.id) : null,
+          notes: faker.lorem.sentence(),
+        },
+      }),
+    );
+    // Set the absent tech's status
+    await prisma.user.update({
+      where: { id: absentTechs[i].id },
+      data: { status: pick(["SICK", "LEAVE", "UNAVAILABLE"] as TechnicianStatus[]) },
     });
   }
 
-  for (let i = 0; i < 40; i++) {
-    const uploader = pick(allUsers);
-    const mediaType = pick(["PHOTO", "VIDEO", "PHOTO", "PHOTO", "PDF"] as const);
-    const isPhoto = mediaType === "PHOTO";
-    const fileName = isPhoto ? `evidence_${i + 1}.png` : mediaType === "VIDEO" ? `evidence_${i + 1}.mp4` : `evidence_${i + 1}.pdf`;
-    const thumbName = `thumb_evidence_${i + 1}.png`;
+  // Future absences (planned)
+  for (let i = 6; i < 8; i++) {
+    const startDate = daysFromNow(3 + (i - 6) * 5, 7 + (i - 6) * 5);
+    const endDate = new Date(startDate);
+    endDate.setDate(endDate.getDate() + 5 + Math.floor(Math.random() * 5));
+    absenceRecords.push(
+      await prisma.absenceRecord.create({
+        data: {
+          user_id: absentTechs[i].id,
+          reason: pick(["VACATION", "TRAINING"] as const),
+          start_date: startDate,
+          expected_return_date: endDate,
+          is_approved: Math.random() > 0.5,
+          approved_by: Math.random() > 0.5 ? (managers[0]?.id ?? devOps.id) : null,
+          notes: faker.lorem.sentence(),
+        },
+      }),
+    );
+  }
 
-    // Write actual placeholder files
-    if (isPhoto) {
-      writeFileSync(`uploads/${fileName}`, generatePhoto(i));
+  // ─── Replacement Suggestions (US-REPL-01/02/03) ────────────────────────
+  for (const absence of absenceRecords.slice(3, 6)) { // for current absences
+    // Find assignments for the absent tech
+    const techAssignments = await prisma.assignment.findMany({
+      where: { user_id: absence.user_id, accepted_at: { not: null }, declined_at: null },
+    });
+
+    // Suggest 3 candidates per absence
+    const candidates = technicians.filter((t) => t.id !== absence.user_id).slice(0, 3);
+    for (const candidate of candidates) {
+      const skillMatch = 0.5 + Math.random() * 0.5;
+      const certMatch = 0.4 + Math.random() * 0.6;
+      const proximity = 0.3 + Math.random() * 0.7;
+      const workload = 0.6 + Math.random() * 0.4;
+      const familiarity = 0.5 + Math.random() * 0.5;
+      const total = (skillMatch * 0.3 + certMatch * 0.25 + proximity * 0.2 + workload * 0.15 + familiarity * 0.1);
+
+      await prisma.replacementSuggestion.create({
+        data: {
+          absence_record_id: absence.id,
+          suggested_user_id: candidate.id,
+          skill_match_score: skillMatch,
+          cert_match_score: certMatch,
+          proximity_score: proximity,
+          workload_score: workload,
+          familiarity_score: familiarity,
+          total_score: total,
+          is_above_threshold: total >= 0.6,
+        },
+      });
     }
-    writeFileSync(`uploads/${thumbName}`, generateThumbnail(mediaType, i));
+  }
 
-    await prisma.evidenceItem.create({
+  // ─── Assignments (US-DISP-03, US-REPL-04, US-MOB-01) ──────────────────
+  // Create assignments for inspections
+  for (const insp of inspectionRecords.slice(0, 30)) {
+    const assigner = pick(dispatchers.length ? dispatchers : allUsers);
+    const accepted = insp.status !== "ASSIGNED";
+    await prisma.assignment.create({
       data: {
-        media_type: mediaType,
-        status: pick(["PENDING", "APPROVED", "APPROVED", "APPROVED"] as const),
-        file_url: `/uploads/${fileName}`,
-        thumbnail_url: `/uploads/${thumbName}`,
-        file_size_bytes: 500_000 + Math.floor(Math.random() * 4_500_000),
-        mime_type: isPhoto ? "image/png" : mediaType === "VIDEO" ? "video/mp4" : "application/pdf",
-        uploaded_by: uploader.id,
-        description: Math.random() > 0.4 ? faker.lorem.sentence() : null,
-        created_at: daysAgo(1, 90),
+        user_id: insp.technician_id,
+        inspection_id: insp.id,
+        status: "ASSIGNED",
+        assigned_by: assigner.id,
+        assigned_at: insp.created_at,
+        accepted_at: accepted ? new Date(insp.created_at.getTime() + 3600000) : null,
       },
     });
   }
 
-  // ─── Audit Events (100) ────────────────────────────────────────────────
-  const auditActions = ["CREATE", "UPDATE", "STATUS_CHANGE", "ASSIGN", "DELETE"] as const;
-  for (let i = 0; i < 100; i++) {
-    const entityType = pick(["TICKET", "WORK_ORDER", "INSPECTION"] as const);
-    const entityId = entityType === "TICKET"
-      ? pick(tickets).id
-      : entityType === "WORK_ORDER"
-        ? pick(workOrders).id
-        : pick(allUsers).id;
+  // Create assignments for work orders
+  for (const wo of workOrders.filter((w) => w.assignee_id).slice(0, 25)) {
+    const assigner = pick(dispatchers.length ? dispatchers : allUsers);
+    const accepted = wo.status !== "NEW";
+    await prisma.assignment.create({
+      data: {
+        user_id: wo.assignee_id!,
+        work_order_id: wo.id,
+        status: "ASSIGNED",
+        assigned_by: assigner.id,
+        assigned_at: wo.created_at,
+        accepted_at: accepted ? new Date(wo.created_at.getTime() + 7200000) : null,
+      },
+    });
+  }
+
+  // ─── Sync Events (US-OFF-03/05, US-DASH-05) ───────────────────────────
+  const syncStatuses = ["SYNCED", "SYNCED", "SYNCED", "SYNCED", "PENDING", "FAILED", "CONFLICT"] as const;
+  const entityTypes = ["INSPECTION", "TICKET", "WORK_ORDER", "EVIDENCE"] as const;
+  for (let i = 0; i < 50; i++) {
+    const tech = pick(technicians.length ? technicians : allUsers);
+    const entityType = pick(entityTypes);
+    let entityId: string;
+    switch (entityType) {
+      case "INSPECTION": entityId = pick(inspectionRecords).id; break;
+      case "TICKET": entityId = pick(tickets).id; break;
+      case "WORK_ORDER": entityId = pick(workOrders).id; break;
+      default: entityId = pick(evidenceItems).id;
+    }
+    const syncStatus = pick(syncStatuses);
+
+    await prisma.syncEvent.create({
+      data: {
+        user_id: tech.id,
+        entity_type: entityType,
+        entity_id: entityId,
+        sync_status: syncStatus as any,
+        conflict_data: syncStatus === "CONFLICT"
+          ? { field: "status", clientValue: "IN_PROGRESS", serverValue: "SUBMITTED" }
+          : null,
+        error_message: syncStatus === "FAILED" ? pick(["Network timeout", "Server error 500", "Connection refused", "Auth token expired"]) : null,
+        retry_count: syncStatus === "FAILED" ? 1 + Math.floor(Math.random() * 3) : syncStatus === "PENDING" ? 0 : 0,
+        synced_at: syncStatus === "SYNCED" ? daysAgo(0, 5) : null,
+        created_at: daysAgo(0, 10),
+      },
+    });
+  }
+
+  // ─── Audit Events (120) — including evidence, absence, sync events ──────
+  const auditActions = ["CREATE", "UPDATE", "STATUS_CHANGE", "ASSIGN", "APPROVE", "REJECT", "DELETE"] as const;
+  const auditEntityTypes = ["TICKET", "WORK_ORDER", "INSPECTION", "EVIDENCE", "ABSENCE", "SYNC"] as const;
+
+  for (let i = 0; i < 120; i++) {
+    const entityType = pick(auditEntityTypes);
+    let entityId: string;
+    switch (entityType) {
+      case "TICKET": entityId = pick(tickets).id; break;
+      case "WORK_ORDER": entityId = pick(workOrders).id; break;
+      case "INSPECTION": entityId = pick(inspectionRecords).id; break;
+      case "EVIDENCE": entityId = pick(evidenceItems).id; break;
+      case "ABSENCE": entityId = absenceRecords.length > 0 ? pick(absenceRecords).id : pick(allUsers).id; break;
+      default: entityId = pick(allUsers).id;
+    }
 
     await prisma.auditEvent.create({
       data: {
@@ -599,18 +1010,28 @@ async function main() {
 
   // ─── Summary ────────────────────────────────────────────────────────────
   console.log("Seed completed successfully!");
-  console.log(`  Organizations: 3`);
+  console.log(`  Organizations: 3 + 1 dev`);
   console.log(`  Sites: ${siteRecords.length}`);
   console.log(`  Turbines: ${turbines.length}`);
-  console.log(`  Users: ${allUsers.length}`);
+  console.log(`  Components: ${componentMap.length}`);
+  console.log(`  Users: ${allUsers.length} + 5 dev accounts`);
+  console.log(`  Dev logins: admin/tech/dispatcher/qa/ops @cmms.test — password: ${PASSWORD}`);
+  console.log(`  Staff logins: technician1..N / dispatcher1..N / qareviewer1..N @cmms.test — password: ${PASSWORD}`);
   console.log(`  Skills: ${skills.length}, Certifications: ${certs.length}`);
-  console.log(`  Inspection templates: ${templates.length}`);
-  console.log(`  Tickets: ${tickets.length}`);
+  console.log(`  Inspection templates: ${templates.length} (${templateVersions.length} versions)`);
+  console.log(`  Inspections: ${inspectionRecords.length} (with field data + defects)`);
+  console.log(`  Defects: ${defects.length}`);
+  console.log(`  Tickets: ${tickets.length} (${tickets.filter((t) => (t as any).defect_id).length} from defects)`);
   console.log(`  Work orders: ${workOrders.length}`);
-  console.log(`  Inspections: 60`);
-  console.log(`  Evidence items: 40`);
-  console.log(`  Audit events: 100`);
-  console.log(`  All user passwords: ${PASSWORD}`);
+  console.log(`  Evidence items: ${evidenceItems.length} (linked to inspections/components)`);
+  console.log(`  Ticket-Evidence links: ~25`);
+  console.log(`  WorkOrder-Evidence links: ~20`);
+  console.log(`  Availability slots: ~140`);
+  console.log(`  Absence records: ${absenceRecords.length}`);
+  console.log(`  Replacement suggestions: ~9`);
+  console.log(`  Assignments: ~55`);
+  console.log(`  Sync events: 50`);
+  console.log(`  Audit events: 120`);
 }
 
 main()
