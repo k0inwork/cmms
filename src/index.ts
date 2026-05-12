@@ -88,6 +88,6 @@ const port = Number(process.env.PORT) || 3000;
 
 console.log(`CMMS API starting on port ${port}`);
 
-serve({ port, fetch: app.fetch }, () => {
-  console.log(`Server running on http://localhost:${port}`);
+serve({ port, hostname: "0.0.0.0", fetch: app.fetch }, () => {
+  console.log(`Server running on http://0.0.0.0:${port}`);
 });

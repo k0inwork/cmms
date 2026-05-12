@@ -23,6 +23,9 @@ vi.mock("../../src/lib/prisma.js", () => ({
     inspectionFieldData: {
       upsert: vi.fn(),
     },
+    auditEvent: {
+      create: vi.fn(),
+    },
     user: {
       findFirst: vi.fn(),
     },

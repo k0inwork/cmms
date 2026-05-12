@@ -33,13 +33,15 @@ export default function ReportsPage() {
   const [selected, setSelected] = useState<ReportType | null>(null);
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
-  const [loading, setLoading] = useState(false);
   const [reportData, setReportData] = useState<any>(null);
   const [error, setError] = useState("");
 
+  const [loadingType, setLoadingType] = useState<ReportType | null>(null);
+
   const runReport = async (type: ReportType, format: "json" | "csv" = "json") => {
-    setLoading(true);
+    setLoadingType(type);
     setError("");
+    setReportData(null);
     try {
       const params = new URLSearchParams({ format });
       if (dateFrom) params.set("dateFrom", new Date(dateFrom).toISOString());
@@ -57,17 +59,17 @@ export default function ReportsPage() {
         a.download = `${type}-report.csv`;
         a.click();
         URL.revokeObjectURL(a.href);
-        setLoading(false);
+        setLoadingType(null);
         return;
       }
 
-      setSelected(type);
       const data = await apiGet<any>(`/reports/${type}?${params.toString()}`);
+      setSelected(type);
       setReportData(data);
     } catch (e: any) {
       setError(e?.message || "Failed to generate report");
     } finally {
-      setLoading(false);
+      setLoadingType(null);
     }
   };
 
@@ -118,14 +120,14 @@ export default function ReportsPage() {
             <div className="mt-4 flex items-center gap-2">
               <button
                 onClick={() => runReport(card.key)}
-                disabled={loading}
+                disabled={loadingType !== null}
                 className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
               >
-                {loading && selected === card.key ? "Loading..." : "Generate"}
+                {loadingType === card.key ? "Loading..." : "Generate"}
               </button>
               <button
                 onClick={() => runReport(card.key, "csv")}
-                disabled={loading}
+                disabled={loadingType !== null}
                 className="flex items-center gap-1 rounded-md border border-slate-200 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50"
               >
                 <Download className="h-3.5 w-3.5" /> CSV

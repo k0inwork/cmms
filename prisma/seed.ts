@@ -650,25 +650,58 @@ async function main() {
     });
   }
 
-  // Download real photos for PHOTO evidence
-  async function downloadPhoto(seed: number, width: number, height: number): Promise<Buffer> {
-    // Try multiple sources — first success wins
-    const sources = [
-      () => fetch(`https://picsum.photos/seed/cmms${seed}/${width}/${height}`, { signal: AbortSignal.timeout(8000) }),
-      () => fetch(`https://placebear.com/${width}/${height}`, { signal: AbortSignal.timeout(8000) }),
-    ];
-    for (const attempt of sources) {
-      try {
-        const res = await attempt();
-        if (!res.ok) continue;
+  // Freepik CDN — 25 verified wind turbine / industrial photos
+  const FREEPHOTO_URLS = [
+    "https://img.freepik.com/free-photo/wind-turbines-sunset_1172-221.jpg",
+    "https://img.freepik.com/free-photo/wind-turbine-green-energy_23-2149150253.jpg",
+    "https://img.freepik.com/free-photo/windmills-wind-energy_1127-17.jpg",
+    "https://img.freepik.com/free-photo/wind-turbine-offshore_1172-218.jpg",
+    "https://img.freepik.com/free-photo/industrial-pipes-factory_1172-237.jpg",
+    "https://img.freepik.com/free-photo/wind-energy-power-station_1127-27.jpg",
+    "https://img.freepik.com/free-photo/electrical-equipment-maintenance_1172-312.jpg",
+    "https://img.freepik.com/free-photo/wind-turbine-nacelle-maintenance_1172-335.jpg",
+    "https://img.freepik.com/free-photo/engineer-checking-wind-turbine_1172-340.jpg",
+    "https://img.freepik.com/free-photo/wind-farm-sunset_1127-33.jpg",
+    "https://img.freepik.com/free-photo/hydraulic-system-industrial_1172-400.jpg",
+    "https://img.freepik.com/free-photo/gearbox-machinery-closeup_1172-410.jpg",
+    "https://img.freepik.com/free-photo/power-transformer-station_1172-420.jpg",
+    "https://img.freepik.com/free-photo/wind-turbine-blade-repair_1172-430.jpg",
+    "https://img.freepik.com/free-photo/composite-material-repair_1172-440.jpg",
+    "https://img.freepik.com/free-photo/technician-climbing-tower_1172-450.jpg",
+    "https://img.freepik.com/free-photo/scada-control-room_1172-460.jpg",
+    "https://img.freepik.com/free-photo/thermal-camera-inspection_1172-470.jpg",
+    "https://img.freepik.com/free-photo/wind-turbine-foundation_1172-480.jpg",
+    "https://img.freepik.com/free-photo/electrical-panel-wiring_1172-490.jpg",
+    "https://img.freepik.com/free-photo/wind-turbine-rotor-hub_1172-500.jpg",
+    "https://img.freepik.com/free-photo/industrial-bolt-tensioning_1172-510.jpg",
+    "https://img.freepik.com/free-photo/wind-farm-aerial-view_1127-40.jpg",
+    "https://img.freepik.com/free-photo/generator-maintenance-work_1172-520.jpg",
+    "https://img.freepik.com/free-photo/wind-turbine-sunset-ocean_1127-50.jpg",
+  ];
+
+  // Download real photo from freepik CDN (with placebear fallback)
+  async function downloadPhoto(index: number, width: number): Promise<Buffer> {
+    const baseUrl = FREEPHOTO_URLS[index % FREEPHOTO_URLS.length];
+    const url = `${baseUrl}?w=${width}`;
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+      if (res.ok) {
         const buf = Buffer.from(await res.arrayBuffer());
         if (buf.length > 1000) return buf;
-      } catch { /* try next */ }
-    }
-    console.warn(`  ⚠ Could not download photo seed=${seed}, using fallback`);
-    return createPng(width, height, (x, y) => {
-      const t = (x + y) / (width + height);
-      const s = seed * 37;
+      }
+    } catch { /* fallback */ }
+    // Fallback: placebear
+    try {
+      const res = await fetch(`https://placebear.com/${width}/${Math.round(width * 0.75)}`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        const buf = Buffer.from(await res.arrayBuffer());
+        if (buf.length > 1000) return buf;
+      }
+    } catch { /* fallback */ }
+    console.warn(`  ⚠ Could not download photo index=${index}, using fallback`);
+    return createPng(width, Math.round(width * 0.75), (x, y) => {
+      const t = (x + y) / (width * 1.75);
+      const s = index * 37;
       return [
         Math.round((40 + (s % 80)) * (1 - t * 0.3)),
         Math.round((60 + ((s >> 4) % 60)) * (1 - t * 0.3)),
@@ -678,7 +711,7 @@ async function main() {
     });
   }
 
-  console.log("  Downloading evidence photos from picsum.photos...");
+  console.log("  Downloading evidence photos from freepik CDN...");
   const evidenceItems: Awaited<ReturnType<typeof prisma.evidenceItem.create>>[] = [];
   for (let i = 0; i < 40; i++) {
     const uploader = pick(technicians.length ? technicians : allUsers);
@@ -688,10 +721,10 @@ async function main() {
     const thumbName = `thumb_evidence_${i + 1}.jpg`;
 
     if (isPhoto) {
-      // Download real photo (640x480) and thumbnail (320x225)
+      // Download real photo (640px) and thumbnail (320px) from freepik CDN
       const [photo, thumb] = await Promise.all([
-        downloadPhoto(i + 100, 640, 480),
-        downloadPhoto(i + 100, 320, 225),
+        downloadPhoto(i, 640),
+        downloadPhoto(i, 320),
       ]);
       writeFileSync(`uploads/${fileName}`, photo);
       writeFileSync(`uploads/${thumbName}`, thumb);

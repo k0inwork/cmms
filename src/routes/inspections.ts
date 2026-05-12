@@ -178,6 +178,17 @@ app.post(
       },
     });
 
+    const user = c.get("user");
+    await prisma.auditEvent.create({
+      data: {
+        entity_type: "InspectionRecord",
+        entity_id: record.id,
+        action: "CREATE",
+        user_id: user?.userId ?? "system",
+        after_state: { status: record.status, technician_id: technicianId, turbine_id: turbineId },
+      },
+    });
+
     return c.json(record, 201);
   }
 );
@@ -262,6 +273,18 @@ app.put(
       await prisma.inspectionRecord.update({ where: { id }, data: updateData });
     }
 
+    const user = c.get("user");
+    await prisma.auditEvent.create({
+      data: {
+        entity_type: "InspectionRecord",
+        entity_id: id,
+        action: "UPDATE",
+        user_id: user?.userId ?? "system",
+        before_state: { status: record.status },
+        after_state: updateData.status ? { status: updateData.status } : { status: record.status, field_data_updated: !!fieldData },
+      },
+    });
+
     const updated = await prisma.inspectionRecord.findFirst({
       where: { id, deleted_at: null },
       include: {
@@ -316,6 +339,18 @@ app.post(
       },
     });
 
+    const user = c.get("user");
+    await prisma.auditEvent.create({
+      data: {
+        entity_type: "InspectionRecord",
+        entity_id: id,
+        action: "STATUS_CHANGE",
+        user_id: user?.userId ?? "system",
+        before_state: { status: record.status },
+        after_state: { status: "SUBMITTED" },
+      },
+    });
+
     return c.json(updated);
   }
 );
@@ -358,6 +393,17 @@ app.post(
         template_version: {
           select: { version: true, template: { select: { id: true, name: true } } },
         },
+      },
+    });
+
+    await prisma.auditEvent.create({
+      data: {
+        entity_type: "InspectionRecord",
+        entity_id: id,
+        action: "APPROVE",
+        user_id: user.userId,
+        before_state: { status: record.status },
+        after_state: { status: "APPROVED", reviewed_by: user.userId },
       },
     });
 
@@ -405,6 +451,17 @@ app.post(
         template_version: {
           select: { version: true, template: { select: { id: true, name: true } } },
         },
+      },
+    });
+
+    await prisma.auditEvent.create({
+      data: {
+        entity_type: "InspectionRecord",
+        entity_id: id,
+        action: "REJECT",
+        user_id: user.userId,
+        before_state: { status: record.status },
+        after_state: { status: newStatus, reviewed_by: user.userId },
       },
     });
 
