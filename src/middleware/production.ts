@@ -124,6 +124,8 @@ export const prodCors = () => cors({
   maxAge: 86400,
 });
 
-export const prodSecureHeaders = () => secureHeaders();
+export const prodSecureHeaders = () => secureHeaders({
+  crossOriginResourcePolicy: "cross-origin", // allow GUI to load uploaded images
+});
 
 export const prodRequestId = () => requestId();
