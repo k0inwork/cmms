@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { apiGet } from "@/lib/api-client";
+import { apiGet, getApiBase } from "@/lib/api-client";
 import type {
   ComplianceReport,
   InspectionsReport,
@@ -50,7 +50,7 @@ export default function ReportsPage() {
       if (format === "csv") {
         // Trigger download
         const token = localStorage.getItem("cmms_access_token");
-        const url = `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/reports/${type}?${params.toString()}`;
+        const url = `${getApiBase()}/reports/${type}?${params.toString()}`;
         const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
         if (!res.ok) throw new Error("Download failed");
         const blob = await res.blob();
