@@ -132,7 +132,7 @@ app.get("/users", zValidator("query", paginationSchema), async (c) => {
   const admin = c.get("user");
 
   const items = await prisma.user.findMany({
-    where: { organization_id: admin.organizationId, deleted_at: null },
+    where: { deleted_at: null },
     take: limit + 1,
     orderBy: { created_at: "desc" },
     select: userSelect,
