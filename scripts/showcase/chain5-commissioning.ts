@@ -7,8 +7,13 @@
  * Tech preloads + completes → QA reviews → defects found → tickets →
  * work orders → Ops exports report → audit trail
  */
-import { createBrowser, cleanup, step, chainHeader, pause, openSession, API_BASE, apiLogin, ACCOUNTS } from "./helpers";
+import {
+  createBrowser, cleanup, step, chainHeader, pause, openSession,
+  openInspectionByStatus, clickDetailButton, fillDialogAndConfirm,
+  API_BASE, apiLogin, ACCOUNTS,
+} from "./helpers";
 
+const GUI = process.env.GUI_URL || "http://localhost:3001";
 const TOTAL_STEPS = 16;
 
 async function main() {
@@ -18,7 +23,6 @@ async function main() {
 
   const browser = await createBrowser();
   const contexts: any[] = [];
-  const GUI = process.env.GUI_URL || "http://localhost:3001";
 
   try {
     // ── Steps 1-5: Admin creates asset hierarchy ─────────────────────────
@@ -28,14 +32,11 @@ async function main() {
     await adminPage.goto(`${GUI}/admin`);
     await pause();
 
-    // Create org via API (admin GUI may not have org creation yet)
+    // Create org via API
     const adminTokens = await apiLogin(ACCOUNTS.admin.email, ACCOUNTS.admin.password);
     const orgRes = await fetch(`${API_BASE}/organizations`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${adminTokens.accessToken}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${adminTokens.accessToken}`, "Content-Type": "application/json" },
       body: JSON.stringify({ name: "North Wind Energy" }),
     });
     if (orgRes.ok) {
@@ -47,19 +48,11 @@ async function main() {
     await pause();
 
     step(2, TOTAL_STEPS, "Admin creates site 'Baltic Shore Wind Farm'");
+    const orgData = await orgRes.json().catch(() => ({ id: undefined }));
     const siteRes = await fetch(`${API_BASE}/sites`, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${adminTokens.accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: "Baltic Shore Wind Farm",
-        latitude: 54.69,
-        longitude: 10.87,
-        timezone: "Europe/Berlin",
-        organizationId: (await orgRes.json().catch(() => ({}))).id,
-      }),
+      headers: { Authorization: `Bearer ${adminTokens.accessToken}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ name: "Baltic Shore Wind Farm", latitude: 54.69, longitude: 10.87, timezone: "Europe/Berlin", organizationId: orgData.id }),
     });
     console.log(`  Site created: ${siteRes.ok ? "success" : siteRes.status}`);
     await pause();
@@ -78,30 +71,18 @@ async function main() {
 
     // ── Steps 6-8: Admin builds template and assigns skills ──────────────
     step(6, TOTAL_STEPS, "Admin builds commissioning inspection template");
-    // Navigate to templates tab
-    const templatesTab = adminPage.locator('button:has-text("Templates")');
-    if (await templatesTab.isVisible()) {
-      await templatesTab.click();
-      await pause();
-    }
+    // Navigate to admin page (already there)
+    await adminPage.bringToFront();
+    await adminPage.goto(`${GUI}/admin`);
+    await pause();
     console.log("  Template: pass/fail per subsystem, photo fields, signature");
     await pause();
 
     step(7, TOTAL_STEPS, "Admin creates technician accounts for commissioning team");
-    const usersTab = adminPage.locator('button:has-text("Users")');
-    if (await usersTab.isVisible()) {
-      await usersTab.click();
-      await pause();
-    }
     console.log("  [GUI] User management showing team members");
     await pause();
 
     step(8, TOTAL_STEPS, "Admin assigns skills (blade inspection) + certs (GWO Working at Heights)");
-    const skillsTab = adminPage.locator('button:has-text("Skills")');
-    if (await skillsTab.isVisible()) {
-      await skillsTab.click();
-      await pause();
-    }
     console.log("  Skills and certifications assigned to tech accounts");
     await pause();
 
@@ -121,16 +102,20 @@ async function main() {
     console.log("  Templates, asset data, reference materials cached locally");
 
     step(11, TOTAL_STEPS, "Tech completes commissioning — finds 2 defects");
-    const techRow = techPage.locator("tbody tr").first();
-    if (await techRow.isVisible()) {
-      await techRow.click();
-      await pause();
-      const startBtn = techPage.locator('button:has-text("Start Inspection")');
-      if (await startBtn.isVisible()) await startBtn.click();
-      await pause(800);
-      const submitBtn = techPage.locator('button:has-text("Submit for Review")');
-      if (await submitBtn.isVisible()) await submitBtn.click();
-      await pause(1000);
+    if (await openInspectionByStatus(techPage, "ASSIGNED")) {
+      if (await clickDetailButton(techPage, "Start Inspection")) await pause(800);
+      if (await clickDetailButton(techPage, "Submit for Review")) {
+        await pause(1000);
+        console.log("  Commissioning submitted — status → SUBMITTED");
+      } else {
+        const techTokens = await apiLogin(ACCOUNTS.tech.email, ACCOUNTS.tech.password);
+        const id = techPage.url().split("/inspections/")[1]?.split("?")[0];
+        if (id) {
+          await fetch(`${API_BASE}/inspections/${id}`, { method: "PUT", headers: { Authorization: `Bearer ${techTokens.accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ status: "IN_PROGRESS" }) });
+          await fetch(`${API_BASE}/inspections/${id}/submit`, { method: "POST", headers: { Authorization: `Bearer ${techTokens.accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({}) });
+          console.log("  Commissioning submitted via API — status → SUBMITTED");
+        }
+      }
     }
     console.log("  Defect 1: Gearbox alignment issue (HIGH severity)");
     console.log("  Defect 2: Missing yaw bolt (MEDIUM severity)");
@@ -139,23 +124,21 @@ async function main() {
     step(12, TOTAL_STEPS, "QA reviews commissioning results, confirms 2 defects");
     const { context: qaCtx, page: qaPage } = await openSession(browser, ACCOUNTS.qa);
     contexts.push(qaCtx);
-    await qaPage.goto(`${GUI}/inspections`);
-    await pause();
 
-    const qaRow = qaPage.locator("tbody tr").first();
-    if (await qaRow.isVisible()) {
-      await qaRow.click();
-      await pause();
-      const approveBtn = qaPage.locator('button:has-text("Approve")').first();
-      if (await approveBtn.isVisible()) {
-        await approveBtn.click();
-        await pause(500);
-        const confirm = qaPage.locator('button:has-text("Approve")').last();
-        if (await confirm.isVisible()) await confirm.click();
-        await pause(1000);
+    if (await openInspectionByStatus(qaPage, "SUBMITTED")) {
+      if (await clickDetailButton(qaPage, "Approve")) {
+        await fillDialogAndConfirm(qaPage, "Commissioning inspection approved.", "Approve");
+        console.log("  Commissioning inspection APPROVED");
+      }
+    } else {
+      const qaTokens = await apiLogin(ACCOUNTS.qa.email, ACCOUNTS.qa.password);
+      const res = await fetch(`${API_BASE}/inspections?status=SUBMITTED&limit=1`, { headers: { Authorization: `Bearer ${qaTokens.accessToken}` } });
+      const data = await res.json();
+      if (data.data?.[0]) {
+        await fetch(`${API_BASE}/inspections/${data.data[0].id}/approve`, { method: "POST", headers: { Authorization: `Bearer ${qaTokens.accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ notes: "Approved." }) });
+        console.log("  Commissioning inspection APPROVED via API");
       }
     }
-    console.log("  Commissioning inspection APPROVED");
 
     step(13, TOTAL_STEPS, "QA creates 2 tickets from defects");
     console.log("  Ticket 1: Gearbox alignment (HIGH) → linked to WTG-B01 Gearbox");

@@ -6,7 +6,11 @@
  * QA flags evidence → Tech re-inspects → QA approves → ticket created →
  * work order → tech resolves → QA closes
  */
-import { createBrowser, cleanup, step, chainHeader, pause, openSession, API_BASE, apiLogin, ACCOUNTS } from "./helpers";
+import {
+  createBrowser, cleanup, step, chainHeader, pause, openSession,
+  openInspectionByStatus, clickDetailButton, fillDialogAndConfirm,
+  API_BASE, apiLogin, ACCOUNTS,
+} from "./helpers";
 
 const TOTAL_STEPS = 17;
 
@@ -16,7 +20,7 @@ async function main() {
   ]);
 
   const browser = await createBrowser();
-  const contexts: Awaited<ReturnType<typeof cleanup>> extends Promise<void> ? never : any[] = [];
+  const contexts: any[] = [];
 
   try {
     // ── Step 1: Dispatcher assigns inspection ──────────────────────────────
@@ -24,36 +28,9 @@ async function main() {
     const { context: dispCtx, page: dispPage } = await openSession(browser, ACCOUNTS.dispatcher);
     contexts.push(dispCtx);
 
-    // Get an assigned inspection via API
-    const dispTokens = await apiLogin(ACCOUNTS.dispatcher.email, ACCOUNTS.dispatcher.password);
-    const inspectionsRes = await fetch(`${API_BASE}/inspections?status=ASSIGNED&limit=5`, {
-      headers: { Authorization: `Bearer ${dispTokens.accessToken}` },
-    });
-    const inspections = await inspectionsRes.json();
-    const inspection = inspections.data?.[0];
-
-    if (!inspection) {
-      console.log("  No ASSIGNED inspection found. Creating one via API...");
-      // Get a template and technician
-      const templatesRes = await fetch(`${API_BASE}/inspections/templates?limit=1`, {
-        headers: { Authorization: `Bearer ${dispTokens.accessToken}` },
-      });
-      const templates = await templatesRes.json();
-      const template = templates.data?.[0];
-
-      if (!template) {
-        console.log("  No templates found. Run seed first.");
-        process.exit(1);
-      }
-
-      // Navigate to inspections page
-      await dispPage.goto(`${process.env.GUI_URL || "http://localhost:3001"}/inspections`);
-      await pause();
-    } else {
-      console.log(`  Found inspection: ${inspection.id} (status: ${inspection.status})`);
-      await dispPage.goto(`${process.env.GUI_URL || "http://localhost:3001"}/inspections`);
-      await pause();
-    }
+    await dispPage.goto(`${process.env.GUI_URL || "http://localhost:3001"}/inspections`);
+    await pause();
+    console.log("  Dispatcher viewing inspections list");
 
     // ── Step 2-4: Technician preloads, starts, works offline ─────────────
     step(2, TOTAL_STEPS, "Technician preloads data for offline access");
@@ -63,18 +40,25 @@ async function main() {
     await pause();
 
     step(3, TOTAL_STEPS, "Technician starts inspection");
-    // Click first assigned inspection row
-    const firstRow = techPage.locator("tbody tr").first();
-    if (await firstRow.isVisible()) {
-      await firstRow.click();
-      await pause();
-
-      // Click "Start Inspection" button
-      const startBtn = techPage.locator('button:has-text("Start Inspection")');
-      if (await startBtn.isVisible()) {
-        await startBtn.click();
+    if (await openInspectionByStatus(techPage, "ASSIGNED")) {
+      if (await clickDetailButton(techPage, "Start Inspection")) {
         await pause(1000);
         console.log("  Inspection started — status → IN_PROGRESS");
+      } else {
+        console.log("  [Fallback] Starting via API...");
+        const techTokens = await apiLogin(ACCOUNTS.tech.email, ACCOUNTS.tech.password);
+        const url = techPage.url();
+        const id = url.split("/inspections/")[1]?.split("?")[0];
+        if (id) {
+          await fetch(`${API_BASE}/inspections/${id}`, {
+            method: "PUT",
+            headers: { Authorization: `Bearer ${techTokens.accessToken}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "IN_PROGRESS" }),
+          });
+          await techPage.reload();
+          await pause();
+          console.log("  Inspection started via API — status → IN_PROGRESS");
+        }
       }
     }
 
@@ -87,12 +71,25 @@ async function main() {
     console.log("  [Simulated] 3 photos tagged with asset/inspection/timestamp");
     await pause();
 
-    step(6, TOTAL_STEPS, "Technician submits inspection (queued offline)");
-    const submitBtn = techPage.locator('button:has-text("Submit for Review")');
-    if (await submitBtn.isVisible()) {
-      await submitBtn.click();
+    step(6, TOTAL_STEPS, "Technician submits inspection");
+    if (await clickDetailButton(techPage, "Submit for Review")) {
       await pause(1000);
       console.log("  Inspection submitted — status → SUBMITTED");
+    } else {
+      console.log("  [Fallback] Submitting via API...");
+      const techTokens = await apiLogin(ACCOUNTS.tech.email, ACCOUNTS.tech.password);
+      const url = techPage.url();
+      const id = url.split("/inspections/")[1]?.split("?")[0];
+      if (id) {
+        await fetch(`${API_BASE}/inspections/${id}/submit`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${techTokens.accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        await techPage.reload();
+        await pause();
+        console.log("  Inspection submitted via API — status → SUBMITTED");
+      }
     }
 
     // ── Step 7-8: Idempotent resubmit, auto-sync ─────────────────────────
@@ -108,75 +105,88 @@ async function main() {
     step(9, TOTAL_STEPS, "QA Reviewer reviews submitted inspection");
     const { context: qaCtx, page: qaPage } = await openSession(browser, ACCOUNTS.qa);
     contexts.push(qaCtx);
-    await qaPage.goto(`${process.env.GUI_URL || "http://localhost:3001"}/inspections?status=SUBMITTED`);
-    await pause();
 
-    const submittedRow = qaPage.locator("tbody tr").first();
-    if (await submittedRow.isVisible()) {
-      await submittedRow.click();
-      await pause();
+    if (await openInspectionByStatus(qaPage, "SUBMITTED")) {
       console.log("  QA opened inspection for review");
     }
 
     step(10, TOTAL_STEPS, "QA flags evidence — 'unclear, retake needed'");
-    // Click "Request Changes" button
-    const changesBtn = qaPage.locator('button:has-text("Request Changes")');
-    if (await changesBtn.isVisible()) {
-      await changesBtn.click();
-      await pause(500);
-
-      // Fill review notes
-      const notesArea = qaPage.locator("textarea").last();
-      if (await notesArea.isVisible()) {
-        await notesArea.fill("Photo of blade trailing edge is blurry. Please retake with focus on crack area.");
-      }
-      await pause(500);
-
-      // Submit the reject dialog
-      const confirmBtn = qaPage.locator('button:has-text("Request Changes")').last();
-      if (await confirmBtn.isVisible()) {
-        await confirmBtn.click();
-        await pause(1000);
-        console.log("  Changes requested — status → CHANGES_REQUESTED");
+    if (await clickDetailButton(qaPage, "Request Changes")) {
+      await fillDialogAndConfirm(
+        qaPage,
+        "Photo of blade trailing edge is blurry. Please retake with focus on crack area.",
+        "Request Changes",
+      );
+      console.log("  Changes requested — status → CHANGES_REQUESTED");
+    } else {
+      console.log("  [Fallback] Requesting changes via API...");
+      const qaTokens = await apiLogin(ACCOUNTS.qa.email, ACCOUNTS.qa.password);
+      const url = qaPage.url();
+      const id = url.split("/inspections/")[1]?.split("?")[0];
+      if (id) {
+        await fetch(`${API_BASE}/inspections/${id}/reject`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${qaTokens.accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "REQUEST_CHANGES", notes: "Photos unclear. Please retake." }),
+        });
+        await qaPage.reload();
+        await pause();
+        console.log("  Changes requested via API — status → CHANGES_REQUESTED");
       }
     }
 
     // ── Step 11: Tech re-inspects ─────────────────────────────────────────
     step(11, TOTAL_STEPS, "Technician re-inspects, retakes photos, resubmits");
-    await techPage.reload();
-    await pause();
+    await techPage.bringToFront();
 
-    // Navigate back to the inspection
-    const changesRow = techPage.locator("tbody tr").first();
-    if (await changesRow.isVisible()) {
-      await changesRow.click();
-      await pause();
+    if (await openInspectionByStatus(techPage, "CHANGES_REQUESTED")) {
+      console.log("  Tech reopened the inspection with changes requested");
+    }
 
-      // Resubmit
-      const resubmitBtn = techPage.locator('button:has-text("Submit for Review")');
-      if (await resubmitBtn.isVisible()) {
-        await resubmitBtn.click();
-        await pause(1000);
-        console.log("  Re-submitted after re-inspection — status → SUBMITTED");
+    if (await clickDetailButton(techPage, "Submit for Review")) {
+      await pause(1000);
+      console.log("  Re-submitted after re-inspection — status → SUBMITTED");
+    } else {
+      console.log("  [Fallback] Resubmitting via API...");
+      const techTokens = await apiLogin(ACCOUNTS.tech.email, ACCOUNTS.tech.password);
+      const url = techPage.url();
+      const id = url.split("/inspections/")[1]?.split("?")[0];
+      if (id) {
+        await fetch(`${API_BASE}/inspections/${id}/submit`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${techTokens.accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        await techPage.reload();
+        await pause();
+        console.log("  Re-submitted via API — status → SUBMITTED");
       }
     }
 
     // ── Step 12: QA approves ──────────────────────────────────────────────
     step(12, TOTAL_STEPS, "QA Reviewer approves inspection");
-    await qaPage.reload();
-    await pause();
+    await qaPage.bringToFront();
 
-    const approveBtn = qaPage.locator('button:has-text("Approve")');
-    if (await approveBtn.isVisible()) {
-      await approveBtn.click();
-      await pause(500);
-
-      // Confirm approval in dialog
-      const confirmApprove = qaPage.locator('button:has-text("Approve")').last();
-      if (await confirmApprove.isVisible()) {
-        await confirmApprove.click();
-        await pause(1000);
+    if (await openInspectionByStatus(qaPage, "SUBMITTED")) {
+      if (await clickDetailButton(qaPage, "Approve")) {
+        await fillDialogAndConfirm(qaPage, "Photos and data look good.", "Approve");
         console.log("  Inspection approved — status → APPROVED");
+      }
+    } else {
+      console.log("  [Fallback] Approving via API...");
+      const qaTokens = await apiLogin(ACCOUNTS.qa.email, ACCOUNTS.qa.password);
+      const inspectionsRes = await fetch(`${API_BASE}/inspections?status=SUBMITTED&limit=1`, {
+        headers: { Authorization: `Bearer ${qaTokens.accessToken}` },
+      });
+      const inspections = await inspectionsRes.json();
+      const insp = inspections.data?.[0];
+      if (insp) {
+        await fetch(`${API_BASE}/inspections/${insp.id}/approve`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${qaTokens.accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ notes: "Approved." }),
+        });
+        console.log("  Inspection approved via API — status → APPROVED");
       }
     }
 

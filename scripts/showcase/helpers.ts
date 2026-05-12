@@ -98,6 +98,95 @@ export async function openSession(
   return { context, page };
 }
 
+/**
+ * Navigate to inspections list, click the first row matching status filter,
+ * wait for detail page to load. Returns true if an inspection was opened.
+ */
+export async function openInspectionByStatus(
+  page: Page,
+  status?: string,
+): Promise<boolean> {
+  const url = status
+    ? `${GUI_BASE}/inspections`
+    : `${GUI_BASE}/inspections`;
+  await page.goto(url);
+  await pause();
+
+  // If status filter needed, use the dropdown
+  if (status) {
+    const select = page.locator("select").first();
+    if (await select.isVisible()) {
+      await select.selectOption({ label: new Map([
+        ["ASSIGNED", "Assigned"],
+        ["IN_PROGRESS", "In Progress"],
+        ["SUBMITTED", "Submitted"],
+        ["APPROVED", "Approved"],
+        ["REJECTED", "Rejected"],
+        ["CHANGES_REQUESTED", "Changes Requested"],
+      ]).get(status) ?? status });
+      await pause(800); // wait for filtered data
+    }
+  }
+
+  const row = page.locator("tbody tr").first();
+  if (!(await row.isVisible())) {
+    console.log("  No inspection rows found");
+    return false;
+  }
+
+  await row.click();
+  // Wait for detail page to finish loading (spinner gone)
+  await page.waitForURL(/\/inspections\/[a-f0-9-]+/, { timeout: 10000 });
+  await page.waitForSelector("h1", { timeout: 10000 });
+  await pause();
+  return true;
+}
+
+/**
+ * Click a button on the inspection detail page by its text.
+ * Waits for the button to appear (handles async page load).
+ */
+export async function clickDetailButton(
+  page: Page,
+  buttonText: string,
+  timeout = 5000,
+): Promise<boolean> {
+  const btn = page.locator(`button:has-text("${buttonText}")`).first();
+  try {
+    await btn.waitFor({ state: "visible", timeout });
+    await btn.click();
+    return true;
+  } catch {
+    console.log(`  Button "${buttonText}" not found or not visible`);
+    return false;
+  }
+}
+
+/**
+ * In an open modal dialog, fill the notes textarea and click the confirm button.
+ */
+export async function fillDialogAndConfirm(
+  page: Page,
+  notes: string,
+  confirmButtonText: string,
+): Promise<boolean> {
+  await pause(500);
+  const textarea = page.locator(".fixed textarea, .fixed [role='dialog'] textarea").first();
+  if (await textarea.isVisible()) {
+    await textarea.fill(notes);
+    await pause(300);
+  }
+  // The confirm button in the dialog (last occurrence to avoid the trigger button)
+  const confirmBtn = page.locator(`.fixed button:has-text("${confirmButtonText}")`).last();
+  if (await confirmBtn.isVisible()) {
+    await confirmBtn.click();
+    await pause(1000);
+    return true;
+  }
+  console.log(`  Dialog confirm "${confirmButtonText}" not found`);
+  return false;
+}
+
 /** Cleanup all contexts */
 export async function cleanup(browser: Browser, contexts: BrowserContext[]) {
   for (const ctx of contexts) {

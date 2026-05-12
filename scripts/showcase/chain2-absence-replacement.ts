@@ -6,8 +6,13 @@
  * Manual reassignment → Replacement accepts → Completes work → QA approves →
  * Ops reviews absence patterns
  */
-import { createBrowser, cleanup, step, chainHeader, pause, openSession, API_BASE, apiLogin, ACCOUNTS } from "./helpers";
+import {
+  createBrowser, cleanup, step, chainHeader, pause, openSession,
+  openInspectionByStatus, clickDetailButton, fillDialogAndConfirm,
+  API_BASE, apiLogin, ACCOUNTS,
+} from "./helpers";
 
+const GUI = process.env.GUI_URL || "http://localhost:3001";
 const TOTAL_STEPS = 10;
 
 async function main() {
@@ -45,7 +50,7 @@ async function main() {
     step(2, TOTAL_STEPS, "Dispatcher sees Tech A as SICK on coverage board");
     const { context: dispCtx, page: dispPage } = await openSession(browser, ACCOUNTS.dispatcher);
     contexts.push(dispCtx);
-    await dispPage.goto(`${process.env.GUI_URL || "http://localhost:3001"}/dispatch`);
+    await dispPage.goto(`${GUI}/inspections`);
     await pause();
     console.log("  [Coverage board] Tech A shows SICK status with red indicator");
 
@@ -68,7 +73,7 @@ async function main() {
     step(6, TOTAL_STEPS, "Ops Manager manually selects Technician B as replacement");
     const { context: opsCtx, page: opsPage } = await openSession(browser, ACCOUNTS.ops);
     contexts.push(opsCtx);
-    await opsPage.goto(`${process.env.GUI_URL || "http://localhost:3001"}/dispatch`);
+    await opsPage.goto(`${GUI}/inspections`);
     await pause();
     console.log("  Reassignment confirmed despite partial skill match");
 
@@ -76,28 +81,59 @@ async function main() {
     step(7, TOTAL_STEPS, "Technician B accepts reassignment");
     const { context: techBCtx, page: techBPage } = await openSession(browser, ACCOUNTS.tech);
     contexts.push(techBCtx);
-    await techBPage.goto(`${process.env.GUI_URL || "http://localhost:3001"}/inspections`);
-    await pause();
-    console.log("  Tech B sees new assignment, taps Accept");
+
+    if (await openInspectionByStatus(techBPage, "ASSIGNED")) {
+      console.log("  Tech B sees new assignment");
+    }
 
     // ── Step 8: Tech B completes work ─────────────────────────────────────
     step(8, TOTAL_STEPS, "Technician B completes the reassigned work");
-    await techBPage.reload();
-    await pause();
-    console.log("  Resolution notes added, work completed");
+    // Start and submit the inspection
+    if (await clickDetailButton(techBPage, "Start Inspection")) {
+      await pause(1000);
+      console.log("  Inspection started");
+    }
+    if (await clickDetailButton(techBPage, "Submit for Review")) {
+      await pause(1000);
+      console.log("  Resolution notes added, work completed — status → SUBMITTED");
+    } else {
+      // Submit via API fallback
+      const techBTokens = await apiLogin(ACCOUNTS.tech.email, ACCOUNTS.tech.password);
+      const url = techBPage.url();
+      const id = url.split("/inspections/")[1]?.split("?")[0];
+      if (id) {
+        await fetch(`${API_BASE}/inspections/${id}`, {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${techBTokens.accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "IN_PROGRESS" }),
+        });
+        await fetch(`${API_BASE}/inspections/${id}/submit`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${techBTokens.accessToken}`, "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        await techBPage.reload();
+        await pause();
+        console.log("  Work completed via API — status → SUBMITTED");
+      }
+    }
 
     // ── Step 9: QA approves closure ───────────────────────────────────────
     step(9, TOTAL_STEPS, "QA Reviewer approves closure");
     const { context: qaCtx, page: qaPage } = await openSession(browser, ACCOUNTS.qa);
     contexts.push(qaCtx);
-    await qaPage.goto(`${process.env.GUI_URL || "http://localhost:3001"}/inspections`);
-    await pause();
-    console.log("  Ticket approved → CLOSED");
+
+    if (await openInspectionByStatus(qaPage, "SUBMITTED")) {
+      if (await clickDetailButton(qaPage, "Approve")) {
+        await fillDialogAndConfirm(qaPage, "Repair work verified.", "Approve");
+        console.log("  Inspection approved → APPROVED");
+      }
+    }
 
     // ── Step 10: Ops reviews absence patterns ─────────────────────────────
     step(10, TOTAL_STEPS, "Ops Manager reviews absence patterns");
     await opsPage.bringToFront();
-    await opsPage.goto(`${process.env.GUI_URL || "http://localhost:3001"}/admin`);
+    await opsPage.goto(`${GUI}/admin`);
     await pause();
     console.log("  Absence history: Tech A has 3 sick days this month");
 

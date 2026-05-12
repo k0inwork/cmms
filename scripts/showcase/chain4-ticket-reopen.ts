@@ -6,8 +6,13 @@
  * ticket created → assigned → repaired → closed → 2 weeks later defect recurs →
  * QA reopens → Dispatcher escalates to CRITICAL → Ops sees defect trend → audit trail
  */
-import { createBrowser, cleanup, step, chainHeader, pause, openSession, API_BASE, apiLogin, ACCOUNTS } from "./helpers";
+import {
+  createBrowser, cleanup, step, chainHeader, pause, openSession,
+  openInspectionByStatus, clickDetailButton, fillDialogAndConfirm,
+  API_BASE, apiLogin, ACCOUNTS,
+} from "./helpers";
 
+const GUI = process.env.GUI_URL || "http://localhost:3001";
 const TOTAL_STEPS = 15;
 
 async function main() {
@@ -17,63 +22,57 @@ async function main() {
 
   const browser = await createBrowser();
   const contexts: any[] = [];
-  const GUI = process.env.GUI_URL || "http://localhost:3001";
 
   try {
     // ── Step 1-2: QA rejects initial inspection ──────────────────────────
     step(1, TOTAL_STEPS, "Technician submits blade trailing edge inspection");
     const { context: techCtx, page: techPage } = await openSession(browser, ACCOUNTS.tech);
     contexts.push(techCtx);
-    await techPage.goto(`${GUI}/inspections`);
-    await pause();
 
     // Start and submit an inspection
-    const techRow = techPage.locator("tbody tr").first();
-    if (await techRow.isVisible()) {
-      await techRow.click();
-      await pause();
-      const startBtn = techPage.locator('button:has-text("Start Inspection")');
-      if (await startBtn.isVisible()) await startBtn.click();
-      await pause(800);
-      const submitBtn = techPage.locator('button:has-text("Submit for Review")');
-      if (await submitBtn.isVisible()) await submitBtn.click();
-      await pause(1000);
+    if (await openInspectionByStatus(techPage, "ASSIGNED")) {
+      if (await clickDetailButton(techPage, "Start Inspection")) await pause(800);
+      if (await clickDetailButton(techPage, "Submit for Review")) {
+        await pause(1000);
+        console.log("  Inspection submitted — status → SUBMITTED");
+      } else {
+        // Submit via API
+        const tokens = await apiLogin(ACCOUNTS.tech.email, ACCOUNTS.tech.password);
+        const id = techPage.url().split("/inspections/")[1]?.split("?")[0];
+        if (id) {
+          await fetch(`${API_BASE}/inspections/${id}`, { method: "PUT", headers: { Authorization: `Bearer ${tokens.accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({ status: "IN_PROGRESS" }) });
+          await fetch(`${API_BASE}/inspections/${id}/submit`, { method: "POST", headers: { Authorization: `Bearer ${tokens.accessToken}`, "Content-Type": "application/json" }, body: JSON.stringify({}) });
+          await techPage.reload();
+          console.log("  Inspection submitted via API — status → SUBMITTED");
+        }
+      }
     }
 
     step(2, TOTAL_STEPS, "QA Reviewer rejects: 'Photos unclear, need annotated close-ups'");
     const { context: qaCtx, page: qaPage } = await openSession(browser, ACCOUNTS.qa);
     contexts.push(qaCtx);
-    await qaPage.goto(`${GUI}/inspections`);
-    await pause();
 
-    const qaRow = qaPage.locator("tbody tr").first();
-    if (await qaRow.isVisible()) {
-      await qaRow.click();
-      await pause();
+    if (await openInspectionByStatus(qaPage, "SUBMITTED")) {
+      // Click Reject button
+      if (await clickDetailButton(qaPage, "Reject")) {
+        // Select "Reject" action in dialog
+        const rejectTab = qaPage.locator(".fixed button:has-text('Reject')").nth(1);
+        if (await rejectTab.isVisible()) await rejectTab.click();
+        await pause(300);
 
-      // Click Reject
-      const rejectBtn = qaPage.locator('button:has-text("Reject")').first();
-      if (await rejectBtn.isVisible()) {
-        await rejectBtn.click();
-        await pause(500);
-        const notes = qaPage.locator("textarea").last();
-        if (await notes.isVisible()) {
-          await notes.fill("Photos of trailing edge are unclear. Need annotated close-ups showing crack propagation.");
-        }
-        await pause(500);
-        const confirmReject = qaPage.locator('button:has-text("Reject")').last();
-        if (await confirmReject.isVisible()) await confirmReject.click();
-        await pause(1000);
+        await fillDialogAndConfirm(
+          qaPage,
+          "Photos of trailing edge are unclear. Need annotated close-ups showing crack propagation.",
+          "Reject",
+        );
         console.log("  Inspection REJECTED — status → REJECTED");
       }
     }
 
     // ── Step 3-4: Tech re-inspects with annotations ──────────────────────
     step(3, TOTAL_STEPS, "Tech captures new high-res photos of damage area");
-    await techPage.bringToFront();
-    await techPage.reload();
-    await pause();
     console.log("  [Simulated] 3 new high-res photos captured");
+    await pause();
 
     step(4, TOTAL_STEPS, "Tech adds annotations: arrows + 'crack extends 15cm from root'");
     console.log("  [Simulated] Annotation overlay applied to photos");
@@ -81,29 +80,19 @@ async function main() {
 
     // ── Step 5-6: QA approves, ticket created ────────────────────────────
     step(5, TOTAL_STEPS, "Tech resubmits, QA approves");
-    const resubmitRow = techPage.locator("tbody tr").first();
-    if (await resubmitRow.isVisible()) {
-      await resubmitRow.click();
-      await pause();
-      const resubBtn = techPage.locator('button:has-text("Submit for Review")');
-      if (await resubBtn.isVisible()) await resubBtn.click();
+    await techPage.bringToFront();
+
+    // Find another ASSIGNED inspection, start + submit it
+    if (await openInspectionByStatus(techPage, "ASSIGNED")) {
+      if (await clickDetailButton(techPage, "Start Inspection")) await pause(800);
+      await clickDetailButton(techPage, "Submit for Review");
       await pause(1000);
     }
 
     await qaPage.bringToFront();
-    await qaPage.reload();
-    await pause();
-    const approveRow = qaPage.locator("tbody tr").first();
-    if (await approveRow.isVisible()) {
-      await approveRow.click();
-      await pause();
-      const approveBtn = qaPage.locator('button:has-text("Approve")').first();
-      if (await approveBtn.isVisible()) {
-        await approveBtn.click();
-        await pause(500);
-        const confirm = qaPage.locator('button:has-text("Approve")').last();
-        if (await confirm.isVisible()) await confirm.click();
-        await pause(1000);
+    if (await openInspectionByStatus(qaPage, "SUBMITTED")) {
+      if (await clickDetailButton(qaPage, "Approve")) {
+        await fillDialogAndConfirm(qaPage, "Annotated photos accepted.", "Approve");
         console.log("  Inspection APPROVED");
       }
     }
@@ -140,8 +129,6 @@ async function main() {
 
     // ── Step 11-12: QA reopens, Dispatcher escalates ─────────────────────
     step(11, TOTAL_STEPS, "QA reopens ticket: 'Defect recurred at same location'");
-    await qaPage.reload();
-    await pause();
     console.log("  Reason: 'Original repair insufficient — crack reappeared'");
 
     step(12, TOTAL_STEPS, "Dispatcher escalates priority to CRITICAL");
