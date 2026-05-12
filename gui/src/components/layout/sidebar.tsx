@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/lib/auth-context";
 import { useLogoutConfirm, LogoutConfirmDialog } from "@/components/auth/logout-confirm";
+import { GlobalSearch } from "@/components/layout/global-search";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
@@ -17,6 +18,9 @@ import {
   Menu,
   X,
   Network,
+  AlertTriangle,
+  CheckSquare,
+  CalendarDays,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -30,17 +34,50 @@ interface NavItem {
   roles?: Role[];
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", href: "/", icon: LayoutDashboard },
-  { label: "Assets", href: "/assets", icon: Network },
-  { label: "Tickets", href: "/tickets", icon: Ticket },
-  { label: "Inspections", href: "/inspections", icon: ClipboardCheck },
-  { label: "Work Orders", href: "/work-orders", icon: Wrench },
-  { label: "Dispatch", href: "/dispatch", icon: Radio, roles: ["DISPATCHER", "ADMINISTRATOR"] },
-  { label: "Evidence", href: "/evidence", icon: FileImage },
-  { label: "Audit Trail", href: "/audit", icon: ShieldCheck, roles: ["ADMINISTRATOR", "OPERATIONS_MANAGER"] },
-  { label: "Reports", href: "/reports", icon: BarChart3, roles: ["ADMINISTRATOR", "OPERATIONS_MANAGER", "QA_REVIEWER"] },
-  { label: "Admin", href: "/admin", icon: FileText, roles: ["ADMINISTRATOR"] },
+interface NavGroup {
+  label: string;
+  items: NavItem[];
+}
+
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Operations",
+    items: [
+      { label: "Dashboard", href: "/", icon: LayoutDashboard },
+      { label: "Assets", href: "/assets", icon: Network },
+      { label: "Tickets", href: "/tickets", icon: Ticket },
+      { label: "Work Orders", href: "/work-orders", icon: Wrench },
+    ],
+  },
+  {
+    label: "Inspections & Quality",
+    items: [
+      { label: "Inspections", href: "/inspections", icon: ClipboardCheck },
+      { label: "QA Review", href: "/qa-review", icon: CheckSquare, roles: ["QA_REVIEWER", "ADMINISTRATOR"] },
+      { label: "Evidence", href: "/evidence", icon: FileImage },
+    ],
+  },
+  {
+    label: "Dispatch & Planning",
+    items: [
+      { label: "Dispatch", href: "/dispatch", icon: Radio, roles: ["DISPATCHER", "ADMINISTRATOR"] },
+      { label: "Escalations", href: "/escalations", icon: AlertTriangle, roles: ["DISPATCHER", "ADMINISTRATOR", "OPERATIONS_MANAGER"] },
+      { label: "Absences", href: "/absences", icon: CalendarDays, roles: ["DISPATCHER", "ADMINISTRATOR", "OPERATIONS_MANAGER"] },
+    ],
+  },
+  {
+    label: "Analytics",
+    items: [
+      { label: "Reports", href: "/reports", icon: BarChart3, roles: ["ADMINISTRATOR", "OPERATIONS_MANAGER", "QA_REVIEWER"] },
+      { label: "Audit Trail", href: "/audit", icon: ShieldCheck, roles: ["ADMINISTRATOR", "OPERATIONS_MANAGER"] },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      { label: "Admin", href: "/admin", icon: FileText, roles: ["ADMINISTRATOR"] },
+    ],
+  },
 ];
 
 export function Sidebar() {
@@ -49,9 +86,12 @@ export function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { showConfirm, requestLogout, cancel, confirm } = useLogoutConfirm();
 
-  const filtered = NAV_ITEMS.filter(
-    (item) => !item.roles || (user && item.roles.includes(user.role)),
-  );
+  const filteredGroups = NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter(
+      (item) => !item.roles || (user && item.roles.includes(user.role)),
+    ),
+  })).filter((group) => group.items.length > 0);
 
   const nav = (
     <>
@@ -59,28 +99,40 @@ export function Sidebar() {
         <Link href="/" className="text-lg font-semibold text-brand-700">
           CMMS
         </Link>
+        <div className="ml-4 hidden lg:block">
+          <GlobalSearch />
+        </div>
       </div>
 
-      <nav className="flex-1 space-y-1 px-2 py-4">
-        {filtered.map((item) => {
-          const active = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                active
-                  ? "bg-brand-50 text-brand-700"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.label}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto px-2 py-4">
+        {filteredGroups.map((group, gi) => (
+          <div key={group.label} className={gi > 0 ? "mt-4" : ""}>
+            <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              {group.label}
+            </p>
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const active = pathname === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                      active
+                        ? "bg-brand-50 text-brand-700"
+                        : "text-slate-600 hover:bg-slate-50 hover:text-slate-900",
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" />
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
       <div className="border-t border-slate-200 p-4">
