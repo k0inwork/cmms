@@ -70,14 +70,28 @@ export function chainHeader(title: string, roles: string[]) {
   console.log(`${"═".repeat(60)}`);
 }
 
-/** Create browser context + page, login, return page */
+const MOBILE_VIEWPORT = { width: 375, height: 812 };
+const DESKTOP_VIEWPORT = { width: 1280, height: 900 };
+const MOBILE_USER_AGENT =
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
+
+function isTechAccount(account: { email: string }) {
+  return account.email.startsWith("tech");
+}
+
+/** Create browser context + page, login, return page.
+ *  Technician accounts get mobile viewport + user-agent, others get desktop. */
 export async function openSession(
   browser: Browser,
   account: { email: string; password: string },
   viewport?: { width: number; height: number },
 ): Promise<{ context: BrowserContext; page: Page }> {
+  const mobile = isTechAccount(account);
   const context = await browser.newContext({
-    viewport: viewport ?? { width: 1280, height: 900 },
+    viewport: viewport ?? (mobile ? MOBILE_VIEWPORT : DESKTOP_VIEWPORT),
+    userAgent: mobile ? MOBILE_USER_AGENT : undefined,
+    isMobile: mobile,
+    hasTouch: mobile,
   });
   const page = await context.newPage();
   await login(page, account);
