@@ -32,7 +32,7 @@ export async function login(page: Page, account: { email: string; password: stri
   await page.fill('input[id="password"]', account.password);
   await pause(300);
   await page.click('button[type="submit"]');
-  await page.waitForURL(/\/(inspections|admin|tickets|dashboard|profile)/, { timeout: 10000 });
+  await page.waitForURL((url) => !url.pathname.startsWith("/login"), { timeout: 10000 });
   await pause(500);
 }
 
