@@ -192,7 +192,12 @@ export async function reseedDb(): Promise<void> {
   console.log("  Resetting database to seed state...");
   const { execSync } = await import("node:child_process");
   const cwd = process.cwd();
-  execSync("npx prisma migrate reset --force", { stdio: "pipe", cwd, timeout: 120_000 });
+  execSync("npx prisma migrate reset --force", {
+    stdio: "pipe",
+    cwd,
+    timeout: 120_000,
+    env: { ...process.env, PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION: "showcase script auto-consent for dev db reset" },
+  });
   console.log("  Database reseeded.");
 }
 

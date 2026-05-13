@@ -38,7 +38,11 @@ app.post("/run/:chainId", async (c) => {
     return c.json({ error: "Chain already running" }, 409);
   }
 
-  const env = { ...process.env, SHOWCASE_SPEED: "fast" };
+  const env = {
+    ...process.env,
+    SHOWCASE_SPEED: "fast",
+    PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION: "showcase script auto-consent for dev db reset",
+  };
 
   const proc = spawn("npx", ["tsx", `scripts/showcase/${chain.script}`], {
     cwd: process.cwd(),
@@ -49,11 +53,16 @@ app.post("/run/:chainId", async (c) => {
 
   running.set(chainId, proc);
 
-  proc.on("close", () => {
+  proc.stdout?.on("data", (d: Buffer) => console.log(`[showcase:${chainId}]`, d.toString().trimEnd()));
+  proc.stderr?.on("data", (d: Buffer) => console.error(`[showcase:${chainId}]`, d.toString().trimEnd()));
+
+  proc.on("close", (code) => {
+    console.log(`[showcase:${chainId}] exited with code ${code}`);
     running.delete(chainId);
   });
 
-  proc.on("error", () => {
+  proc.on("error", (err) => {
+    console.error(`[showcase:${chainId}] spawn error:`, err.message);
     running.delete(chainId);
   });
 
