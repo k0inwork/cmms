@@ -36,12 +36,13 @@ import { ShowcaseTab } from "./showcase-tab";
 
 type Tab = "users" | "skills" | "certifications" | "workflows" | "templates" | "showcase" | "docs";
 
-const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
+// Tabs marked with * are shells — data model exists but enforcement/UX is incomplete
+const TABS: { key: Tab; label: string; icon: React.ElementType; shell?: string }[] = [
   { key: "users", label: "Users", icon: Users },
-  { key: "skills", label: "Skills", icon: Zap },
-  { key: "certifications", label: "Certifications", icon: Award },
-  { key: "workflows", label: "Workflows", icon: Cog },
-  { key: "templates", label: "Templates", icon: ClipboardList },
+  { key: "skills", label: "Skills*", icon: Zap, shell: "Skills are stored but dispatch doesn't enforce skill matching when assigning technicians" },
+  { key: "certifications", label: "Certifications*", icon: Award, shell: "Certs are stored but no expiry warnings or auto-unassign on expired certs" },
+  { key: "workflows", label: "Workflows*", icon: Cog, shell: "In-memory only (lost on restart). Real state machines are hardcoded in route handlers, not configurable via this UI" },
+  { key: "templates", label: "Templates*", icon: ClipboardList, shell: "Backend supports field schemas (JSON) but GUI has no field builder — only metadata editing" },
   { key: "showcase", label: "Showcase", icon: MonitorPlay },
   { key: "docs", label: "Docs", icon: BookOpen },
 ];
@@ -93,11 +94,13 @@ export default function AdminPage() {
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
+              title={t.shell || undefined}
               className={cn(
                 "flex items-center gap-2 border-b-2 px-1 pb-3 text-sm font-medium transition-colors",
                 tab === t.key
                   ? "border-brand-600 text-brand-600"
                   : "border-transparent text-slate-500 hover:text-slate-700",
+                t.shell && "italic",
               )}
             >
               <t.icon className="h-4 w-4" />
@@ -398,6 +401,7 @@ function SkillsTab() {
           <Plus className="h-4 w-4" /> Add Skill
         </button>
       </div>
+      <ShellNotice note="Skills are stored but dispatch doesn't enforce skill matching when assigning technicians to jobs." />
 
       {loading ? (
         <p className="mt-8 text-center text-sm text-slate-500">Loading...</p>
@@ -512,6 +516,7 @@ function CertsTab() {
           <Plus className="h-4 w-4" /> Add Certification
         </button>
       </div>
+      <ShellNotice note="Certifications are stored but there are no expiry warnings or auto-unassign on expired certs." />
 
       {loading ? (
         <p className="mt-8 text-center text-sm text-slate-500">Loading...</p>
@@ -646,6 +651,7 @@ function WorkflowsTab() {
           <Plus className="h-4 w-4" /> Add Rule
         </button>
       </div>
+      <ShellNotice note="In-memory only (lost on server restart). Real state machines (inspection/ticket flows) are hardcoded in route handlers, not configurable via this UI." />
 
       {loading ? (
         <p className="mt-8 text-center text-sm text-slate-500">Loading...</p>
@@ -828,6 +834,7 @@ function TemplatesTab() {
           <Plus className="h-4 w-4" /> Add Template
         </button>
       </div>
+      <ShellNotice note="Backend supports field schemas (JSON in Prisma) but GUI has no field builder — only template metadata (name, type, model) can be edited." />
 
       {loading ? (
         <p className="mt-8 text-center text-sm text-slate-500">Loading...</p>
@@ -1274,6 +1281,15 @@ function DocsTab() {
 }
 
 // ─── Shared Components ────────────────────────────────────────────────────────
+
+function ShellNotice({ note }: { note: string }) {
+  return (
+    <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+      <span className="font-semibold shrink-0">Shell:</span>
+      <span>{note}</span>
+    </div>
+  );
+}
 
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
