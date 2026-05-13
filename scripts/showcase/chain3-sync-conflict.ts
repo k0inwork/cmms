@@ -8,22 +8,75 @@
 import {
   createBrowser, cleanup, step, chainHeader, pause, openSession,
   openInspectionByStatus, clickDetailButton,
-  API_BASE, apiLogin, ACCOUNTS,
+  API_BASE, apiLogin, ACCOUNTS, reseedDb,
 } from "./helpers";
+import { createSlideOverlay, type Slide } from "./slides";
 
 const GUI = process.env.GUI_URL || "http://localhost:3001";
 const TOTAL_STEPS = 12;
+
+const CHAIN_SLIDES: Slide[] = [
+  {
+    title: "Two Techs, Same Component",
+    body: "Two technicians are independently assigned\nto inspect the same turbine component.\n\nTech A: oil leak inspection\nTech B: vibration analysis\n\nBoth go offline at the remote site.",
+    highlight: "TECHNICIAN A & B",
+    flow: "Dispatcher ──assign──▸ Tech A (oil leak)\n            └──assign──▸ Tech B (vibration)\n                         [OFFLINE]",
+  },
+  {
+    title: "Both Submit Offline",
+    body: "Working offline, each technician fills in their\ninspection data and captures photos.\n\nSubmissions are queued locally on each device,\nwaiting for connectivity to sync.",
+    highlight: "TECHNICIAN",
+    flow: "Tech A ──submit offline──▸ queued\nTech B ──submit offline──▸ queued",
+  },
+  {
+    title: "Tech A Syncs — Success",
+    body: "Tech A drives back into signal range.\nTheir inspection syncs to the server successfully.\n\nServer version: 1",
+    highlight: "TECHNICIAN A",
+    flow: "Tech A ──online──▸ SYNC ✓  (server v1)",
+  },
+  {
+    title: "Tech B Syncs — CONFLICT",
+    body: "Tech B comes back online and syncs.\nThe server detects a version conflict:\nTech B's data was based on version 0,\nbut the server is now at version 1.\n\nCONFLICT flagged for QA review.",
+    highlight: "TECHNICIAN B",
+    flow: "Tech B ──online──▸ CONFLICT ⚠\n         client v0 ≠ server v1",
+  },
+  {
+    title: "QA Reviews Side-by-Side",
+    body: "The QA Reviewer opens the conflict review screen.\nBoth inspection versions are shown side-by-side:\n\n  • Tech A: oil leak found, 3 photos\n  • Tech B: abnormal vibration, 2 photos\n\nQA merges non-conflicting fields.",
+    highlight: "QA REVIEWER",
+    flow: "Tech A (oil) ─┐\n               ├──▸ QA merge ──▸ APPROVED\nTech B (vib) ─┘",
+  },
+  {
+    title: "Merged & Ticket Created",
+    body: "QA approves the merged inspection.\nA ticket is auto-created from the confirmed\ndefect data.\n\nOps Manager reviews sync health dashboard:\nconflicts resolved, no data loss.",
+    highlight: "OPS MANAGER",
+    flow: "[MERGED] ──approve──▸ [APPROVED] ✓\n  └──▸ Ticket created\n  └──▸ Sync health: OK",
+  },
+];
 
 async function main() {
   chainHeader("Chain 3: Sync Conflict Resolution", [
     "Technician A", "Technician B", "QA Reviewer", "Ops Manager",
   ]);
 
+  await reseedDb();
+
   const browser = await createBrowser();
   const contexts: any[] = [];
+  let slideBrowser: import("@playwright/test").Browser | undefined;
 
   try {
+    const overlay = await createSlideOverlay(
+      browser,
+      "Chain 3: Sync Conflict Resolution",
+      ["Technician A", "Technician B", "QA Reviewer", "Ops Manager"],
+      CHAIN_SLIDES,
+    );
+    slideBrowser = overlay.slideBrowser;
+    let slideIdx = 0;
+
     // ── Step 1: Both techs assigned to same component ────────────────────
+    await overlay.gotoSlide(slideIdx++);
     step(1, TOTAL_STEPS, "Two technicians assigned to same turbine component");
     console.log("  Tech A (tech@cmms.test) — oil leak inspection");
     console.log("  Tech B (technician1@cmms.test) — vibration analysis");
@@ -38,6 +91,7 @@ async function main() {
     console.log("  [Simulated] Offline indicator shown on both devices");
 
     // ── Step 3-4: Both submit inspections ─────────────────────────────────
+    await overlay.gotoSlide(slideIdx++);
     step(3, TOTAL_STEPS, "Tech A finds oil leak, submits inspection");
     if (await openInspectionByStatus(pageA, "ASSIGNED")) {
       if (await clickDetailButton(pageA, "Start Inspection")) {
@@ -80,11 +134,13 @@ async function main() {
     }
 
     // ── Step 5: Tech A syncs first ────────────────────────────────────────
+    await overlay.gotoSlide(slideIdx++);
     step(5, TOTAL_STEPS, "Tech A drives back to range — sync succeeds");
     console.log("  Sync status: pending → synced");
     await pause();
 
     // ── Step 6: Tech B syncs — CONFLICT ───────────────────────────────────
+    await overlay.gotoSlide(slideIdx++);
     step(6, TOTAL_STEPS, "Tech B goes online — sync triggers CONFLICT");
     console.log("  Server detects version conflict on same component inspection");
     await pause();
@@ -102,6 +158,7 @@ async function main() {
     await pause();
 
     // ── Step 9-10: QA reviews both inspections ────────────────────────────
+    await overlay.gotoSlide(slideIdx++);
     step(9, TOTAL_STEPS, "QA Reviewer opens conflict review — sees both side-by-side");
     const { context: qaCtx, page: qaPage } = await openSession(browser, ACCOUNTS.qa);
     contexts.push(qaCtx);
@@ -132,6 +189,7 @@ async function main() {
     }
 
     // ── Step 11: Ticket created from confirmed defect ─────────────────────
+    await overlay.gotoSlide(slideIdx++);
     step(11, TOTAL_STEPS, "QA creates ticket from confirmed oil leak defect");
     console.log("  Ticket created with merged inspection data");
     await pause();
@@ -146,6 +204,7 @@ async function main() {
 
     console.log("\n✓ Chain 3 complete: Sync conflict → resolution demonstrated.\n");
   } finally {
+    await slideBrowser?.close().catch(() => {});
     await cleanup(browser, contexts);
   }
 }

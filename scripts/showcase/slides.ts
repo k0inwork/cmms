@@ -1,9 +1,9 @@
 /**
  * Slide overlay renderer for showcase chains.
- * Opens a full-screen HTML page in a browser tab that shows
- * explanatory slides (text + ASCII flow) synchronized with the demo.
+ * Opens a SEPARATE browser window that stays visible alongside
+ * the demo windows. Shows explanatory slides synced with each step.
  */
-import type { Browser, BrowserContext, Page } from "@playwright/test";
+import { chromium, type Browser, type Page } from "@playwright/test";
 
 export interface Slide {
   title: string;
@@ -150,6 +150,24 @@ function renderSlidesHtml(chainTitle: string, chainRoles: string[], slides: Slid
     color: #475569;
   }
 
+  /* ── Next button ── */
+  #nextBtn {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 14px 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+  }
+  #nextBtn:hover { transform: scale(1.05); box-shadow: 0 6px 28px rgba(99,102,241,0.6); }
+  #nextBtn:active { transform: scale(0.97); }
+
   /* ── Waiting state ── */
   .waiting {
     text-align: center;
@@ -188,6 +206,7 @@ function renderSlidesHtml(chainTitle: string, chainRoles: string[], slides: Slid
 <script>
 const slides = ${slidesJson};
 let current = -1;
+window.__nextReady = false;
 
 function renderSlide(index) {
   if (index < 0 || index >= slides.length) return;
@@ -195,9 +214,9 @@ function renderSlide(index) {
   const container = document.getElementById('container');
   const progress = document.getElementById('progress');
 
-  // Fade out
   container.classList.add('fading');
   setTimeout(() => {
+    const label = (index + 1 >= slides.length) ? 'Done' : 'Next \u2192';
     let html = '<div class="slide">';
     html += '<div class="step-label">Step ' + (index + 1) + ' / ' + slides.length + '</div>';
     if (s.highlight) {
@@ -208,10 +227,12 @@ function renderSlide(index) {
     if (s.flow) {
       html += '<div class="flow">' + s.flow + '</div>';
     }
+    html += '<button id="nextBtn" onclick="window.__playwrightNext()">' + label + '</button>';
     html += '</div>';
     container.innerHTML = html;
     container.classList.remove('fading');
     progress.style.width = ((index + 1) / slides.length * 100) + '%';
+    window.__nextReady = false;  // reset AFTER new button is in DOM
   }, 300);
 }
 
@@ -219,7 +240,6 @@ function escapeHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-// Listen for slide change commands via window.postMessage from Playwright
 window.addEventListener('message', (e) => {
   if (e.data?.type === 'goto') {
     current = e.data.slide;
@@ -227,7 +247,6 @@ window.addEventListener('message', (e) => {
   }
 });
 
-// Also poll a global for Playwright evaluate-based control
 window.__slideTarget = -1;
 setInterval(() => {
   if (window.__slideTarget !== current && window.__slideTarget >= 0) {
@@ -242,31 +261,52 @@ setInterval(() => {
 }
 
 /**
- * Create a slide overlay browser context.
- * Returns the page — call gotoSlide(n) to change slides.
+ * Create a slide overlay in a SEPARATE browser window.
+ * This ensures it stays visible even as demo windows open/close.
+ * Returns { browser, page } — add browser to cleanup list.
  */
+export interface SlideOverlay {
+  slideBrowser: Browser;
+  page: Page;
+  totalSlides: number;
+  gotoSlide: (index: number) => Promise<void>;
+}
+
 export async function createSlideOverlay(
-  browser: Browser,
+  _browser: Browser,
   chainTitle: string,
   chainRoles: string[],
   slides: Slide[],
-): Promise<{ context: BrowserContext; page: Page; totalSlides: number }> {
+): Promise<SlideOverlay> {
   const html = renderSlidesHtml(chainTitle, chainRoles, slides);
-  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+
+  const slideBrowser = await chromium.launch({
+    headless: false,
+    args: ["--window-size=800,900"],
+  });
+  const context = await slideBrowser.newContext({ viewport: { width: 800, height: 900 } });
   const page = await context.newPage();
 
-  // Serve HTML via data URL
+  // Expose a native callback — only fires on real human clicks
+  let nextResolver: (() => void) | null = null;
+  await page.exposeFunction("__playwrightNext", () => {
+    if (nextResolver) {
+      nextResolver();
+      nextResolver = null;
+    }
+  });
+
   await page.setContent(html, { waitUntil: "domcontentloaded" });
 
-  return { context, page, totalSlides: slides.length };
-}
+  async function gotoSlide(index: number) {
+    const promise = new Promise<void>((resolve) => { nextResolver = resolve; });
+    await page.evaluate((i) => {
+      (window as any).__slideTarget = i;
+      (window as any).postMessage({ type: "goto", slide: i }, "*");
+    }, index);
+    await page.bringToFront();
+    await promise; // waits until user clicks Next
+  }
 
-/**
- * Navigate to a specific slide (0-indexed).
- */
-export async function gotoSlide(page: Page, index: number) {
-  await page.evaluate((i) => {
-    (window as any).__slideTarget = i;
-    (window as any).postMessage({ type: "goto", slide: i }, "*");
-  }, index);
+  return { slideBrowser, page, totalSlides: slides.length, gotoSlide };
 }

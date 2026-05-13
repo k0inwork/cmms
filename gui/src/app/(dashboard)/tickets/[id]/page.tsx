@@ -24,6 +24,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+function resolveUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith("http")) return url;
+  return `${API_BASE}${url}`;
+}
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<
@@ -408,7 +415,11 @@ export default function TicketDetailPage() {
                     key={te.id}
                     className="flex aspect-square items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-xs text-slate-400"
                   >
-                    {te.evidence.media_type?.startsWith("image") ? "IMG" : te.evidence.media_type ?? "FILE"}
+                    {te.evidence.thumbnail_url ? (
+	                      <img src={resolveUrl(te.evidence.thumbnail_url)} alt="" className="h-full w-full object-cover" />
+	                    ) : (
+	                      <span className="text-xs text-slate-400">{te.evidence.media_type ?? "FILE"}</span>
+	                    )}
                   </div>
                 ))}
               </div>

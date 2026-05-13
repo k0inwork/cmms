@@ -38,7 +38,14 @@ function makeTokenPayload(user: {
 // ─── POST /auth/login ────────────────────────────────────────────────────────
 
 auth.post("/login", async (c) => {
-  const body = await c.req.json();
+  console.log("[LOGIN] request from", c.req.header("x-forwarded-for") || new URL(c.req.url).hostname);
+  let body;
+  try {
+    body = await c.req.json();
+  } catch (e) {
+    console.error("[LOGIN] failed to parse body:", e);
+    return c.json({ error: "Invalid JSON body" }, 400);
+  }
   const parsed = loginSchema.safeParse(body);
   if (!parsed.success) {
     return c.json({ error: "Validation failed", details: parsed.error.flatten().fieldErrors }, 400);
@@ -46,19 +53,25 @@ auth.post("/login", async (c) => {
 
   const { email, password } = parsed.data;
 
+  console.log("[LOGIN] email:", email);
+
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user || !user.is_active) {
+    console.log("[LOGIN] user not found or inactive");
     return c.json({ error: "Invalid credentials" }, 401);
   }
 
   const valid = await verifyPassword(password, user.password_hash);
   if (!valid) {
+    console.log("[LOGIN] invalid password");
     return c.json({ error: "Invalid credentials" }, 401);
   }
 
+  console.log("[LOGIN] user authenticated, signing tokens...");
   const payload = makeTokenPayload(user);
   const accessToken = signAccessToken(payload);
   const refreshToken = signRefreshToken(payload);
+  console.log("[LOGIN] tokens signed, storing refresh token...");
 
   // Store refresh token hash in DB
   const tokenHash = crypto.createHash("sha256").update(refreshToken).digest("hex");
@@ -72,6 +85,7 @@ auth.post("/login", async (c) => {
     },
   });
 
+  console.log("[LOGIN] success for", email);
   return c.json({
     accessToken,
     refreshToken,

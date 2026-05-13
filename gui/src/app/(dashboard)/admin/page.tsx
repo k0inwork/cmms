@@ -26,16 +26,21 @@ import {
   UserCheck,
   UserX,
   Shield,
+  ClipboardList,
+  MonitorPlay,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ShowcaseTab } from "./showcase-tab";
 
-type Tab = "users" | "skills" | "certifications" | "workflows";
+type Tab = "users" | "skills" | "certifications" | "workflows" | "templates" | "showcase";
 
 const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: "users", label: "Users", icon: Users },
   { key: "skills", label: "Skills", icon: Zap },
   { key: "certifications", label: "Certifications", icon: Award },
   { key: "workflows", label: "Workflows", icon: Cog },
+  { key: "templates", label: "Templates", icon: ClipboardList },
+  { key: "showcase", label: "Showcase", icon: MonitorPlay },
 ];
 
 const ROLE_LABELS: Record<Role, string> = {
@@ -75,7 +80,7 @@ export default function AdminPage() {
     <div>
       <h1 className="text-2xl font-semibold text-slate-900">Admin</h1>
       <p className="mt-1 text-sm text-slate-500">
-        Manage users, skills, certifications, and workflow rules.
+        Manage users, skills, certifications, templates, and workflow rules.
       </p>
 
       {/* Tabs */}
@@ -104,6 +109,8 @@ export default function AdminPage() {
         {tab === "skills" && <SkillsTab />}
         {tab === "certifications" && <CertsTab />}
         {tab === "workflows" && <WorkflowsTab />}
+        {tab === "templates" && <TemplatesTab />}
+        {tab === "showcase" && <ShowcaseTab />}
       </div>
     </div>
   );
@@ -729,6 +736,400 @@ function WorkflowModal({ title, ruleId, rules, onClose, onSaved }: { title: stri
           {submitting ? "Saving..." : "Save"}
         </button>
       </div>
+    </Modal>
+  );
+}
+
+// ─── Templates Tab ─────────────────────────────────────────────────────────────
+
+interface TemplateItem {
+  id: string;
+  name: string;
+  description?: string | null;
+  inspection_type: string;
+  turbine_model?: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+interface TemplateVersion {
+  id: string;
+  version: number;
+  changelog?: string | null;
+  created_at: string;
+}
+
+function TemplatesTab() {
+  const [templates, setTemplates] = useState<TemplateItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreate, setShowCreate] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [versionsFor, setVersionsFor] = useState<string | null>(null);
+  const [versions, setVersions] = useState<TemplateVersion[]>([]);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await apiGet<{ data: TemplateItem[] }>("/templates?limit=100");
+      setTemplates(res.data);
+    } catch {
+      /* ignore */
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this template?")) return;
+    try {
+      await apiDelete(`/templates/${id}`);
+      load();
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const handleToggleActive = async (t: TemplateItem) => {
+    try {
+      await apiPatch(`/templates/${t.id}`, { is_active: !t.is_active });
+      load();
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const handleViewVersions = async (id: string) => {
+    try {
+      const res = await apiGet<{ data: TemplateVersion[] }>(`/templates/${id}/versions`);
+      setVersions(res.data);
+      setVersionsFor(id);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-medium text-slate-900">Inspection Templates</h2>
+        <button
+          onClick={() => setShowCreate(true)}
+          className="flex items-center gap-1.5 rounded-md bg-brand-600 px-3 py-2 text-sm font-medium text-white hover:bg-brand-700"
+        >
+          <Plus className="h-4 w-4" /> Add Template
+        </button>
+      </div>
+
+      {loading ? (
+        <p className="mt-8 text-center text-sm text-slate-500">Loading...</p>
+      ) : templates.length === 0 ? (
+        <p className="mt-8 text-center text-sm text-slate-500">No templates defined</p>
+      ) : (
+        <div className="mt-4 overflow-hidden rounded-lg border border-slate-200">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Name</th>
+                <th className="hidden px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 sm:table-cell">Type</th>
+                <th className="hidden px-4 py-3 text-left text-xs font-medium uppercase text-slate-500 md:table-cell">Turbine Model</th>
+                <th className="px-4 py-3 text-left text-xs font-medium uppercase text-slate-500">Active</th>
+                <th className="px-4 py-3 text-right text-xs font-medium uppercase text-slate-500">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 bg-white">
+              {templates.map((t) => (
+                <tr key={t.id} className="hover:bg-slate-50">
+                  <td className="px-4 py-3">
+                    <p className="text-sm font-medium text-slate-900">{t.name}</p>
+                    {t.description && (
+                      <p className="mt-0.5 text-xs text-slate-500 line-clamp-1">{t.description}</p>
+                    )}
+                  </td>
+                  <td className="hidden px-4 py-3 text-sm text-slate-600 sm:table-cell">
+                    <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium">
+                      {t.inspection_type.replace("_", " ")}
+                    </span>
+                  </td>
+                  <td className="hidden px-4 py-3 text-sm text-slate-500 md:table-cell">
+                    {t.turbine_model || "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => handleToggleActive(t)}
+                      className={cn(
+                        "relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors",
+                        t.is_active ? "bg-brand-600" : "bg-slate-200",
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transition-transform",
+                          t.is_active ? "translate-x-4" : "translate-x-0",
+                        )}
+                      />
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => handleViewVersions(t.id)}
+                        className="rounded p-1 text-slate-400 hover:text-slate-600"
+                        title="Versions"
+                      >
+                        <ClipboardList className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setEditId(t.id)}
+                        className="rounded p-1 text-slate-400 hover:text-slate-600"
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(t.id)}
+                        className="rounded p-1 text-slate-400 hover:text-red-600"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {showCreate && (
+        <TemplateModal title="Create Template" onClose={() => setShowCreate(false)} onSaved={load} />
+      )}
+      {editId && (
+        <TemplateModal
+          title="Edit Template"
+          templateId={editId}
+          templates={templates}
+          onClose={() => setEditId(null)}
+          onSaved={load}
+        />
+      )}
+      {versionsFor && (
+        <VersionsModal
+          versions={versions}
+          templateId={versionsFor}
+          onClose={() => {
+            setVersionsFor(null);
+            setVersions([]);
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+function TemplateModal({
+  title,
+  templateId,
+  templates,
+  onClose,
+  onSaved,
+}: {
+  title: string;
+  templateId?: string;
+  templates?: TemplateItem[];
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    inspection_type: "ROUTINE",
+    turbine_model: "",
+    is_active: true,
+  });
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (templateId && templates) {
+      const t = templates.find((x) => x.id === templateId);
+      if (t)
+        setForm({
+          name: t.name,
+          description: t.description || "",
+          inspection_type: t.inspection_type,
+          turbine_model: t.turbine_model || "",
+          is_active: t.is_active,
+        });
+    }
+  }, [templateId, templates]);
+
+  const submit = async () => {
+    setSubmitting(true);
+    setError("");
+    try {
+      const payload: Record<string, unknown> = {
+        name: form.name,
+        inspection_type: form.inspection_type,
+        is_active: form.is_active,
+      };
+      if (form.description) payload.description = form.description;
+      if (form.turbine_model) payload.turbine_model = form.turbine_model;
+      if (templateId) await apiPatch(`/templates/${templateId}`, payload);
+      else await apiPost("/templates", payload);
+      onSaved();
+      onClose();
+    } catch (e: any) {
+      setError(e?.body?.error || "Failed");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal title={title} onClose={onClose}>
+      <Field label="Name" value={form.name} onChange={(v) => setForm({ ...form, name: v })} />
+      <Field
+        label="Description"
+        value={form.description}
+        onChange={(v) => setForm({ ...form, description: v })}
+        optional
+      />
+      <div>
+        <label className="block text-sm font-medium text-slate-700">Inspection Type</label>
+        <select
+          value={form.inspection_type}
+          onChange={(e) => setForm({ ...form, inspection_type: e.target.value })}
+          className="mt-1 w-full rounded-md border border-slate-200 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
+        >
+          <option value="ROUTINE">Routine</option>
+          <option value="COMPREHENSIVE">Comprehensive</option>
+          <option value="SPECIAL">Special</option>
+          <option value="SAFETY">Safety</option>
+        </select>
+      </div>
+      <Field
+        label="Turbine Model"
+        value={form.turbine_model}
+        onChange={(v) => setForm({ ...form, turbine_model: v })}
+        optional
+        placeholder="e.g. Vestas V80"
+      />
+      <div className="flex items-center gap-2">
+        <input
+          type="checkbox"
+          checked={form.is_active}
+          onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+          className="rounded border-slate-300"
+        />
+        <label className="text-sm text-slate-700">Active</label>
+      </div>
+      {error && <p className="text-sm text-red-600">{error}</p>}
+      <div className="flex justify-end gap-2 pt-2">
+        <button
+          onClick={onClose}
+          className="rounded-md border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={submit}
+          disabled={submitting}
+          className="rounded-md bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+        >
+          {submitting ? "Saving..." : "Save"}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+function VersionsModal({
+  versions,
+  templateId,
+  onClose,
+}: {
+  versions: TemplateVersion[];
+  templateId: string;
+  onClose: () => void;
+}) {
+  const [creating, setCreating] = useState(false);
+  const [changelog, setChangelog] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleCreateVersion = async () => {
+    setSubmitting(true);
+    try {
+      await apiPost(`/templates/${templateId}/versions`, {
+        changelog: changelog || undefined,
+        schema: { fields: [] },
+      });
+      setCreating(false);
+      setChangelog("");
+      onClose();
+    } catch {
+      /* ignore */
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <Modal title="Template Versions" onClose={onClose}>
+      {versions.length === 0 ? (
+        <p className="py-4 text-center text-sm text-slate-500">No versions yet</p>
+      ) : (
+        <div className="space-y-2">
+          {versions.map((v) => (
+            <div key={v.id} className="rounded-lg border border-slate-200 p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-slate-900">Version {v.version}</span>
+                <span className="text-xs text-slate-400">
+                  {new Date(v.created_at).toLocaleDateString()}
+                </span>
+              </div>
+              {v.changelog && <p className="mt-1 text-xs text-slate-500">{v.changelog}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!creating ? (
+        <button
+          onClick={() => setCreating(true)}
+          className="mt-3 flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
+        >
+          <Plus className="h-4 w-4" /> New Version
+        </button>
+      ) : (
+        <div className="mt-3 space-y-2 rounded-lg border border-slate-200 p-3">
+          <Field
+            label="Changelog"
+            value={changelog}
+            onChange={setChangelog}
+            optional
+            placeholder="What changed in this version..."
+          />
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setCreating(false)}
+              className="rounded-md border border-slate-200 px-3 py-1.5 text-sm hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCreateVersion}
+              disabled={submitting}
+              className="rounded-md bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+            >
+              {submitting ? "Creating..." : "Create"}
+            </button>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 }

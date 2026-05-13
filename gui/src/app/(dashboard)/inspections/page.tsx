@@ -139,7 +139,7 @@ export default function InspectionsPage() {
                 const sc = STATUS_BADGE[insp.status];
                 const isOverdue = insp.due_date && new Date(insp.due_date) < new Date() && insp.status !== "APPROVED";
                 return (
-                  <tr key={insp.id} className="hover:bg-slate-50">
+                  <tr key={insp.id} className="hover:bg-slate-50 cursor-pointer" onClick={() => window.location.href = `/inspections/${insp.id}`}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <ClipboardCheck className="h-4 w-4 text-slate-400" />

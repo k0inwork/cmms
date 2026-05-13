@@ -43,12 +43,10 @@ app.post("/upload-url", authMiddleware(), requireRoles("TECHNICIAN", "QA_REVIEWE
   const key = `evidence/${evidenceId}/${fileName}`;
 
   return c.json({
-    uploadUrl: `https://s3.example.com/upload`,
+    uploadUrl: `/evidence/upload`,
     evidenceId,
     fields: {
       key,
-      policy: "placeholder-policy",
-      signature: "placeholder-signature",
     },
   });
 });
@@ -72,7 +70,7 @@ app.post("/", authMiddleware(), requireRoles("TECHNICIAN", "QA_REVIEWER", "ADMIN
   const user = c.get("user");
   const data = c.req.valid("json");
 
-  const fileUrl = `https://s3.example.com/evidence/${data.id}/${data.fileName}`;
+  const fileUrl = `/uploads/evidence/${data.id}/${data.fileName}`;
 
   const evidence = await prisma.evidenceItem.create({
     data: {

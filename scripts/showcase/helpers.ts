@@ -187,6 +187,15 @@ export async function fillDialogAndConfirm(
   return false;
 }
 
+/** Reset DB to seed state so every run starts with identical data */
+export async function reseedDb(): Promise<void> {
+  console.log("  Resetting database to seed state...");
+  const { execSync } = await import("node:child_process");
+  const cwd = process.cwd();
+  execSync("npx prisma migrate reset --force", { stdio: "pipe", cwd, timeout: 120_000 });
+  console.log("  Database reseeded.");
+}
+
 /** Cleanup all contexts */
 export async function cleanup(browser: Browser, contexts: BrowserContext[]) {
   for (const ctx of contexts) {

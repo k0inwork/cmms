@@ -3,6 +3,7 @@ dist/
 .env
 *.local
 .DS_Store
+uploads/
 
 # Beads / Dolt files (added by bd init)
 .dolt/

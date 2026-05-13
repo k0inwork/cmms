@@ -24,6 +24,7 @@ import workOrderRoutes from "./routes/work-orders.js";
 import searchRoutes from "./routes/search.js";
 import auditRoutes from "./routes/audit.js";
 import reportRoutes from "./routes/reports.js";
+import showcaseRoutes from "./routes/showcase.js";
 import {
   prodCors,
   prodSecureHeaders,
@@ -71,6 +72,7 @@ app.route("/work-orders", workOrderRoutes);
 app.route("/search", searchRoutes);
 app.route("/audit", auditRoutes);
 app.route("/reports", reportRoutes);
+app.route("/showcase", showcaseRoutes);
 
 app.onError((err, c) => {
   if (err instanceof HTTPException) {

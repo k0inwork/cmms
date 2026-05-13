@@ -95,13 +95,13 @@ export default function EvidenceViewer({ params }: { params: { id: string } }) {
 
         <div className="flex-1 relative flex items-center justify-center p-4">
            {evidence.media_type === "PHOTO" ? (
-             <img src={evidence.file_url} alt="" className="max-h-full max-w-full object-contain" />
+             <img src={resolveUrl(evidence.file_url)} alt="" className="max-h-full max-w-full object-contain" />
            ) : evidence.media_type === "VIDEO" ? (
-             <video src={evidence.file_url} controls className="max-h-full max-w-full" />
+             <video src={resolveUrl(evidence.file_url)} controls className="max-h-full max-w-full" />
            ) : (
              <div className="text-center">
                 <FileText className="h-16 w-16 mx-auto mb-4 text-slate-500" />
-                <a href={evidence.file_url} target="_blank" rel="noopener noreferrer" className="text-brand-400 hover:underline">
+                <a href={resolveUrl(evidence.file_url)} target="_blank" rel="noopener noreferrer" className="text-brand-400 hover:underline">
                   Download {evidence.media_type}
                 </a>
              </div>
