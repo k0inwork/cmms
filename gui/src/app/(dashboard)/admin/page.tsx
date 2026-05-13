@@ -28,11 +28,13 @@ import {
   Shield,
   ClipboardList,
   MonitorPlay,
+  BookOpen,
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ShowcaseTab } from "./showcase-tab";
 
-type Tab = "users" | "skills" | "certifications" | "workflows" | "templates" | "showcase";
+type Tab = "users" | "skills" | "certifications" | "workflows" | "templates" | "showcase" | "docs";
 
 const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: "users", label: "Users", icon: Users },
@@ -41,6 +43,7 @@ const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: "workflows", label: "Workflows", icon: Cog },
   { key: "templates", label: "Templates", icon: ClipboardList },
   { key: "showcase", label: "Showcase", icon: MonitorPlay },
+  { key: "docs", label: "Docs", icon: BookOpen },
 ];
 
 const ROLE_LABELS: Record<Role, string> = {
@@ -111,6 +114,7 @@ export default function AdminPage() {
         {tab === "workflows" && <WorkflowsTab />}
         {tab === "templates" && <TemplatesTab />}
         {tab === "showcase" && <ShowcaseTab />}
+        {tab === "docs" && <DocsTab />}
       </div>
     </div>
   );
@@ -1131,6 +1135,141 @@ function VersionsModal({
         </div>
       )}
     </Modal>
+  );
+}
+
+// ─── Documentation Tab ──────────────────────────────────────────────────────
+
+interface DocEntry {
+  title: string;
+  href: string;
+  desc: string;
+  tags: string[];
+  status?: string;
+}
+
+const DOC_SECTIONS: { heading: string; docs: DocEntry[] }[] = [
+  {
+    heading: "Strategy & Requirements",
+    docs: [
+      { title: "Proposal", href: "/docs/proposal.md", desc: "Full platform definition: business goals, system archetype (CMMS + FSM + EAM), operating context, user roles, functional requirements, and phased roadmap.", tags: ["spec"], status: "Source document — all other docs derive from this" },
+      { title: "MVP Requirements", href: "/docs/MVP_Requirements.md", desc: "Scope boundaries: what's in and out of MVP. Core user flows, functional requirements, non-functional targets, and exit criteria.", tags: ["spec"], status: "Condensed scope document — quick reference for what MVP ships" },
+      { title: "User Stories", href: "/docs/MVP_User_Stories.md", desc: "52 user stories across 13 modules. Each with acceptance criteria. Covers Auth, Assets, Inspections, Offline, Evidence, Tickets, Availability, Replacements, Dispatch, Dashboard, Search, Admin, and Mobile.", tags: ["spec", "test"], status: "52 stories · traced to 76 test cases" },
+      { title: "Implementation Phases", href: "/docs/MVP_Implementation_Phases.md", desc: "7-phase build plan: Discovery → Core Foundation → Field Capture → Ticketing & Workforce → Reporting & Audit → Testing & Pilot → Launch.", tags: ["guide"], status: "Phase-level plan, not sprint-level" },
+    ],
+  },
+  {
+    heading: "Design & Architecture",
+    docs: [
+      { title: "MVP Design Document", href: "/docs/MVP_Design.md", desc: "Design principles, system archetype, main modules, key screens, data model overview, and UX notes.", tags: ["design"], status: "Mobile-first PWA · offline-first · single React codebase" },
+      { title: "Developer Briefing", href: "/docs/developer-briefing.md", desc: "Technical deep-dive for the engineering team. Architecture diagram, core data model, the 6 hard problems, ticket lifecycle, API principles, and tech stack.", tags: ["design", "guide"], status: "Tech stack: TypeScript · Fastify · Prisma · PostgreSQL · React · Keycloak" },
+      { title: "Database Schema", href: "/docs/MVP_Database_Schema.md", desc: "Full Prisma schema with naming conventions, enums, all tables, soft delete pattern, audit trail approach, and indexing strategy.", tags: ["spec", "design"], status: "PostgreSQL 15+ · Prisma ORM · JSONB for flexible form data" },
+      { title: "API Specification", href: "/docs/MVP_API_Specification.md", desc: "REST API with endpoints for auth, assets, inspections, evidence, tickets, workforce, sync, search, and admin.", tags: ["spec"], status: "JWT auth · idempotency keys · presigned S3 uploads · delta sync" },
+      { title: "Deployment Guide", href: "/docs/MVP_Deployment_Guide.md", desc: "Docker Compose setup for single-server MVP. Architecture diagram, service ports, environment variables, backup/restore.", tags: ["guide"], status: "Docker Compose · 8 CPU / 32 GB · ~100 users" },
+      { title: "Wireframes", href: "/docs/wireframes/index.html", desc: "33 SVG wireframes covering desktop (19 screens) and mobile (14 screens). Includes asset hierarchy, inspection forms, dispatcher board, QA review.", tags: ["design"], status: "33 screens · desktop + mobile" },
+    ],
+  },
+  {
+    heading: "Quality Assurance",
+    docs: [
+      { title: "Testing Strategy", href: "/docs/MVP_Testing_Strategy.md", desc: "Testing levels (unit, integration, E2E, UAT), 8 high-risk areas, test data requirements, and exit criteria for MVP readiness.", tags: ["test"], status: "Exit: all P0 pass + no data-loss bugs + UAT sign-off" },
+      { title: "Test Specification", href: "/docs/MVP_Test_Specification.md", desc: "76 traceable test cases with steps, expected results, and priorities. Covers all 52 user stories. Includes E2E, UAT, NFR tests.", tags: ["test", "spec"], status: "76 cases · 54 P0 · 14 P1 · 8 P2 · 100% coverage" },
+      { title: "Testing Presentation", href: "/docs/testing-presentation.html", desc: "Visual slide deck: testing pyramid, module coverage, high-risk heat map, conflict resolution, E2E flow, UAT scenarios.", tags: ["presentation", "test"], status: "7 slides · SVG diagrams" },
+    ],
+  },
+  {
+    heading: "Research & Background",
+    docs: [
+      { title: "Deep Research", href: "/docs/deepr.md", desc: "Market analysis comparing CMMS vs FSM vs EAM archetypes. Benchmarks against OxMaint, IFS Cloud, InnoMaint, Dynamics 365, and Aerones. ROI data.", tags: ["research"], status: "Market context · competitive benchmarks · ROI justification" },
+      { title: "Open Source CMMS Review", href: "/docs/opensource-cmms-review.md", desc: "Evaluation of 6 platforms: Atlas CMMS, SuperCMMS, Trier OS, Liberu Maintenance, Snipe-IT, CalemEAM. Gap analysis.", tags: ["research"], status: "Conclusion: custom build — no OSS covers offline + absence + evidence" },
+      { title: "Borrowed Patterns", href: "/docs/borrowed-patterns.md", desc: "Patterns extracted from evaluated platforms: IndexedDB operation queue, idempotent operations, auto-recovery, asset hierarchies.", tags: ["reference", "design"], status: "Proven patterns to adopt, not reinvent" },
+    ],
+  },
+  {
+    heading: "Presentations",
+    docs: [
+      { title: "Main Presentation", href: "/docs/presentation.html", desc: "Full pitch deck: problem statement, platform overview, architecture, data model, 6 core capabilities, offline sync, conflict resolution.", tags: ["presentation"], status: "20+ slides · SVG architecture diagrams" },
+      { title: "User Stories Slides", href: "/docs/user-stories-slides.html", desc: "Visual walkthrough of all 52 user stories organized by module. For stakeholder review and sprint planning.", tags: ["presentation", "spec"], status: "Open in browser" },
+      { title: "E2E Test Chains", href: "/docs/E2E_Test_Chains.md", desc: "5 end-to-end showcase chains with step-by-step flows, slide definitions, and role transitions.", tags: ["test", "guide"], status: "Chain 1–5 · inspection, absence, sync, ticket, commissioning" },
+    ],
+  },
+];
+
+const TAG_STYLES: Record<string, string> = {
+  spec: "bg-blue-100 text-blue-800",
+  guide: "bg-green-100 text-green-800",
+  reference: "bg-purple-100 text-purple-800",
+  presentation: "bg-orange-100 text-orange-800",
+  research: "bg-violet-100 text-violet-800",
+  test: "bg-cyan-100 text-cyan-800",
+  design: "bg-red-100 text-red-800",
+};
+
+function DocsTab() {
+  const [expanded, setExpanded] = useState<string | null>(null);
+
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-medium text-slate-900">Project Documentation</h2>
+        <a
+          href="/docs/index.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-sm font-medium text-brand-600 hover:text-brand-700"
+        >
+          <ExternalLink className="h-4 w-4" /> Open Doc Hub
+        </a>
+      </div>
+
+      <div className="mt-4 space-y-6">
+        {DOC_SECTIONS.map((section) => (
+          <div key={section.heading}>
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500 border-b border-slate-200 pb-2">
+              {section.heading}
+            </h3>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {section.docs.map((doc) => {
+                const isOpen = expanded === doc.href;
+                return (
+                  <div
+                    key={doc.href}
+                    className="rounded-lg border border-slate-200 bg-white p-4 hover:border-brand-400 transition-colors cursor-pointer"
+                    onClick={() => setExpanded(isOpen ? null : doc.href)}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <a
+                        href={doc.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-sm font-semibold text-brand-600 hover:underline"
+                      >
+                        {doc.title}
+                      </a>
+                      <ExternalLink className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                    </div>
+                    <p className={cn("mt-1 text-xs text-slate-500", !isOpen && "line-clamp-2")}>
+                      {doc.desc}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-1.5">
+                      {doc.tags.map((tag) => (
+                        <span key={tag} className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase", TAG_STYLES[tag] || "bg-slate-100 text-slate-600")}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    {isOpen && doc.status && (
+                      <p className="mt-2 text-xs text-slate-400">{doc.status}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
