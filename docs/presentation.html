@@ -90,8 +90,8 @@
 <h2>What Happens Without a Platform</h2>
 <div class="three-col">
 <div class="box" style="text-align:center;">
-<div class="stat">6h</div>
-<div class="stat-label">Lost per incident when a technician's work is lost to connectivity failure</div>
+<div class="stat">Up to 6h</div>
+<div class="stat-label">Lost per incident when a technician's work is lost to connectivity failure (est.)</div>
 </div>
 <div class="box" style="text-align:center;">
 <div class="stat">19x</div>
@@ -233,7 +233,7 @@
   <!-- Data Layer -->
   <rect x="70" y="375" width="200" height="60" rx="8" fill="url(#gData)" filter="url(#shadow)" stroke="#a080d0" stroke-width="1"/>
   <text x="170" y="400" text-anchor="middle" fill="#a080d0" font-size="13" font-weight="bold">PostgreSQL</text>
-  <text x="170" y="420" text-anchor="middle" fill="#888" font-size="10">Primary · RLS · JSONB</text>
+  <text x="170" y="420" text-anchor="middle" fill="#888" font-size="10">Primary · Org-scoped · JSONB</text>
 
   <rect x="350" y="375" width="200" height="60" rx="8" fill="url(#gData)" filter="url(#shadow)" stroke="#a080d0" stroke-width="1"/>
   <text x="450" y="400" text-anchor="middle" fill="#a080d0" font-size="13" font-weight="bold">PostgreSQL (Prisma)</text>
@@ -261,7 +261,7 @@
 <div class="two-col">
 <div>
 <div class="box">
-<h3>1. Offline-First PWA</h3>
+<h3>1. Offline-First PWA <span style="color:#e8c877;font-size:0.7em">(Phase 2)</span></h3>
 <ul>
 <li>Service Worker + IndexedDB</li>
 <li>Briefcase model: pre-load before site visit</li>
@@ -657,7 +657,7 @@
 <h3>In Scope</h3>
 <ul>
 <li>Asset registry (org &rarr; site &rarr; turbine &rarr; component)</li>
-<li>Offline PWA inspection forms (IndexedDB)</li>
+<li>Responsive web inspection forms (offline PWA: Phase 2)</li>
 <li>Evidence uploads (S3 presigned URLs)</li>
 <li>Ticket + work order creation</li>
 <li>Status lifecycle tracking</li>
@@ -699,7 +699,7 @@
 <th>Requirement</th><th>MVP</th><th>Phase 2</th><th>Phase 3</th><th>Phase 4</th>
 </tr>
 <tr><td>Asset registry (IEC/RDS-PP)</td><td class="green-tag">Full</td><td></td><td></td><td></td></tr>
-<tr><td>Offline inspection capture</td><td class="green-tag">Full (PWA)</td><td></td><td>Native app</td><td></td></tr>
+<tr><td>Offline inspection capture</td><td class="yellow-tag">Designed</td><td class="green-tag">Full (PWA)</td><td>Native app</td><td></td></tr>
 <tr><td>Inspection templates</td><td class="green-tag">Full</td><td></td><td></td><td></td></tr>
 <tr><td>Evidence management</td><td class="green-tag">Upload + link</td><td></td><td>Annotation</td><td></td></tr>
 <tr><td>Ticketing + lifecycle</td><td class="green-tag">Full</td><td></td><td></td><td></td></tr>
@@ -1265,7 +1265,7 @@
 <h3>Threat Model</h3>
 <table>
 <tr><th>Threat</th><th>Mitigation</th></tr>
-<tr><td>Tenant data leakage</td><td>Row-level security + automated isolation tests</td></tr>
+<tr><td>Tenant data leakage</td><td>Organization-scoped queries + automated isolation tests</td></tr>
 <tr><td>Stolen tokens</td><td>Short-lived JWT + refresh rotation</td></tr>
 <tr><td>Offline data on lost device</td><td>Phase 2+: encrypted local storage + remote wipe</td></tr>
 <tr><td>Sync replay attacks</td><td>Idempotency keys + 7-day dedup window</td></tr>
@@ -1321,7 +1321,7 @@
 <tr><td>Offline sync data loss</td><td class="red-tag">Critical</td><td>Phase 1, Sprint 3</td><td>IndexedDB + idempotent ops + conflict queue</td></tr>
 <tr><td>Large media performance</td><td class="yellow-tag">Medium</td><td>Phase 1, Sprint 5</td><td>Presigned S3 URLs + client-side compression</td></tr>
 <tr><td>Technician adoption</td><td class="yellow-tag">Medium</td><td>Phase 1, Sprint 3+</td><td>UX testing with field teams from week 7</td></tr>
-<tr><td>Multi-tenant data leakage</td><td class="red-tag">Critical</td><td>Phase 1, Sprint 1</td><td>Row-level security + automated isolation tests</td></tr>
+<tr><td>Multi-tenant data leakage</td><td class="red-tag">Critical</td><td>Phase 1, Sprint 1</td><td>Organization-scoped queries + automated isolation tests</td></tr>
 <tr><td>Safety data inconsistency</td><td class="red-tag">Critical</td><td>Phase 1, Sprint 3</td><td>Sequence number versioning for LOTO/permits</td></tr>
 <tr><td>SCADA misalignment</td><td class="yellow-tag">Medium</td><td>Phase 1, Sprint 2</td><td>IEC/RDS-PP naming from day 1 + client validation</td></tr>
 <tr><td>Scope creep</td><td class="yellow-tag">Medium</td><td>Ongoing</td><td>Phase-gate reviews, separate post-MVP backlog</td></tr>
